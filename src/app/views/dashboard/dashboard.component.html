@@ -1,0 +1,29 @@
+<div class="fade-in">
+  <c-card class="p-0">
+    <c-card-body class="p-0">
+      <c-tabset boxed="true" [activeTab]="'0'">
+        <c-tablist class="pt-2 px-2">
+          <c-tab *ngFor="let tab of tabs" (click)="changeTab(tab)">
+            <c-icon [name]="tab.icon" class="pb-1"></c-icon>
+            {{tab.header}}
+          </c-tab>
+        </c-tablist>
+        <c-tab-content>
+          <c-tab-pane>
+            <app-table-view *ngIf="isDisplay"></app-table-view>
+          </c-tab-pane>
+          <c-tab-pane>
+            <app-map-view *ngIf="isMapDisplay"></app-map-view>
+          </c-tab-pane>
+          <c-tab-pane>
+            <app-dashboard-count></app-dashboard-count>
+          </c-tab-pane>
+        </c-tab-content>
+      </c-tabset>
+    </c-card-body>
+  </c-card>
+</div>
+
+<div class="loading-indicator" *ngIf="loading">
+  <c-spinkit [name]="'bounce'"></c-spinkit>
+</div> 

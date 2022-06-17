@@ -1,0 +1,366 @@
+// Here you can add other styles
+@import '~spinkit/spinkit.css';
+.btn:disabled {
+    cursor: auto;
+}
+
+.errorRes{
+  margin: 8px 0px;
+    color: red;
+    padding: 10px 0px;
+    display: block;
+    font-weight: 500;
+}
+
+.succassRes{
+    margin: 8px 0px;
+    color: #31b506;
+    padding: 10px 0px;
+    display: block;
+    font-weight: 500;
+}
+
+.massegeCls{
+  margin-left: 20px;
+}
+
+.loading-indicator {
+    position: fixed;
+    z-index: 999;
+    height: 2em;
+    width: 2em;
+    overflow: show;
+    margin: auto;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+}
+
+/* Transparent Overlay */
+.loading-indicator:before {
+    content: '';
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.3);
+}
+c-spinkit {
+    position: relative;
+    margin-left: 50%;
+    --sk-color: var(--primary)
+}
+mat-cell,mat-header-cell{
+    word-break: break-all;
+    padding: 0 10px;
+}
+i{
+    outline: none;
+}
+
+.form-control-plaintext{
+    outline: none;
+}
+.iti{
+    width: 100% !important;
+}
+
+.export-select{
+    width: 20%;
+}
+
+::placeholder {
+    color: #8e8e8e;
+    opacity: 1;
+  }
+  
+  :-ms-input-placeholder {
+    color: #8e8e8e;
+  }
+  
+  ::-ms-input-placeholder {
+    color: #8e8e8e;
+  }
+  .form-control::placeholder {
+    color: #8e8e8e;
+    opacity: 1;
+  }
+
+.side-menu-section{
+    overflow-y: auto !important;
+    
+    .panel  .panel-default{
+        background: transparent;
+        margin-bottom: 0;
+    }
+    .panel-heading{
+        background: transparent;
+        color: #ffffff;
+        border: 0;
+        padding-left: 17px;
+        padding-top: 14px;
+        padding-bottom: 13px;
+        &:hover {
+            color: #fff; 
+            background: #321fdb;
+        }
+    }
+    .btn{
+        color: rgba(255, 255, 255, 0.8);
+        text-decoration: none;
+    }
+    i{
+        color: #ffffff80;
+    }
+    
+    .panel-open{
+        background: rgba(0,0,0,.2) !important;
+    }
+    .panel-body .card-block .card-body{
+        padding: 5px 0 !important;
+        
+    }
+    .inner-link{
+        padding-left: 56px;
+    }
+    .show{
+        .panel-body{
+            padding: 0 !important;
+        }
+    }
+}
+
+.nav-tabs .nav-item{
+  margin-right: 3px !important;
+}
+
+.btn-primary{
+    background-color: #257796 !important;
+}
+
+.c-sidebar{
+    background-color: #002736 !important;
+}
+
+.c-switch-primary .c-switch-input:checked + .c-switch-slider {
+    background-color: #257796 !important;
+    border-color: #257796 !important;
+}
+
+
+.c-switch-primary .c-switch-input:checked + .c-switch-slider::before{
+    border-color: #257796 !important;
+}
+
+.side-menu-section .panel-heading:hover{
+    background: #05445d !important;
+}
+
+
+.c-sidebar .c-sidebar-nav-link:hover, .c-sidebar .c-sidebar-nav-dropdown-toggle:hover{
+    background: #02212d !important;
+}
+
+
+.sk-bounce-dot{
+    background: #257796 !important;
+}
+
+a{
+    color: #257796 !important;
+}
+
+a:hover{
+    color: #002736 !important;
+}
+
+
+.c-sidebar .c-sidebar-nav-link:hover{
+    color: #ffffff !important;
+}
+
+.c-sidebar .c-sidebar-nav-link {
+  color: #ffffff !important;
+}
+
+.side-menu-section .panel-heading:hover{
+    background: #02212d !important
+}
+
+.btn-link{
+    color: #257796 !important;
+}
+body {
+  font-family: 'Inter', sans-serif;
+  color:#3C4B64;
+}
+h1, h2, h3, h4, h5 {
+  font-family: 'Inter', sans-serif;
+  color: #3C4B64;
+}
+.card-header h4{
+  font-weight:500;
+}
+
+.mat-table{
+    font-family: 'Inter', sans-serif;
+    overflow: scroll;
+}
+.mat-sort-header-content,
+.mat-header-cell{
+  color:#3C4B64;
+  font-size: 13px;
+  font-weight: 600;
+}
+.mat-cell.cdk-cell {
+  color: #3C4B64;
+}
+.breadcrumb-item a{color:#3C4B64 !important;}
+
+.breadcrumb-item.active{color:#3C4B64 !important;}
+.form-control{color:#3C4B64;}
+.custom-control-input:checked ~ .custom-control-label::before {
+  border-color: #257796;
+  background-color: #257796;
+}
+.common-form .card-header {
+  border: 0;
+  padding: 0 0 10px !important;
+  display: block;
+}
+.form-horizontal .common-form {
+  border-bottom: 1px solid rgba(216, 219, 224, 0.5);
+  margin: 0 0 20px;
+  padding: 0 0 10px;
+}
+.common-form .form-group .col-form-label {
+  //padding:0 0 0 15px;
+  margin:0;
+}
+
+.form-control:focus{
+    color: #3C4B64 !important;
+}
+
+.fa.fa-eye, .fa.fa-history, .fa.fa-pencil, .fa-envelope {
+  color: #257796;
+}
+
+.text-primary {
+    color: #257796 !important;
+}
+
+.dropdown-item:active {
+  background-color: #ebedef;
+}
+
+.modal-dialog{max-width:1140px;}
+
+.modal-dialog .input-box{width:100%;}
+
+.c-header-nav-item h4 {
+  font-weight: 600;
+  font-family: "Inter", sans-serif;
+}
+
+.c-sidebar-brand {
+    align-items: center !important;
+    display: flex !important;
+    flex: 0 0 56px !important;
+    justify-content: flex-start !important;
+    padding-left: 18px !important;
+  }
+  
+  
+  .sidebar-dropdown-menu {
+    div.panel-default {
+      box-shadow: none !important;
+    }
+  }
+  
+  .badge-warning {
+    background-color: #f9b11529 !important;
+    color: #ce9927 !important;
+  }
+  
+  .badge-success{
+    background-color: #2eb85c2b !important;
+    color: #48af6b !important;
+  }
+  
+  .badge-danger{
+    background-color: #e5535321 !important;
+    color: #f78686 !important;
+  }
+
+  .btn-success{
+    background-color: #2eb85c2b !important;
+    color: #48af6b !important;
+  }
+  
+  .btn-danger{
+    background-color: #e5535321 !important;
+    color: #f78686 !important;
+  }
+
+  .text-danger{
+    color: #f78686 !important;
+  }
+
+  .nav-tabs-boxed .tab-content{
+    color: #3C4B64 !important;
+  }
+
+  .btn:focus {
+    box-shadow: 0 0 0 0.2rem rgb(37 119 150 / 25%) !important;
+}
+
+html:not([dir=rtl]) .c-sidebar:not(.c-sidebar-right) {
+  margin-left: 0 !important;
+ }
+ .menu-close{
+   display: none;
+  }
+
+ button.navbar-toggler.navbar-toggler-right.py-2 {
+  margin: -18px 0 0 0;
+  outline: none;
+}
+ @media (max-width:991px){
+  .menu-close{
+    display: block; 
+    color: #ffffff; 
+    position: absolute; 
+    top: 17px; 
+    left: auto; 
+    right: 15px;
+    font-size: 22px;
+  }
+ }
+ @media (max-width:767px) {
+  .menu-close{
+    display: block; 
+    color: #ffffff; 
+    position: absolute; 
+    top: 17px; 
+    left: auto; 
+    right: 15px;
+    font-size: 22px;}
+ }
+
+ .invalid-org{
+  position: fixed;
+  height: 100%;
+  width: 100%;
+  background: black;
+  z-index: 999;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  opacity: 1;
+  color: #fff;
+  font-size: 27px;
+ }

@@ -1,0 +1,64 @@
+<div class="fade-in">
+    <c-card>
+        <c-card-header class="d-flex align-items-center">
+            <h4 class="mb-0">User Groups List</h4>
+            <c-card-header-actions class="ml-auto">
+                <button cButton color="primary" size="md" class="mfe-1" (click)="addGroup()">
+                    <span> Add User Groups</span>
+                </button>
+            </c-card-header-actions>
+        </c-card-header>
+        <c-card-body>
+            <!-- <c-row class="mb-3">
+                <c-col md="12">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="cil-search"></i></span>
+                        </div>
+                        <input cInput placeholder="Search here..." (input)="search($event)" />
+                    </div>
+                </c-col>
+            </c-row> -->
+
+            <mat-table #table mat-table [dataSource]="dataSource" matSort matSortActive="createdAt" matSortDisableClear
+                matSortDirection="desc" class="mat-elevation-z8" (matSortChange)="sortChange()">
+
+                <ng-container matColumnDef="name">
+                    <mat-header-cell [ngClass]="'w-name'" *matHeaderCellDef>Group Name </mat-header-cell>
+                    <mat-cell [ngClass]="'w-name'" *matCellDef="let element">
+                        {{element.name}}
+                    </mat-cell>
+                </ng-container>
+
+
+                <ng-container matColumnDef="users">
+                    <mat-header-cell [ngClass]="'w-name'" *matHeaderCellDef> No. of Users </mat-header-cell>
+                    <mat-cell [ngClass]="'w-name'" *matCellDef="let element"> {{element.users.length}} </mat-cell>
+                </ng-container>
+
+
+                <ng-container matColumnDef="action">
+                    <mat-header-cell *matHeaderCellDef> Action </mat-header-cell>
+                    <mat-cell *matCellDef="let element">
+                        <i class="fa fa-eye mr-2" (click)="viewGroup(element)"></i>
+                        <i class="fa fa-pencil mr-2" (click)="updateGroup(element)"></i>
+                        <i class="fa fa-trash text-danger" (click)="delete(element)"
+                            *ngIf="element.role != role.admin"></i>
+                    </mat-cell>
+                </ng-container>
+
+                <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+            </mat-table>
+            <div class="mat-table__message text-center mt-3" *ngIf="!resultsLength">No records found</div>
+            <!--  <div class="mat-table__bottom">
+                <mat-paginator [pageSizeOptions]="[10, 25, 50, 100]" [length]="resultsLength" [showFirstLastButtons]
+                    (page)="pageChange()">
+                </mat-paginator>
+            </div> -->
+        </c-card-body>
+    </c-card>
+</div>
+<div class="loading-indicator" *ngIf="loading">
+    <c-spinkit [name]="'bounce'"></c-spinkit>
+    </div> 

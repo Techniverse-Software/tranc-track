@@ -1,0 +1,56 @@
+<div class="modal-content">
+    <div class="modal-header">
+        <h5 class="modal-title custom-title" id="exampleModalLabel">{{title}}</h5>
+    </div>
+    <div class="modal-body">
+        <form class="form-horizontal needs-validation" [formGroup]="allocateForm" novalidate>
+
+            <c-form-group cRow>
+                <label cLabel="col" cCol md="3" for="email-input">Select Device Group</label>
+                <c-col md="9">
+                    <ng-select class="bootstrap" placeholder="Select Devices" [items]="deviceGroupList"
+                        [clearable]="true" bindLabel="name" bindValue="devices" formControlName="devices"
+                        (change)="changeEvent($event,true)">
+                    </ng-select>
+                    <div *ngIf="submitted && f['devices'].invalid" class="invalid-feedback d-block">
+                        <div *ngIf="f['devices'].errors.required">
+                            {{formErrors.device.required}} group
+                        </div>
+                    </div>
+                    <ul *ngIf="selectedDeviceData.length" class="mt-3 mb-0">
+                        <li *ngFor="let item of selectedDeviceData">
+                            {{item.id1}}
+                        </li>
+                    </ul>
+                </c-col>
+            </c-form-group>
+
+            <c-form-group cRow class="mb-0">
+                <label cLabel="col" cCol md="3" for="email-input">Select User group</label>
+                <c-col md="9">
+                    <ng-select class="bootstrap" placeholder="Select Users" [items]="userGroupList" [clearable]="true"
+                        bindLabel="name" bindValue="users" formControlName="users" (change)="changeEvent($event,false)">
+                    </ng-select>
+                    <div *ngIf="submitted && f['users'].invalid" class="invalid-feedback d-block">
+                        <div *ngIf="f['users'].errors.required">
+                            {{formErrors.user.required}} group
+                        </div>
+                    </div>
+                    <ul *ngIf="selectedUserData.length" class="mt-3 mb-0">
+                        <li *ngFor="let item of selectedUserData">
+                            {{item.name}}
+                        </li>
+                    </ul>
+                </c-col>
+            </c-form-group>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button cButton color="primary" (click)="allocate()">{{submitButtonText}}</button>
+        <button cButton color="secondary" (click)="cancle()">{{cancleButtonText}}</button>
+    </div>
+    <div class="massegeCls"
+        [ngClass]="{'errorRes' : gs.resMassage.status == 'error', 'succassRes' : gs.resMassage.status == 'success'}">
+        {{gs.resMassage.massage || ''}}
+    </div>
+</div>

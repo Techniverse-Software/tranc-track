@@ -1,0 +1,44 @@
+<div class="modal-content">
+    <div class="modal-header">
+        <h5 class="modal-title custom-title" id="exampleModalLabel">{{title}}</h5>
+    </div>
+    <div class="modal-body">
+        <div class="my-4">
+            <!-- <button cButton size="md" class="mfe-1 import-bottun" (click)="organizationfile.click()">
+                <c-icon name="cil-cloud-upload" size="sm" class="text-white"></c-icon>
+                <span> Import</span>
+                <input type="file" hidden (change)="selectFile($event)" #organizationfile
+                    accept=".csv,application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
+            </button> -->
+            <input type="file" (change)="selectFile($event)" #organizationfile
+                accept=".csv,application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
+        </div>
+        <c-row *ngIf="fileData.fileName" class="mt-4">
+            <label cLabel="col" class="" cCol md="12" for="text-input"><strong>File Name :
+                    {{fileData.fileName}}</strong>
+            </label>
+            <!-- <label cLabel="col" cCol md="11" for="text-input"></label> -->
+            <label cLabel="col" class="" cCol md="12" for="text-input"><strong>File Size :
+                    {{fileData.fileSize}}</strong> </label>
+            <!-- <label cLabel="col" cCol md="11" for="text-input"></label> -->
+        </c-row>
+        <img style="border: 1px solid;margin: 23px 0;" *ngIf="page == 'user'" src="assets/img/user.png" alt=""
+            width="100%">
+        <img style="border: 1px solid;margin: 23px 0;" *ngIf="page == 'organizations'"
+            src="assets/img/organizations.png" alt="" width="100%">
+        <img style="border: 1px solid;margin: 23px 0;" *ngIf="page == 'devices'" src="assets/img/devices.png" alt=""
+            width="100%">
+        <img style="border: 1px solid;margin: 23px 0;" *ngIf="page == 'location'" src="assets/img/location.png" alt=""
+            width="100%">
+        <!-- <c-row *ngIf="fileData.fileSize">
+        </c-row> -->
+    </div>
+    <div class="modal-footer">
+        <button cButton color="primary" (click)="save()">Save</button>
+        <button cButton color="secondary" (click)="close()">Close</button>
+    </div>
+    <div class="massegeCls"
+        [ngClass]="{'errorRes' : gs.resMassage.status == 'error', 'succassRes' : gs.resMassage.status == 'success'}">
+        {{gs.resMassage.massage || ''}}
+    </div>
+</div>

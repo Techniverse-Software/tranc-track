@@ -1,0 +1,108 @@
+<div class="fade-in">
+  <c-card>
+    <c-card-header class="d-flex align-items-center">
+      <h4 class="mb-0">Check-in History</h4>
+    </c-card-header>
+    <c-card-body>
+      <c-row class="mb-3">
+        <c-col md="4">
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <span class="input-group-text"><i class="cil-search"></i></span>
+            </div>
+            <input cInput placeholder="Search here..." (input)="search($event)" />
+          </div>
+        </c-col>
+        <c-col md="3" *ngIf="
+            organizationArr.length &&
+            tokenData &&
+            !tokenData.user.organizationId
+          " (change)="filterData($event, 'orgasnizationUniqueId')">
+          <select cSelect id="select1" name="select1">
+            <option value="">All Organization</option>
+            <option [value]="organization.organizationId" *ngFor="let organization of organizationArr">
+              {{ organization.organizationName | titlecase }}
+            </option>
+          </select>
+        </c-col>
+      </c-row>
+      <mat-table #table mat-table [dataSource]="dataSource" matSort matSortActive="createdAt" matSortDisableClear
+        matSortDirection="desc" class="mat-elevation-z8" (matSortChange)="sortChange()">
+        <ng-container matColumnDef="userDetail.name">
+          <mat-header-cell [ngClass]="'w-name'" *matHeaderCellDef mat-sort-header>User's Name
+          </mat-header-cell>
+          <mat-cell [ngClass]="'w-name'" *matCellDef="let element">
+            {{
+            element.userDetail ? element.userDetail.name : ("-" | titlecase)
+            }}
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="organizationDetail.organizationName">
+          <mat-header-cell [ngClass]="'o-name'" *matHeaderCellDef mat-sort-header>Organization
+          </mat-header-cell>
+          <mat-cell [ngClass]="'o-name'" *matCellDef="let element">
+            {{
+            element.organizationDetail
+            ? element.organizationDetail.organizationName
+            : "-"
+            }}
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="userDetail.email">
+          <mat-header-cell [ngClass]="'w-email'" *matHeaderCellDef>User's Email
+          </mat-header-cell>
+          <mat-cell [ngClass]="'w-email'" *matCellDef="let element">
+            {{ element.userDetail ? element.userDetail.email : "-" }}
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="deviceDetail.location">
+          <mat-header-cell [ngClass]="'c-name'" *matHeaderCellDef>Coordinates</mat-header-cell>
+          <mat-cell [ngClass]="'c-name'" *matCellDef="let element">
+            <div class="mt-10">
+              <a href="javascript:void(0)" *ngIf="element.location" (click)="selectLocation(element.location)">
+                {{ element.location }}</a>
+              <br />
+              <p>{{ element.installationLocation }}</p>
+            </div>
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="createdAt">
+          <mat-header-cell [ngClass]="'d-name'" *matHeaderCellDef mat-sort-header>Date and Time
+          </mat-header-cell>
+          <mat-cell [ngClass]="'d-name'" *matCellDef="let element">
+            {{ element.createdAt | date: "dd/MM/yyyy, h:mm:ss" }}
+            {{ element.createdAt | date: "a" | lowercase }}
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+          <mat-header-cell [ngClass]="'s-name'" *matHeaderCellDef> Status </mat-header-cell>
+          <mat-cell [ngClass]="'s-name'" *matCellDef="let element" class="status-icon">
+            <i class="fa fa-exclamation-triangle text-danger mx-2" *ngIf="element.status == 0" style="font-size: 23px"
+              ngxTippy [tippyProps]="simpleProps(element.title)"></i>
+            <i class="fa fa-check text-success mx-2" *ngIf="element.status == 1" style="font-size: 23px"></i>
+          </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+      </mat-table>
+      <div class="mat-table__message text-center mt-3" *ngIf="!resultsLength">
+        No records found
+      </div>
+      <div class="mat-table__bottom">
+        <mat-paginator [pageSizeOptions]="[10, 25, 50, 100]" [length]="resultsLength" [showFirstLastButtons]
+          (page)="pageChange()">
+        </mat-paginator>
+      </div>
+    </c-card-body>
+  </c-card>
+</div>
+
+<div class="loading-indicator" *ngIf="loading">
+  <c-spinkit [name]="'bounce'"></c-spinkit>
+</div>

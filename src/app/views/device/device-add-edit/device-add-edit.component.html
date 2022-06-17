@@ -1,0 +1,230 @@
+<div class="fade-in">
+    <c-row>
+        <c-col md="12">
+            <c-card>
+                <c-card-header>
+                    <strong>{{!deviceId?'Add Device':'Edit Device'}}</strong>
+                </c-card-header>
+                <c-card-body>
+                    <form class="form-horizontal needs-validation" [formGroup]="deviceForm" novalidate>
+                        <div class="common-form">
+                            <c-card-header class="p-0 pb-2">
+                                <strong>Device Details</strong>
+                            </c-card-header>
+                            <c-form-group cRow>
+                                <label cLabel="col" cCol md="3" for="email-input">Prefix</label>
+                                <c-col md="5">
+                                    <select cSelect id="select1" formControlName="prefixName">
+                                        <option value="tracdisc">tracdisc</option>
+                                        <option value="SCANX">SCANX</option>
+                                    </select>
+                                </c-col>
+                            </c-form-group>
+                            <c-form-group cRow>
+                                <label cLabel="col" cCol md="3" for="email-input"> ID <span
+                                        class="text-danger">*</span></label>
+                                <c-col md="5">
+                                    <input cInput type="text" placeholder="Enter Device ID" formControlName="id1"
+                                        [disabled]="deviceId && tokenData.user.role != roles.superAdmin"
+                                        [readonly]="deviceId && tokenData.user.role != roles.superAdmin"
+                                        [plaintext]="deviceId && tokenData.user.role != roles.superAdmin"
+                                        [textMask]="{mask: idMask}"
+                                        [ngClass]="{ 'is-invalid': (submitted || f.id1.touched) && f.id1.invalid, 'is-valid': f.id1.touched && f.id1.valid }">
+                                    <div *ngIf="submitted || f['id1'].invalid" class="invalid-feedback">
+                                        <div *ngIf="f['id1'].errors?.required">{{formErrors.id1?.required}}</div>
+                                    </div>
+                                    <div *ngIf="submitted || f['id1'].invalid" class="invalid-feedback">
+                                        <div *ngIf="f['id1'].errors && f['id1']?.errors?.isInValidId ">{{formErrors.id1?.invalid}}</div>
+                                    </div>
+                                </c-col>
+                            </c-form-group>
+                            <!-- <c-form-group cRow>
+                            <label cLabel="col" cCol md="3" for="email-input">ID#2</label>
+                            <c-col md="9">
+                                <input cInput type="text" placeholder="Enter Id2" formControlName="id2"
+                                    [disabled]="deviceId" [readonly]="deviceId" [plaintext]="deviceId"
+                                    [ngClass]="{ 'is-invalid': (submitted || f.id2.touched) && f.id2.invalid, 'is-valid': f.id2.touched && f.id2.valid }">
+                                <div *ngIf="submitted && f['id2'].invalid" class="invalid-feedback">
+                                    <div *ngIf="f['id2'].errors.required">ID2 is required</div>
+                                </div>
+                            </c-col>
+                        </c-form-group> -->
+                            <c-form-group cRow>
+                                <label cLabel="col" cCol md="3" for="text-input">Device UID <span
+                                        class="text-danger">*</span></label>
+                                <c-col md="5">
+                                    <input cInput id="text-input" placeholder="Enter Device UID" formControlName="uid"
+                                        [disabled]="deviceId && tokenData.user.role != roles.superAdmin"
+                                        [readonly]="deviceId && tokenData.user.role != roles.superAdmin"
+                                        [plaintext]="deviceId && tokenData.user.role != roles.superAdmin"
+                                        [ngClass]="{ 'is-invalid': (submitted || f.uid.touched) && f.uid.invalid, 'is-valid': f.uid.touched && f.uid.valid }">
+                                    <div *ngIf="submitted && f['uid'].invalid" class="invalid-feedback">
+                                        <div *ngIf="f['uid'].errors.required">
+                                            {{formErrors.uid.required}}
+                                        </div>
+                                    </div>
+                                </c-col>
+                            </c-form-group>
+                            <c-form-group cRow>
+                                <label cLabel="col" cCol md="3" for="text-input">Description</label>
+                                <c-col md="5">
+                                    <input cInput id="text-input" placeholder="Enter Description"
+                                        formControlName="description">
+                                </c-col>
+                            </c-form-group>
+                        </div>
+                        <!--<div class="common-form">
+                            <c-card-header class="p-0 pb-2">
+                                <strong>Groups</strong>
+                            </c-card-header>
+                            <c-form-group cRow>
+                                <label cLabel="col" cCol md="3" for="select1">Select Device Groups</label>
+                                <c-col md="4">
+                                    <ng-select (add)="addGroup($event)" (remove)="removeGroup($event)" class="bootstrap"
+                                        placeholder="Select Group" [items]="groupList" [clearable]="true"
+                                        bindLabel="name" bindValue="_id" formControlName="groups" multiple="true"
+                                        [selectOnTab]="true">
+                                    </ng-select>
+                                </c-col>
+                                <button md="1" cButton color="primary" size="md" class="mfe-1" (click)="addGroupList()">
+                                    <c-icon name="cil-plus" size="sm" class="text-white"></c-icon>
+                                    <span> Add Group</span>
+                                </button>
+                            </c-form-group>
+                        </div>-->
+                        <div class="common-form" *ngIf="(authService.check_super_admin())">
+                            <c-card-header class="p-0 pb-2">
+                                <strong>Select Registration Status</strong>
+                            </c-card-header>
+                            <ng-container>
+                                <c-form-group cRow>
+                                    <label cLabel="col" cCol md="3" for="select1">Registration Status</label>
+                                    <c-col md="5">
+                                        <select cSelect id="select1" formControlName="registrationStatus"
+                                            (change)="changeRegistrationtatus()">
+                                            <option [value]="status.value" *ngFor="let status of registrationStatusArr">
+                                                {{status.label}}</option>
+                                        </select>
+                                    </c-col>
+                                </c-form-group>
+                                <c-form-group cRow *ngIf="deviceForm.value.registrationStatus == 'true'">
+                                    <label cLabel="col" cCol md="3" for="select1">Assign to</label>
+                                    <c-col md="5">
+                                        <ng-select class="bootstrap" placeholder="Select Organization"
+                                            [items]="organizationArr" [clearable]="true" bindLabel="organizationName"
+                                            bindValue="_id" formControlName="organizationId"
+                                            (change)="selectOrganization($event)">
+                                        </ng-select>
+                                        <div *ngIf="submitted && f['organizationId'].invalid"
+                                            class="invalid-feedback d-block">
+                                            <div *ngIf="f['organizationId'].errors.required">
+                                                {{formErrors.organization.required}}
+                                            </div>
+                                        </div>
+                                    </c-col>
+                                </c-form-group>
+                            </ng-container>
+                        </div>
+                        <div class="common-form">
+                            <c-card-header class="p-0 pb-2">
+                                <strong>Select Device Status & Location</strong>
+                            </c-card-header>
+                            <c-form-group cRow>
+                                <label cLabel="col" cCol md="3" for="text-input">Location <span
+                                    class="text-danger">*</span> </label>
+                                <c-col md="5">
+                                    <ng-select class="bootstrap" placeholder="Enter Location" [items]="locationList"
+                                        [clearable]="true" bindLabel="name" bindValue="_id" formControlName="locationId"
+                                        [ngClass]="{ 'is-invalid': (submitted || f.locationId.touched) && f.locationId.invalid, 'is-valid': f.locationId.touched && f.locationId.valid }">
+                                    </ng-select>
+                                    <div *ngIf="submitted && f['locationId'].invalid" class="invalid-feedback">
+                                        <div *ngIf="f['locationId'].errors.required">
+                                          {{formErrors.locationId.required}}
+                                        </div>
+                                      </div>
+                                </c-col>
+                            </c-form-group>
+                            <c-form-group cRow>
+                                <label cLabel="col" cCol md="3">Status</label>
+                                <c-col md="5" col="form-label">
+                                    <c-form-check variant="radio" inline custom>
+                                        <input cInput type="radio" id="radio1" [value]="1" checked
+                                            formControlName="status" class="custom-control-input"
+                                            (change)="changeStatus()">
+                                        <label cLabel variant="radio" for="radio1" class="custom-control-label">
+                                            Active
+                                        </label>
+                                    </c-form-check>
+
+                                    <c-form-check variant="radio" inline custom>
+                                        <input cInput type="radio" id="radio2" [value]="0" formControlName="status"
+                                            class="custom-control-input" (change)="changeStatus()">
+                                        <label cLabel variant="radio" for="radio2" class="custom-control-label">
+                                            Inactive
+                                        </label>
+                                    </c-form-check>
+                                    <c-form-check variant="radio" inline custom>
+                                        <input disabled cInput type="radio" id="radio3" [value]="3"
+                                            formControlName="status" class="custom-control-input"
+                                            (change)="changeStatus()">
+                                        <label cLabel variant="radio" for="radio3" class="custom-control-label">
+                                            Pending
+                                        </label>
+                                    </c-form-check>
+                                    <c-form-check variant="radio" inline custom>
+                                        <input disabled cInput type="radio" id="radio4" [value]="4"
+                                            formControlName="status" class="custom-control-input"
+                                            (change)="changeStatus()">
+                                        <label cLabel variant="radio" for="radio4" class="custom-control-label">
+                                            Unassigned
+                                        </label>
+                                    </c-form-check>
+                                </c-col>
+                            </c-form-group>
+                            <c-form-group cRow *ngIf="deviceForm.value.status == '1'">
+                                <label cLabel="col" cCol md="3" for="text-input">Location Coordinate</label>
+                                <c-col md="5">
+                                    <input cInput id="text-input" placeholder="Enter Coordinate (lat,lng)"
+                                        formControlName="location"
+                                        [ngClass]="{ 'is-invalid': (submitted || f.location.touched) && f.location.invalid, 'is-valid': f.location.touched && f.location.valid }">
+                                        <div *ngIf="submitted && f['location'].invalid" class="invalid-feedback">
+                                            <div *ngIf="f['location'].errors.required">{{formErrors.location.required}}</div>
+                                        </div>
+                                </c-col>
+                            </c-form-group>
+                          
+                        </div>
+                    </form>
+                </c-card-body>
+                <c-card-footer>
+                    <button cButton type="submit" color="primary" size="md" class="mfe-1" (click)="save()"
+                        *ngIf="!deviceId">
+                        <c-icon name="cil-check-circle" size="sm"></c-icon>
+                        <span> Submit</span>
+                    </button>
+                    <button cButton type="submit" color="primary" size="md" class="mfe-1" *ngIf="deviceId"
+                        (click)="update()">
+                        <c-icon name="cil-pencil" size="sm"></c-icon>
+                        <span> Update</span>
+                    </button>
+                    <button cButton type="reset" color="danger" size="md" class="mfe-1" (click)="onReset()"
+                        *ngIf="!deviceId">
+                        <c-icon name="cil-ban" size="sm"></c-icon>
+                        <span> Reset</span>
+                    </button>
+                    <button cButton type="reset" color="secondary" size="md" class="mfe-1" routerLink="/device">
+                        <c-icon name="cil-x-circle" size="sm"></c-icon>
+                        <span> Cancel</span>
+                    </button>
+                </c-card-footer>
+                <div class="massegeCls"
+                    [ngClass]="{'errorRes' : gs.resMassage.status == 'error', 'succassRes' : gs.resMassage.status == 'success'}">
+                    {{gs.resMassage.massage || ''}}
+                </div>
+            </c-card>
+        </c-col>
+    </c-row>
+</div>
+<div class="loading-indicator" *ngIf="loading">
+    <c-spinkit [name]="'bounce'"></c-spinkit>
+    </div> 

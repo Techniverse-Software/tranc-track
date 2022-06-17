@@ -1,0 +1,59 @@
+<c-container>
+  <c-row class="justify-content-center">
+    <c-col md="6">
+      <c-card-group>
+        <c-card class="p-4">
+          <c-card-body>
+            <form
+              [formGroup]="verifyOtpForm"
+              novalidate
+              (ngSubmit)="onSubmit()"
+              class="needs-validation"
+            >
+              <h3>Please enter 5 digit passcode that was sent to your mail</h3>
+              <div class="input-group mb-3">
+                <ng-otp-input
+                  class="text-center"
+                  (onInputChange)="onOtpChange($event)"
+                  [config]="{ length: 5 }"
+                >
+                </ng-otp-input>
+              </div>
+              <c-row>
+                <c-col col="6">
+                  <button
+                    cButton
+                    color="primary"
+                    class="px-4"
+                    type="submit"
+                    [disabled]="false"
+                  >
+                    Verify
+                  </button>
+                </c-col>
+                <c-col col="6" class="text-right">
+                  <button
+                    cButton
+                    color="link"
+                    class="px-0"
+                    (click)="resendOtp()"
+                  >
+                    Resend Passcode
+                  </button>
+                </c-col>
+              </c-row>
+              <div
+                [ngClass]="{
+                  errorRes: gs.resMassage.status == 'error',
+                  succassRes: gs.resMassage.status == 'success'
+                }"
+              >
+                {{ gs.resMassage.massage || "" }}
+              </div>
+            </form>
+          </c-card-body>
+        </c-card>
+      </c-card-group>
+    </c-col>
+  </c-row>
+</c-container>

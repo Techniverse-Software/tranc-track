@@ -1,0 +1,121 @@
+<ng-container>
+    <c-row>
+        <label cLabel="col" cCol md="3" > <strong>Summary Text</strong>
+        </label>
+        <label cLabel="col" cCol md="9" >  <strong>Count </strong></label>
+    </c-row>
+    <hr class="org-hr"/>
+    <c-row *ngIf="permissionDetails && permissionDetails.is_default">
+        <label cLabel="col" cCol md="3" > Total Devices 
+        </label>
+        <label cLabel="col" cCol md="9" >{{totaldeviceCount?.deviceCount ? totaldeviceCount?.deviceCount : 0}}</label>
+    </c-row>
+    <hr *ngIf="permissionDetails && permissionDetails.is_default" class="org-hr"/>
+    <c-row>
+        <label cLabel="col" cCol md="3" > Assigned Devices </label>
+        <label cLabel="col" cCol md="9" >{{deviceCount?.assignedDevice ? deviceCount?.assignedDevice : 0}}</label>
+    </c-row>
+    <hr class="org-hr"/>
+    <c-row>
+        <label cLabel="col" cCol md="3" > Total Registered Users </label>
+        <label cLabel="col" cCol md="9" >{{userCount?.totalRegisterdUser ? userCount?.totalRegisterdUser : 0}}</label>
+    </c-row>
+    <hr class="org-hr"/>
+    <c-row>
+        <label cLabel="col" cCol md="3" > Check-in this month 
+        </label>
+        <label cLabel="col" cCol md="9">{{checkInCount?.checkInThisMonth ? checkInCount?.checkInThisMonth : 0}}</label>
+    </c-row>
+    <hr class="org-hr"/>
+    <c-row>
+        <label cLabel="col" cCol md="3" > Total Check-in to date
+        </label>
+        <label cLabel="col" cCol md="9">{{checkInCount?.checkInSinceStart ? checkInCount?.checkInSinceStart : 0}}</label>
+    </c-row>
+    <hr class="org-hr"/>
+    <c-row *ngIf="permissionDetails && permissionDetails.is_default">
+        <label cLabel="col" cCol md="3" > Number of Resellers
+        </label>
+        <label cLabel="col" cCol md="9">{{organizationCount?.resellers ? organizationCount?.resellers : 0}}</label>
+    </c-row>
+    <hr *ngIf="permissionDetails && permissionDetails.is_default" class="org-hr"/>
+    <c-row *ngIf="permissionDetails && permissionDetails.is_default">
+        <label cLabel="col" cCol md="3" > Number of Active Resellers
+        </label>
+        <label cLabel="col" cCol md="9">{{organizationCount?.activeResellers ? organizationCount?.activeResellers : 0}}</label>
+    </c-row>
+    <hr *ngIf="permissionDetails && permissionDetails.is_default" class="org-hr"/>
+    <c-row *ngIf="permissionDetails && permissionDetails.is_default">
+        <label cLabel="col" cCol md="3" > Number of Organizations 
+        </label>
+        <label cLabel="col" cCol md="9">{{organizationCount?.organization ? organizationCount?.organization : 0}}</label>
+    </c-row>
+    <hr *ngIf="permissionDetails && permissionDetails.is_default" class="org-hr"/>
+    <c-row *ngIf="permissionDetails && permissionDetails.is_default">
+        <label cLabel="col" cCol md="3" > Number of Active Organizations
+        </label>
+        <label cLabel="col" cCol md="9">{{organizationCount?.activeOrganization ? organizationCount?.activeOrganization : 0}}</label>
+    </c-row>
+    <hr *ngIf="permissionDetails && permissionDetails.is_default" class="org-hr"/>
+    <!-- </c-card-body>
+</c-card> -->
+</ng-container>
+
+<div class="loading-indicator" *ngIf="loading">
+    <c-spinkit [name]="'bounce'"></c-spinkit>
+    </div> 
+
+
+
+
+
+
+
+<!--<div class="fade-in">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th scope="col">Summary Text</th>
+                <th scope="col">Count</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="width: 30%;">Assigned Devices</td>
+                <td>{{deviceCount?.assignedDevice ? deviceCount?.assignedDevice : 0}}</td>
+            </tr>
+            <tr *ngIf="permissionDetails && permissionDetails.is_default">
+                <td style="width: 30%;">Unassigned Devices</td>
+                <td>{{deviceCount?.unassignedDevice ? deviceCount?.unassignedDevice : 0}}</td>
+            </tr>
+            <tr>
+                <td style="width: 30%;">Total Registered Users</td>
+                <td>{{userCount?.totalRegisterdUser ? userCount?.totalRegisterdUser : 0}}</td>
+            </tr>
+            <tr *ngIf="permissionDetails && permissionDetails.is_default">
+                <td style="width: 30%;">Number Of Resellers</td>
+                <td>{{userCount?.resellers ? userCount?.resellers : 0}}</td>
+            </tr>
+            <tr *ngIf="permissionDetails && permissionDetails.is_default">
+                <td style="width: 30%;">Number Of Active Resellers</td>
+                <td>{{userCount?.activeResellers ? userCount?.activeResellers : 0}}</td>
+            </tr>
+            <tr>
+                <td style="width: 30%;">Check-in's this month</td>
+                <td>{{checkInCount?.checkInThisMonth ? checkInCount?.checkInThisMonth : 0}}</td>
+            </tr>
+            <tr>
+                <td style="width: 30%;">Total Check-in's to date</td>
+                <td>{{checkInCount?.checkInSinceStart ? checkInCount?.checkInSinceStart : 0}}</td>
+            </tr>
+            <tr *ngIf="permissionDetails && permissionDetails.is_default">
+                <td style="width: 30%;">Number of Organization</td>
+                <td>{{organizationCount?.organization ? organizationCount?.organization : 0}}</td>
+            </tr>
+            <tr *ngIf="permissionDetails && permissionDetails.is_default">
+                <td style="width: 30%;">Number Of Active Organization</td>
+                <td>{{organizationCount?.activeOrganization ? organizationCount?.activeOrganization : 0}}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>-->

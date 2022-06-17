@@ -1,0 +1,16 @@
+@import '~@ng-select/ng-select/scss/default.theme';
+@import './src/scss/vendors/ng-select/ng-select.scss';
+
+
+.manager-button-td {
+  vertical-align: middle;
+  text-align: center;
+}
+
+.w-blank{
+	max-width: 0% !important;
+}
+
+.w-checkbox{
+	max-width: 10% !important;
+}

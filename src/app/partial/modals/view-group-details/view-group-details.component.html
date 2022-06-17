@@ -1,0 +1,26 @@
+<div class="modal-content">
+    <div class="modal-header">
+        <h5 class="modal-title custom-title" id="exampleModalLabel">{{title}}</h5>
+    </div>
+    <div class="modal-body">
+        <c-row>
+            <label cLabel="col" cCol md="6" for="text-input"><strong>Group Name :</strong> </label>
+            <label cLabel="col" cCol md="6" for="text-input">{{groupData?.name}} </label>
+        </c-row>
+        <c-row *ngIf="groupType === 'device'">
+            <label cLabel="col" cCol md="6" for="text-input"><strong>Devices :</strong> </label>
+            <label cLabel="col" cCol md="6" for="text-input">{{groupData?.allDeviceDetails}} </label>
+        </c-row>
+        <c-row *ngIf="groupType === 'user'">
+            <label cLabel="col" cCol md="6" for="text-input"><strong>Users :</strong> </label>
+            <label cLabel="col" cCol md="6" for="text-input">{{groupData?.allUserData}} </label>
+        </c-row>
+        <c-row *ngIf="groupData?.allAssign">
+            <label cLabel="col" cCol md="6" for="text-input"><strong>Assign :</strong> </label>
+            <label cLabel="col" cCol md="6" for="text-input">{{groupData?.allAssign }} </label>
+        </c-row>
+    </div>
+    <div class="modal-footer">
+        <button cButton color="secondary" (click)="close()">Close</button>
+    </div>
+</div>

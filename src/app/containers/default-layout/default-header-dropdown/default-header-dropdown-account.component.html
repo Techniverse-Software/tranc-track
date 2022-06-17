@@ -1,0 +1,21 @@
+<li class="c-header-nav-item dropdown" dropdown placement="bottom">
+  <a [routerLink] class="c-header-nav-link" data-toggle="dropdown" role="button" aria-haspopup="true"
+    aria-expanded="false" dropdownToggle (click)="false">
+    <img [src]="currentUser && currentUser.image ?mediaUrl + currentUser.image:'assets/img/avatars/6.jpg'" class="c-avatar" alt="" onerror="src='assets/img/avatars/6.jpg'"/>
+  </a>
+  <div class="dropdown-menu dropdown-menu-right pt-0" *dropdownMenu aria-labelledby="account-dropdown">
+    <a [routerLink]="'/profile/update'" class="dropdown-item mt-1" >
+      <c-icon name="cil-user" class="mfe-2"></c-icon>
+      Profile
+    </a>
+    <!--<a routerLink="" class="dropdown-item mt-1" >
+      <c-icon name="cil-sitemap" class="mfe-2"></c-icon>
+      Organization details
+    </a>-->
+    <div class="dropdown-divider"></div>
+    <a [routerLink] class="dropdown-item" (click)="logOut()">
+      <c-icon name="cil-account-logout" class="mfe-2"></c-icon>
+      Logout
+    </a>
+  </div>
+</li>

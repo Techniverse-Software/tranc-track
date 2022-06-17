@@ -1,0 +1,45 @@
+<div class="fade-in">
+    <c-row>
+        <c-col md="12">
+            <c-card>
+                <c-card-header>
+                    <strong>System Parameters</strong>
+                </c-card-header>
+                <c-card-body>
+                    <form class="form-horizontal needs-validation" [formGroup]="systemParameterForm" novalidate>
+                        <c-form-group cRow>
+                            <label cLabel="col" cCol md="3">Status</label>
+                            <c-col md="9" col="form-label">
+                                <c-form-check variant="radio" inline custom>
+                                    <input cInput type="radio" id="radio1" [value]="1" checked formControlName="status"
+                                        class="custom-control-input">
+                                    <label cLabel variant="radio" for="radio1" class="custom-control-label">
+                                        Active
+                                    </label>
+                                </c-form-check>
+                                <c-form-check variant="radio" inline custom>
+                                    <input cInput type="radio" id="radio2" [value]="0" formControlName="status"
+                                        class="custom-control-input">
+                                    <label cLabel variant="radio" for="radio2" class="custom-control-label">
+                                        Inactive
+                                    </label>
+                                </c-form-check>
+                            </c-col>
+                        </c-form-group>
+                    </form>
+                </c-card-body>
+                <c-card-footer>
+                    <button [disabled]="!this.authService.check_edit_access()" cButton type="submit" color="primary"
+                        size="md" class="mfe-1" (click)="save()">
+                        <c-icon name="cil-check-circle" size="sm"></c-icon>
+                        <span> Submit</span>
+                    </button>
+                </c-card-footer>
+                <div class="massegeCls"
+                    [ngClass]="{'errorRes' : gs.resMassage.status == 'error', 'succassRes' : gs.resMassage.status == 'success'}">
+                    {{gs.resMassage.massage || ''}}
+                </div>
+            </c-card>
+        </c-col>
+    </c-row>
+</div>

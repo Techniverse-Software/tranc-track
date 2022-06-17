@@ -1,0 +1,217 @@
+<div class="fade-in">
+  <c-card>
+    <c-card-header class="d-flex align-items-center">
+      <h4 class="mb-0">Check-In Report</h4>
+      <c-card-header-actions class="ml-auto">
+        <button
+          cButton
+          color="primary"
+          size="md"
+          class="mfe-1"
+          (click)="generateReport()"
+        >
+          <c-icon name="cil-file" size="sm" class="text-white"></c-icon>
+          <span> Generate Report</span>
+        </button>
+        <button
+          cButton
+          color="primary"
+          size="md"
+          class="mfe-1"
+          (click)="createPdf()"
+          *ngIf="data.length"
+        >
+          <c-icon
+            name="cil-cloud-download"
+            size="sm"
+            class="text-white"
+          ></c-icon>
+          <span> Export PDF</span>
+        </button>
+      </c-card-header-actions>
+    </c-card-header>
+
+    <c-card-body>
+      <form [formGroup]="filterForm">
+        <c-row class="mb-3">
+          <c-col md="3">
+            <div class="input-group align-items-center">
+              <select cSelect id="user" formControlName="userId">
+                <option value="" selected>All Users</option>
+                <option [value]="user._id" *ngFor="let user of userListArr">
+                  {{ user.name }}
+                </option>
+              </select>
+            </div>
+          </c-col>
+          <c-col md="3">
+            <div class="input-group align-items-center">
+              <select cSelect id="select1" formControlName="status">
+                <option [value]="'all'" selected>All Status</option>
+                <option [value]="1">Successful</option>
+                <option [value]="0">Failed</option>
+              </select>
+            </div>
+          </c-col>
+          <c-col md="3">
+            <div class="input-group">
+              <input
+                cInput
+                #dp="bsDatepicker"
+                bsDatepicker
+                [bsConfig]="bsConfig"
+                placeholder="From Date"
+                formControlName="fromDate"
+              />
+            </div>
+          </c-col>
+          <c-col md="3">
+            <div class="input-group">
+              <input
+                cInput
+                [minDate]="filterForm.value.fromDate"
+                #dp="bsDatepicker"
+                bsDatepicker
+                [bsConfig]="bsConfig"
+                placeholder="To Date"
+                formControlName="toDate"
+              />
+            </div>
+          </c-col>
+        </c-row>
+        <c-row class="mb-3">
+          <c-col
+            md="3"
+            *ngIf="
+              organizationArr.length &&
+              tokenData &&
+              !tokenData.user.organizationId
+            "
+            (change)="filterData($event, 'orgasnizationUniqueId')"
+          >
+            <select cSelect id="select1" name="select1">
+              <option value="">All Organization</option>
+              <option
+                [value]="organization.organizationId"
+                *ngFor="let organization of organizationArr"
+              >
+                {{ organization.organizationName | titlecase }}
+              </option>
+            </select>
+          </c-col>
+        </c-row>
+      </form>
+      <hr />
+      <mat-table
+        #table
+        mat-table
+        [dataSource]="dataSource"
+        matSort
+        matSortActive="createdAt"
+        matSortDisableClear
+        matSortDirection="desc"
+        class="mat-elevation-z8"
+        (matSortChange)="sortChange()"
+        *ngIf="isDisplay"
+      >
+        <ng-container matColumnDef="location">
+          <mat-header-cell
+            [ngClass]="'c-name'"
+            *matHeaderCellDef
+            mat-sort-header
+          >
+            Coordinates
+          </mat-header-cell>
+          <mat-cell [ngClass]="'c-name'" *matCellDef="let element">
+            <div class="mt-10">
+              <a
+                href="javascript:void(0)"
+                *ngIf="element.location"
+                (click)="selectLocation(element.location)"
+              >
+                {{ element.location }}</a
+              >
+              <br />
+              <p>{{ element.installationLocation }}</p>
+            </div>
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="organizationDetail.organizationName">
+          <mat-header-cell
+            [ngClass]="'w-name'"
+            *matHeaderCellDef
+            mat-sort-header
+          >
+            Organization Name
+          </mat-header-cell>
+          <mat-cell [ngClass]="'w-name'" *matCellDef="let element">
+            <a
+              [routerLink]
+              class="c-header-nav-link mr-2"
+              data-toggle="dropdown"
+              role="button"
+              aria-haspopup="true"
+              aria-expanded="false"
+              dropdownToggle
+              (click)="(false)"
+            >
+            </a>
+            {{ element.organizationDetail?.organizationName }}
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="createdAt">
+          <mat-header-cell
+            [ngClass]="'d-name'"
+            *matHeaderCellDef
+            mat-sort-header
+          >
+            Date and Time
+          </mat-header-cell>
+          <mat-cell [ngClass]="'d-name'" *matCellDef="let element">
+            {{ element.createdAt | date: "dd/MM/yyyy, h:mm:ss" }}
+            {{ element.createdAt | date: "a" | lowercase }}
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="userDetail.name">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>
+            User Name</mat-header-cell
+          >
+          <mat-cell *matCellDef="let element">
+            {{ element.userDetail?.name }}
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>
+            Status
+          </mat-header-cell>
+          <mat-cell *matCellDef="let element" class="status-icon">
+            {{ element.status == 1 ? "Successful" : element.title }}
+          </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+      </mat-table>
+      <div class="mat-table__message text-center mt-3" *ngIf="!resultsLength">
+        No records found
+      </div>
+      <div class="mat-table__bottom">
+        <mat-paginator
+          [pageSizeOptions]="[10, 25, 50, 100]"
+          [length]="resultsLength"
+          [showFirstLastButtons]
+          (page)="pageChange()"
+        >
+        </mat-paginator>
+      </div>
+    </c-card-body>
+  </c-card>
+</div>
+
+<div class="loading-indicator" *ngIf="loading">
+  <c-spinkit [name]="'bounce'"></c-spinkit>
+</div>

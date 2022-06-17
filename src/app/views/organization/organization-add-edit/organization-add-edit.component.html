@@ -1,0 +1,448 @@
+<div class="fade-in">
+    <c-row>
+        <c-col md="12">
+            <c-card>
+                <c-card-header>
+                    <strong>{{!organizationId?'Add Organization':'Edit Organization'}}</strong>
+                </c-card-header>
+                <c-card-body>
+                    <form class="form-horizontal needs-validation" [formGroup]="organizationForm" novalidate>
+                        <div class="common-form">
+                            <c-card-header class="p-0 pb-2">
+                                <strong>Organization Details</strong>
+                            </c-card-header>
+                            <c-form-group cRow>
+                                <label cLabel="col" cCol md="3"> Organization Type <span
+                                        class="text-danger">*</span></label>
+                                <c-col md="5" *ngIf="tokenData &&  tokenData.user.organizationId">
+                                    <label cLabel="col" cCol md="3"> General</label>
+                                </c-col>
+                                <c-col md="5" *ngIf="tokenData &&  !tokenData.user.organizationId">
+                                    <select cSelect id="select1" name="select1" (change)="changeType($event)"
+                                        formControlName="orgType"
+                                        [ngClass]="{ 'is-invalid': (submitted || f.orgType.touched) && f.orgType.invalid, 'is-valid': f.orgType.touched && f.orgType.valid }">
+                                        <option [value]=null disabled>Select Organization Type</option>
+                                        <option value="general">General</option>
+                                        <option value="reseller">Reseller</option>
+                                    </select>
+                                    <div *ngIf="submitted && f['orgType'].invalid" class="invalid-feedback">
+                                        <div *ngIf="f['orgType'].errors.required">
+                                            {{formErrors.organizationType.required}}
+                                        </div>
+                                    </div>
+                                </c-col>
+                            </c-form-group>
+
+                            <c-form-group cRow *ngIf="organizationForm.value.orgType === 'reseller'">
+                                <label cLabel="col" cCol md="3"> Reseller Type <span
+                                        class="text-danger">*</span></label>
+                                <c-col md="5">
+                                    <select cSelect id="select1" name="select1" formControlName="resellerType"
+                                        [ngClass]="{ 'is-invalid': (submitted || f.resellerType.touched) && f.resellerType.invalid, 'is-valid': f.resellerType.touched && f.resellerType.valid }">
+                                        <option [value]=null disabled>Select Reseller Type</option>
+                                        <option value="individual">Individual</option>
+                                        <option value="organization">Organization</option>
+                                    </select>
+                                    <div *ngIf="submitted && f['resellerType'].invalid" class="invalid-feedback">
+                                        <div *ngIf="f['resellerType'].errors.required">
+                                            {{formErrors.resellerType.required}}
+                                        </div>
+                                    </div>
+                                </c-col>
+                            </c-form-group>
+
+                            <c-form-group cRow>
+                                <label cLabel="col" cCol md="3"> Organization Name <span
+                                        class="text-danger">*</span></label>
+                                <c-col md="5">
+
+                                    <input cInput id="text-input" placeholder="Enter Organization Name"
+                                        formControlName="organizationName"
+                                        [ngClass]="{ 'is-invalid': (submitted || f.organizationName.touched) && f.organizationName.invalid, 'is-valid': f.organizationName.touched && f.organizationName.valid }">
+                                    <div *ngIf="submitted && f['organizationName'].invalid" class="invalid-feedback">
+                                        <div *ngIf="f['organizationName'].errors.required">
+                                            {{formErrors.organizationName.required}}
+
+                                        </div>
+                                    </div>
+                                </c-col>
+                            </c-form-group>
+
+                            <c-form-group cRow>
+
+                                <label cLabel="col" cCol md="3"> Registration Number <span
+                                        class="text-danger"></span></label>
+                                <c-col md="5">
+                                    <input cInput type="text" placeholder="Enter  Registration Number"
+                                        autocomplete="email" formControlName="registrationNumber"
+                                        [ngClass]="{ 'is-invalid': (submitted || f.registrationNumber.touched) && f.registrationNumber.invalid, 'is-valid': f.registrationNumber.touched && f.registrationNumber.valid }">
+                                    <div *ngIf="submitted && f['registrationNumber'].invalid" class="invalid-feedback">
+                                        <div *ngIf="f['registrationNumber'].errors.required">
+                                            {{formErrors.registrationNumber.required}}</div>
+                                    </div>
+
+                                </c-col>
+                            </c-form-group>
+
+                            <c-form-group cRow>
+                                <label cLabel="col" cCol md="3">Status</label>
+                                <c-col md="5" col="form-label" class="ml-1">
+                                    <c-form-check variant="radio" inline custom>
+                                        <input cInput type="radio" id="radio1" [value]="1" checked
+                                            formControlName="status" class="custom-control-input">
+                                        <label cLabel variant="radio" for="radio1" class="custom-control-label">
+                                            Active
+                                        </label>
+                                    </c-form-check>
+                                    <c-form-check variant="radio" inline custom>
+                                        <input cInput type="radio" id="radio2" [value]="0" formControlName="status"
+                                            class="custom-control-input">
+                                        <label cLabel variant="radio" for="radio2" class="custom-control-label">
+                                            Inactive
+                                        </label>
+                                    </c-form-check>
+                                </c-col>
+                            </c-form-group>
+
+                            <c-form-group cRow>
+                                <label cLabel="col" cCol md="3">NFC Enabled</label>
+                                <c-col md="5" col="form-label" class="ml-1">
+                                    <c-form-check inline custom variant="checkbox" class="mfe-3">
+                                        <input cInput type="checkbox" id="chk-c1" value="option1" checked
+                                            class="custom-control-input" formControlName="nfcEnabled">
+                                        <label class="custom-control-label" for="chk-c1">&nbsp;</label>
+                                    </c-form-check>
+                                </c-col>
+                            </c-form-group>
+                        </div>
+                        <div class="common-form">
+                            <c-card-header class="p-0 pb-2">
+                                <strong>Billing Address</strong>
+                            </c-card-header>
+                            <div formGroupName="billingAddress">
+                                <c-form-group cRow class="mt-3">
+                                    <label cLabel="col" cCol md="3"> Address Line 1 <span
+                                            class="text-danger">*</span></label>
+                                    <c-col md="5">
+                                        <input cInput id="text-input" placeholder="Enter Address Line 1"
+                                            formControlName="addressLine1"
+                                            [ngClass]="{ 'is-invalid': (submitted || organizationForm.get('billingAddress')['controls'].addressLine1.touched) && organizationForm.get('billingAddress')['controls'].addressLine1.invalid, 'is-valid': organizationForm.get('billingAddress')['controls'].addressLine1.touched && organizationForm.get('billingAddress')['controls'].addressLine1.valid }">
+                                        <div *ngIf="submitted && organizationForm.get('billingAddress')['controls'].addressLine1.invalid"
+                                            class="invalid-feedback">
+                                            <div
+                                                *ngIf="organizationForm.get('billingAddress')['controls'].addressLine1.errors.required">
+                                                {{formErrors.addressLine1.required}}
+                                            </div>
+                                        </div>
+                                    </c-col>
+                                </c-form-group>
+                                <c-form-group cRow>
+                                    <label cLabel="col" cCol md="3"> Address Line 2 </label>
+                                    <c-col md="5">
+                                        <input cInput id="text-input" placeholder="Enter  Address Line 2"
+                                            formControlName="addressLine2">
+                                        <!-- <div *ngIf="submitted && organizationForm.get('billingAddress')['controls'].addressLine2.invalid"
+                                        class="invalid-feedback">
+                                        <div
+                                            *ngIf="organizationForm.get('billingAddress')['controls'].addressLine2.errors.required">
+                                            Addresline2 is required.
+                                        </div>
+                                    </div> -->
+                                    </c-col>
+                                </c-form-group>
+                                <c-form-group cRow>
+                                    <label cLabel="col" cCol md="3"> Country <span class="text-danger">*</span></label>
+                                    <c-col md="5">
+                                        <!-- {{organizationForm.billingAddress? organizationForm.billingAddress.country: ''}}sas -->
+                                        <!-- <input cInput id="text-input" placeholder="Enter Country" formControlName="country"
+                                        [ngClass]="{ 'is-invalid': (submitted || organizationForm.get('billingAddress')['controls'].country.touched) && organizationForm.get('billingAddress')['controls'].country.invalid, 'is-valid': organizationForm.get('billingAddress')['controls'].country.touched && organizationForm.get('billingAddress')['controls'].country.valid }"> -->
+
+                                        <ng-select [readonly]="true" class="bootstrap" placeholder="Select Select Country"
+                                            [items]="country_list" (change)="country_chnage($event)" [clearable]="_billingDetailForm.country.value != null ? true : false"
+                                            bindLabel="name" bindValue="name" formControlName="country"
+                                            [ngClass]="{ 'is-invalid': (submitted || organizationForm.get('billingAddress')['controls'].country.touched) && organizationForm.get('billingAddress')['controls'].country.invalid, 'is-valid': organizationForm.get('billingAddress')['controls'].country.touched && organizationForm.get('billingAddress')['controls'].country.valid }">
+                                        </ng-select>
+
+                                        <div *ngIf="submitted && organizationForm.get('billingAddress')['controls'].country.invalid"
+                                            class="invalid-feedback">
+<!--                                             <div
+                                                *ngIf="organizationForm.get('billingAddress')['controls'].country.errors.pattern">
+                                                {{formErrors.country.pattern}}
+                                            </div> -->
+                                            <div
+                                                *ngIf="organizationForm.get('billingAddress')['controls'].country.errors.required">
+                                                Country is required
+                                            </div>
+                                        </div>
+                                    </c-col>
+                                </c-form-group>
+                                <c-form-group cRow>
+                                    <label cLabel="col" cCol md="3"> State </label>
+                                    <c-col md="5">
+                                        <ng-select class="bootstrap" placeholder="Select Select State"
+                                            [items]="state_list" (change)="state_chnage($event)" [clearable]="_billingDetailForm.state.value != null ? true : false"
+                                            bindLabel="name" bindValue="name" formControlName="state"
+                                            [ngClass]="{ 'is-invalid': (submitted || organizationForm.get('billingAddress')['controls'].state.touched) && organizationForm.get('billingAddress')['controls'].state.invalid, 'is-valid': organizationForm.get('billingAddress')['controls'].state.touched && organizationForm.get('billingAddress')['controls'].state.valid }">
+                                        </ng-select>
+<!--                                         <div *ngIf="submitted && organizationForm.get('billingAddress')['controls'].state.invalid"
+                                            class="invalid-feedback">
+                                            <div
+                                                *ngIf="organizationForm.get('billingAddress')['controls'].state.errors.pattern">
+                                                {{formErrors.state.pattern}}
+                                            </div>
+                                            <div
+                                                *ngIf="organizationForm.get('billingAddress')['controls'].state.errors.required">
+                                                State is required
+                                            </div>
+                                        </div> -->
+                                    </c-col>
+                                </c-form-group>
+                                <c-form-group cRow>
+                                    <label cLabel="col" cCol md="3"> Town <span class="text-danger">*</span></label>
+                                    <c-col md="5">
+                                        <ng-select class="bootstrap" placeholder="Select Select City"
+                                            [items]="city_list" [clearable]="_billingDetailForm.town.value != null ? true : false" bindLabel="name" bindValue="name"
+                                            formControlName="town"
+                                            [ngClass]="{ 'is-invalid': (submitted || organizationForm.get('billingAddress')['controls'].town.touched) && organizationForm.get('billingAddress')['controls'].town.invalid, 'is-valid': organizationForm.get('billingAddress')['controls'].town.touched && organizationForm.get('billingAddress')['controls'].town.valid }">
+                                        </ng-select>
+                                        <div *ngIf="submitted && organizationForm.get('billingAddress')['controls'].town.invalid"
+                                            class="invalid-feedback">
+<!--                                             <div
+                                                *ngIf="organizationForm.get('billingAddress')['controls'].town.errors.pattern">
+                                                {{formErrors.town.pattern}}
+                                            </div> -->
+                                            <div
+                                                *ngIf="organizationForm.get('billingAddress')['controls'].town.errors.required">
+                                                Town is required
+                                            </div>
+                                        </div>
+                                    </c-col>
+                                </c-form-group>
+                                <!-- <c-form-group cRow>
+                                <label cLabel="col" cCol md="3"> Landmark <span
+                                        class="text-danger"></span></label>
+                                <c-col md="5">
+                                    <input cInput id="text-input" placeholder="Enter Landmark"
+                                        [ngClass]="{ 'is-invalid': (submitted || organizationForm.get('billingAddress')['controls'].landmark.touched) && organizationForm.get('billingAddress')['controls'].landmark.invalid, 'is-valid': organizationForm.get('billingAddress')['controls'].landmark.touched && organizationForm.get('billingAddress')['controls'].landmark.valid }"
+                                        formControlName="landmark">
+                                    <div *ngIf="submitted && organizationForm.get('billingAddress')['controls'].landmark.invalid"
+                                        class="invalid-feedback">
+                                        <div
+                                            *ngIf="organizationForm.get('billingAddress')['controls'].landmark.errors.required">
+                                            Landmark is required
+                                        </div>
+                                    </div>
+                                </c-col>
+                            </c-form-group>-->
+                                <c-form-group cRow>
+                                    <label cLabel="col" cCol md="3"> Postcode <span class="text-danger">*</span></label>
+                                    <c-col md="5">
+                                        <input cInput id="text-input" placeholder="Enter Postcode"
+                                            formControlName="postCode"
+                                            [ngClass]="{ 'is-invalid': (submitted || organizationForm.get('billingAddress')['controls'].postCode.touched) && organizationForm.get('billingAddress')['controls'].postCode.invalid, 'is-valid': organizationForm.get('billingAddress')['controls'].postCode.touched && organizationForm.get('billingAddress')['controls'].postCode.valid }">
+                                        <div *ngIf="submitted && organizationForm.get('billingAddress')['controls'].postCode.invalid"
+                                            class="invalid-feedback">
+                                            <div
+                                                *ngIf="organizationForm.get('billingAddress')['controls'].postCode.errors.pattern">
+                                                {{formErrors.postCode.pattern}}
+                                            </div>
+                                            <div
+                                                *ngIf="organizationForm.get('billingAddress')['controls'].postCode.errors.required">
+                                                Postcode is required
+                                            </div>
+                                        </div>
+                                    </c-col>
+                                </c-form-group>
+                            </div>
+                        </div>
+                        <div class="common-form">
+                            <c-card-header class="p-0 pb-2">
+                                <strong>Contact Person Details</strong>
+                            </c-card-header>
+
+                            <div formGroupName="personDetail">
+                                <c-form-group cRow class="mt-3">
+                                    <label cLabel="col" cCol md="3">Full Name <span class="text-danger">*</span></label>
+                                    <c-col md="5">
+                                        <input cInput id="text-input" placeholder="Enter Full Name"
+                                            formControlName="name"
+                                            [ngClass]="{ 'is-invalid': (submitted || organizationForm.get('personDetail')['controls'].name.touched) && organizationForm.get('personDetail')['controls'].name.invalid, 'is-valid': organizationForm.get('personDetail')['controls'].name.touched && organizationForm.get('personDetail')['controls'].name.valid }">
+                                        <div *ngIf="submitted && organizationForm.get('personDetail')['controls'].name.invalid"
+                                            class="invalid-feedback">
+                                            <div
+                                                *ngIf="organizationForm.get('personDetail')['controls'].name.errors.pattern">
+                                                {{formErrors.name.pattren}}
+                                            </div>
+                                            <div
+                                                *ngIf="organizationForm.get('personDetail')['controls'].name.errors.required">
+                                                {{formErrors.name.required}}
+                                            </div>
+                                        </div>
+                                    </c-col>
+                                </c-form-group>
+                                <c-form-group cRow>
+                                    <label cLabel="col" cCol md="3" for="text-email"> Email <span
+                                            class="text-danger">*</span></label>
+                                    <c-col md="5">
+                                        <input cInput id="text-email" placeholder="Enter Email" formControlName="email"
+                                            [ngClass]="{ 'is-invalid': (submitted || organizationForm.get('personDetail')['controls'].email.touched) && organizationForm.get('personDetail')['controls'].email.invalid, 'is-valid': organizationForm.get('personDetail')['controls'].email.touched && organizationForm.get('personDetail')['controls'].email.valid }">
+                                        <div *ngIf="submitted && organizationForm.get('personDetail')['controls'].email.invalid"
+                                            class="invalid-feedback">
+                                            <div
+                                                *ngIf="organizationForm.get('personDetail')['controls'].email.errors.pattern">
+                                                {{formErrors.email.email}}
+                                            </div>
+                                            <div
+                                                *ngIf="organizationForm.get('personDetail')['controls'].email.errors.required">
+                                                {{formErrors.email.required}}
+                                            </div>
+                                        </div>
+                                    </c-col>
+                                </c-form-group>
+
+                                <c-form-group cRow>
+                                    <label cLabel="col" cCol md="3" for="text-phone"> Primary Phone No. <span
+                                            class="text-danger">*</span></label>
+                                    <c-col md="5">
+                                        <input cInput class="form-control" ng2TelInput
+                                            [ng2TelInputOptions]="{initialCountry: 'gb'}"
+                                            formControlName="primaryPhoneNo" (hasError)="hasError($event)"
+                                            (countryChange)="countryChange($event)"
+                                            (intlTelInputObject)="telInputObject($event)"
+                                            placeholder="Enter Primary Phone No." title="Enter Primary Phone No."
+                                            [ngClass]="{ 'is-invalid': (submitted || organizationForm.get('personDetail')['controls'].primaryPhoneNo.touched) && organizationForm.get('personDetail')['controls'].primaryPhoneNo.invalid, 'is-valid': organizationForm.get('personDetail')['controls'].primaryPhoneNo.touched && organizationForm.get('personDetail')['controls'].primaryPhoneNo.valid }" />
+                                        <div *ngIf="submitted && organizationForm.get('personDetail')['controls'].primaryPhoneNo.invalid"
+                                            class="invalid-feedback d-block">
+                                            <div
+                                                *ngIf="organizationForm.get('personDetail')['controls'].primaryPhoneNo.errors.required">
+                                                {{formErrors.phone.required}}
+                                            </div>
+                                            <div
+                                                *ngIf="!organizationForm.get('personDetail')['controls'].primaryPhoneNo.valid &&(organizationForm.get('personDetail')['controls'].primaryPhoneNo.touched || organizationForm.get('personDetail')['controls'].primaryPhoneNo.dirty )&& organizationForm.get('personDetail')['controls'].primaryPhoneNo.errors && !organizationForm.get('personDetail')['controls'].primaryPhoneNo.errors.required">
+                                                Please enter valid phone number
+                                            </div>
+                                        </div>
+                                    </c-col>
+                                </c-form-group>
+                                <c-form-group cRow>
+                                    <label cLabel="col" cCol md="3" for="text-phone1"> Secondary Phone No. </label>
+                                    <c-col md="5">
+                                        <input cInput id="text-phone1" class="form-control" ng2TelInput
+                                            [ng2TelInputOptions]="{initialCountry: 'gb'}"
+                                            formControlName="secondaryPhoneNo" (hasError)="hasError1($event)"
+                                            (countryChange)="countryChange1($event)"
+                                            (intlTelInputObject)="telInputObject1($event)"
+                                            placeholder="Enter Secondary Phone No." title="Enter Secondary Phone No."
+                                            [ngClass]="{ 'is-invalid': (submitted || organizationForm.get('personDetail')['controls'].secondaryPhoneNo.touched) && organizationForm.get('personDetail')['controls'].secondaryPhoneNo.invalid, 'is-valid': organizationForm.get('personDetail')['controls'].secondaryPhoneNo.touched && organizationForm.get('personDetail')['controls'].secondaryPhoneNo.valid }">
+<!--                                         <div *ngIf="submitted && organizationForm.get('personDetail')['controls'].secondaryPhoneNo.invalid"
+                                            class="invalid-feedback d-block">
+                                            <div
+                                                *ngIf="organizationForm.get('personDetail')['controls'].secondaryPhoneNo.errors.required">
+                                                {{formErrors.phone.required}}
+                                            </div>
+                                            <div
+                                                *ngIf="!organizationForm.get('personDetail')['controls'].secondaryPhoneNo.valid &&(organizationForm.get('personDetail')['controls'].secondaryPhoneNo.touched || organizationForm.get('personDetail')['controls'].secondaryPhoneNo.dirty )&& organizationForm.get('personDetail')['controls'].secondaryPhoneNo.errors && !organizationForm.get('personDetail')['controls'].secondaryPhoneNo.errors.required">
+                                                Please enter valid phone number
+                                            </div>
+                                        </div> -->
+                                    </c-col>
+                                </c-form-group>
+                                <c-form-group cRow>
+                                    <label cLabel="col" cCol md="3">Permission</label>
+                                    <c-col md="5">
+                                        <ng-select class="bootstrap" placeholder="Select Permission" [readonly]="true"
+                                            [items]="permissionrArr" bindLabel="name" bindValue="_id"
+                                            formControlName="permissionId">
+                                        </ng-select>
+                                    </c-col>
+                                </c-form-group>
+                            </div>
+                        </div>
+                        <div class="common-form"
+                            *ngIf="organizationForm.value.orgType !== 'reseller' && tokenData &&  !tokenData.user.organizationId">
+                            <c-card-header class="p-0 pb-2">
+                                <strong>Reseller Details</strong>
+                            </c-card-header>
+                            <c-form-group cRow class="mt-3">
+                                <label cLabel="col" cCol md="3" for="text-phone"> Reseller Name </label>
+                                <c-col md="5">
+                                    <ng-select class="bootstrap" placeholder="Select Reseller Name"
+                                        [items]="resellerArr" [clearable]="true" bindLabel="organizationName"
+                                        bindValue="organizationId" formControlName="resellerId">
+                                    </ng-select>
+                                    <!-- <div *ngIf="submitted && f['resellerId'].invalid" class="invalid-feedback">
+                                    <div *ngIf="f['resellerId'].errors.required">
+                                        Reseller is required
+                                    </div>
+                                </div> -->
+                                </c-col>
+                            </c-form-group>
+                        </div>
+                        <div class="common-form">
+                            <c-card-header class="p-0 pb-2">
+                                <strong>Billing Details</strong>
+                            </c-card-header>
+                            <div formGroupName="billingDetail">
+                                <c-form-group cRow class="mt-3">
+                                    <label cLabel="col" cCol md="3" for="text-input"> Onboarded via Reseller </label>
+                                    <c-col md="5">
+                                        <select cSelect id="select1" formControlName="viaReseller">
+                                            <option [value]="status.value" *ngFor="let status of registrationStatusArr">
+                                                {{status.label}}</option>
+                                        </select>
+                                    </c-col>
+                                </c-form-group>
+                            </div>
+                        </div>
+                        <div class="common-form">
+                            <c-card-header class="p-0 pb-2">
+                                <strong>Plan Details</strong>
+                            </c-card-header>
+                            <div>
+                                <c-form-group cRow class="mt-3">
+                                    <label cLabel="col" cCol md="3" for="text-input"> Plan </label>
+                                    <c-col md="5">
+                                        <select cSelect id="select1" formControlName="priceId">
+                                            <option [value]=null>Select Plan</option>
+                                            <option [value]="item.id" *ngFor="let item of planArr">
+                                                {{item.ProductName + "("+ (item.unit_amount / 100) +"$ per user)"}}</option>
+                                        </select>
+                                    </c-col>
+                                </c-form-group>
+                            </div>
+                        </div>
+                    </form>
+                </c-card-body>
+                <c-card-footer>
+                    <button cButton type="submit" color="primary" size="md" class="mfe-1" (click)="save()"
+                        *ngIf="!organizationId">
+                        <c-icon name="cil-check-circle" size="sm"></c-icon>
+                        <span> Submit</span>
+                    </button>
+                    <button cButton type="submit" color="primary" size="md" class="mfe-1" *ngIf="organizationId"
+                        (click)="update()">
+                        <c-icon name="cil-pencil" size="sm"></c-icon>
+                        <span> Update</span>
+                    </button>
+                    <button cButton type="reset" color="danger" size="md" class="mfe-1" (click)="onReset()"
+                        *ngIf="!organizationId">
+                        <c-icon name="cil-ban" size="sm"></c-icon>
+                        <span> Reset</span>
+                    </button>
+                    <button cButton type="reset" color="secondary" size="md" class="mfe-1" routerLink="/organization">
+                        <c-icon name="cil-x-circle" size="sm"></c-icon>
+                        <span> Cancel</span>
+                    </button>
+                </c-card-footer>
+                <div class="massegeCls"
+                    [ngClass]="{'errorRes' : gs.resMassage.status == 'error', 'succassRes' : gs.resMassage.status == 'success'}">
+                    {{gs.resMassage.massage || ''}}
+                </div>
+            </c-card>
+        </c-col>
+    </c-row>
+</div>
+
+<div class="loading-indicator" *ngIf="loading">
+    <c-spinkit [name]="'bounce'"></c-spinkit>
+</div> 

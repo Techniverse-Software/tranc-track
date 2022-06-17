@@ -1,0 +1,49 @@
+<div class="fade-in">
+    <c-row>
+        <c-col md="12">
+            <c-card>
+                <c-card-header>
+                    <strong>Organization Information</strong>
+                </c-card-header>
+                <c-card-body>
+                    <form class="form-horizontal needs-validation" [formGroup]="organizationForm" novalidate>
+                        <c-form-group cRow>
+                            <label cLabel="col" cCol md="3" for="text-input">Organization Name</label>
+                            <c-col md="9">
+                                <input cInput id="text-input" placeholder="Enter Name"
+                                    formControlName="organizationName"
+                                    [ngClass]="{ 'is-invalid': (submitted || f.organizationName.touched) && f.organizationName.invalid, 'is-valid': f.organizationName.touched && f.organizationName.valid }">
+                                <div *ngIf="submitted && f['organizationName'].invalid" class="invalid-feedback">
+                                    <div *ngIf="f['organizationName'].errors.required">
+                                        {{formErrors.name.required}}
+                                    </div>
+                                </div>
+                            </c-col>
+                        </c-form-group>
+                        <c-form-group cRow formGroupName="billingAddress">
+                            <label cLabel="col" cCol md="3" for="email-input">Organization Information</label>
+                            <c-col md="9">
+                                <textarea cTextarea id="text-input" placeholder="Enter Organization Information"
+                                    formControlName="addressLine1"
+                                    [ngClass]="{ 'is-invalid': (submitted || organizationForm.get('billingAddress')['controls'].addressLine1.touched) && organizationForm.get('billingAddress')['controls'].addressLine1.invalid, 'is-valid': organizationForm.get('billingAddress')['controls'].addressLine1.touched && organizationForm.get('billingAddress')['controls'].addressLine1.valid }"></textarea>
+                                <div *ngIf="submitted && organizationForm.get('billingAddress')['controls'].addressLine1.invalid"
+                                    class="invalid-feedback">
+                                    <div
+                                        *ngIf="organizationForm.get('billingAddress')['controls'].addressLine1.errors.required">
+                                        {{formErrors.addressLine1.required}}
+                                    </div>
+                                </div>
+                            </c-col>
+                        </c-form-group>
+                    </form>
+                </c-card-body>
+                <c-card-footer>
+                    <button [disabled]="!this.authService.check_edit_access()" cButton type="submit" color="primary" size="md" class="mfe-1" (click)="update()">
+                        <c-icon name="cil-check-circle" size="sm"></c-icon>
+                        <span> Submit</span>
+                    </button>
+                </c-card-footer>
+            </c-card>
+        </c-col>
+    </c-row>
+</div>

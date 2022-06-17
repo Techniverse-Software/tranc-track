@@ -1,0 +1,8 @@
+@import '~@ng-select/ng-select/scss/default.theme';
+@import './src/scss/vendors/ng-select/ng-select.scss';
+
+timepicker{
+    table{
+        margin-top: -26px;
+    }
+}

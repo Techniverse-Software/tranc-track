@@ -1,0 +1,60 @@
+<div class="fade-in">
+    <c-row>
+        <c-col md="12">
+            <c-card>
+                <c-card-header>
+                    <strong>Role Wise Permission</strong>
+                </c-card-header>
+                <c-card-body>
+                    <form class="form-horizontal needs-validation" [formGroup]="permissionForm" novalidate>
+                        <c-form-group cRow>
+                            <label cLabel="col" cCol md="3" for="text-input">Role</label>
+                            <c-col md="9">
+                                <select cSelect id="select1" (change)="changeRole()" formControlName="role">
+                                    <option value='' selected>Choose Role</option>
+                                    <option [value]="role" *ngFor="let role of roleArr"> {{role}}
+                                    </option>
+                                </select>
+                                <div *ngIf="submitted && f['role'].invalid" class="invalid-feedback d-block">
+                                    <div *ngIf="f['role'].errors.required">
+                                        {{formErrors.role.required}}
+                                    </div>
+                                </div>
+                            </c-col>
+                        </c-form-group>
+                        <c-form-group cRow class="text-editor">
+                            <label cLabel="col" cCol md="3" for="text-input">Permission</label>
+                            <c-col md="9">
+                                <c-form-check inline custom variant="checkbox" class="mfe-3"
+                                    *ngFor="let permission of permissionArr; let i = index;">
+                                    <!-- <c-col md="9"> -->
+                                    <input cInput formControlName="permissions" type="checkbox"
+                                        id="permission{{permission.slug}}" (change)="changeCheckbox(i)" value="option1"
+                                        name="permissionOptions" [checked]="permission.checked"
+                                        class="custom-control-input">
+                                    <label class="custom-control-label" for="permission{{permission.slug}}">
+                                        {{permission.name}}</label>
+                                </c-form-check>
+                                <!-- <div *ngIf="submitted && f['permissions'].invalid" class="invalid-feedback d-block">
+                                    <div *ngIf="f['permissions'].errors.required">
+                                        {{formErrors.permissions.required}}
+                                    </div>
+                                </div> -->
+                            </c-col>
+                        </c-form-group>
+                    </form>
+                </c-card-body>
+                <c-card-footer>
+                    <button cButton type="submit" color="primary" size="md" class="mfe-1" (click)="save()">
+                        <c-icon name="cil-check-circle" size="sm"></c-icon>
+                        <span> Submit</span>
+                    </button>
+                </c-card-footer>
+                <div class="massegeCls"
+                    [ngClass]="{'errorRes' : gs.resMassage.status == 'error', 'succassRes' : gs.resMassage.status == 'success'}">
+                    {{gs.resMassage.massage || ''}}
+                </div>
+            </c-card>
+        </c-col>
+    </c-row>
+</div>

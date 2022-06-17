@@ -1,0 +1,411 @@
+<div class="fade-in">
+  <c-row>
+    <c-col md="12">
+      <c-card>
+        <c-card-header>
+          <strong>{{!userId?'Add User':'Edit User'}}</strong>
+        </c-card-header>
+        <c-card-body>
+          <form class="form-horizontal needs-validation" [formGroup]="userForm" novalidate>
+            <div class="common-form">
+              <c-card-header class="p-0 pb-2">
+                <strong>User Details</strong>
+              </c-card-header>
+              <c-form-group cRow>
+                <label cLabel="col" cCol md="3">Full Name <span class="text-danger">*</span></label>
+                <c-col md="5">
+                  <input cInput id="text-input" [readonly]="userDetails && userDetails.email == loggedInUser" placeholder="Enter Full Name" formControlName="name"
+                    [ngClass]="{ 'is-invalid': (submitted || f.name.touched) && f.name.invalid, 'is-valid': f.name.touched && f.name.valid }">
+                  <div *ngIf="submitted && f['name'].invalid" class="invalid-feedback">
+                    <div *ngIf="f['name'].errors.required">
+                      {{formErrors.name.required}}
+                    </div>
+                    <div *ngIf="f['name'].errors.pattern">
+                      {{formErrors.name.pattern}}
+                    </div>
+                  </div>
+                </c-col>
+              </c-form-group>
+              <c-form-group cRow>
+                <label cLabel="col" cCol md="3" for="email-input">Email <span class="text-danger">*</span></label>
+                <c-col md="5">
+                  <input cInput type="email" [readonly]="userDetails && userDetails.email == loggedInUser" placeholder="Enter Email" autocomplete="email" formControlName="email"
+                    [ngClass]="{ 'is-invalid': (submitted || f.email.touched) && f.email.invalid, 'is-valid': f.email.touched && f.email.valid }">
+                  <div *ngIf="submitted && f['email'].invalid" class="invalid-feedback">
+                    <div *ngIf="f['email'].errors.required">{{formErrors.email.required}}</div>
+                    <div *ngIf="f['email'].errors.pattern">{{formErrors.email.email}}</div>
+                  </div>
+                </c-col>
+              </c-form-group>
+              <c-form-group cRow  *ngIf="!(authService.check_super_admin())">
+                <label cLabel="col" cCol md="3" for="email-input">Is Organization Admin? </label>
+                <c-col md="5">
+                  <!-- <input cInput type="email" [readonly]="userDetails && userDetails.email == loggedInUser" placeholder="Enter Email" autocomplete="email" formControlName="email"
+                    [ngClass]="{ 'is-invalid': (submitted || f.email.touched) && f.email.invalid, 'is-valid': f.email.touched && f.email.valid }"> -->
+                  <c-switch [disabled]="userDetails && userDetails.email == loggedInUser" shape="pill" color="primary" [checked]="userDetails && userDetails.is_org" (change)="change($event)" class="mr-3">
+                  </c-switch>
+                </c-col>
+              </c-form-group>
+              <c-form-group cRow [hidden]="userId">
+                <label cLabel="col" cCol md="3" for="password-input">Password</label>
+                <c-col md="9">
+                  <label cLabel="col">Password information will be sent to your registered email when successfully
+                    registered</label>
+                  <!--<c-input-group>
+                    <input cInput [type]="passwordType" formControlName="password" placeholder="Enter Password"
+                      [ngClass]="{ 'is-invalid': (submitted || f.password.touched) && f.password.invalid, 'is-valid': f.password.touched && f.password.valid }">
+                    <c-input-group-append>
+                      <c-input-group-text>
+                        <i [class]="passwordIcon" aria-hidden="true" (click)="togglePassword()"></i>
+                      </c-input-group-text>
+                    </c-input-group-append>
+                  </c-input-group>-->
+                </c-col>
+              </c-form-group>
+              <!-- <c-form-group cRow>
+                        <label cLabel="col" cCol md="3">NFC Enabled</label>
+                        <c-col md="5" col="form-label">
+                          <c-form-check inline custom variant="checkbox" class="mfe-3">
+                            <input cInput type="checkbox" id="chk-c1" value="option1" checked
+                                   class="custom-control-input" formControlName="nfcEnabled">
+                            <label class="custom-control-label" for="chk-c1"></label>
+                          </c-form-check>
+                        </c-col>
+                      </c-form-group>
+                      <c-form-group cRow>
+                        <label cLabel="col" cCol md="3">GeoLocation Enabled</label>
+                        <c-col md="5" col="form-label">
+                          <c-form-check inline custom variant="checkbox" class="mfe-3">
+                            <input cInput type="checkbox" id="chk-c2" value="option1" checked
+                                   class="custom-control-input" formControlName="sharedLocation">
+                            <label class="custom-control-label" for="chk-c2"></label>
+                          </c-form-check>
+                        </c-col>
+                      </c-form-group> -->
+            </div>
+            <div class="common-form">
+              <c-card-header class="p-0 pb-2">
+                <strong>What this user can do? </strong>
+              </c-card-header>
+              <c-form-group cRow>
+                <label cLabel="col" cCol md="3" for="select1"> Permission <span
+                    class="text-danger">*</span></label>
+                <c-col md="5">
+                  <ng-select (ngModelChange)="select_permission($event)" [readonly]="userDetails && userDetails.is_org" class="bootstrap" placeholder="What this user can do?" [items]="permissionrArr"
+                    [clearable]="true" bindLabel="name" bindValue="_id" formControlName="permissionId"
+                    [ngClass]="{ 'is-invalid': (submitted || f.permissionId.touched) && f.permissionId.invalid, 'is-valid': f.permissionId.touched && f.permissionId.valid }">
+                  </ng-select>
+                  <div *ngIf="submitted && f['permissionId'].invalid" class="invalid-feedback">
+                    <div *ngIf="f['permissionId'].errors.required">
+                      {{formErrors.permissionId.required}}
+                    </div>
+                    <div *ngIf="f['permissionId'].errors.pattern">
+                      {{formErrors.permissionId.pattern}}
+                    </div>
+                  </div>
+                </c-col>
+              </c-form-group>
+            </div>
+            <div class="common-form" *ngIf="isSupervisor && !(authService.check_super_admin())">
+              <c-card-header class="p-0 pb-2">
+                <strong>Supervisor</strong>
+              </c-card-header>
+              <c-form-group cRow>
+                <label cLabel="col" cCol md="3">Is this user a Supervisor?
+                  <c-icon name="cil-info" class="ml-3 text-primary" ngxTippy
+                    [tippyProps]="simpleProps('Assign this User As a Manager')"></c-icon>
+                </label>
+                <c-col md="5" col="form-label" class="ml-1">
+                  <c-form-check inline custom variant="checkbox" class="mfe-3">
+                    <input cInput type="checkbox" id="chk-c3" value="option1" (click)="isManagerClick($event)"
+                      class="custom-control-input" formControlName="is_manager">
+                    <label class="custom-control-label" for="chk-c3">&nbsp;</label>
+                  </c-form-check>
+                </c-col>
+              </c-form-group>
+
+              <c-form-group cRow *ngIf="userForm.value.is_manager">
+                <label cLabel="col" cCol md="3" for="select1">Please choose users under this Supervisor <c-icon
+                    name="cil-info" class="ml-3 text-primary" ngxTippy
+                    [tippyProps]="simpleProps('Choose User Under this Manager')"></c-icon></label>
+                <c-col md="7">
+                  <form name="form1" id="form1" onsubmit="return false;">
+                    <table width="100%">
+                      <tr>
+                        <td style="width: 45%;">
+                          <label cLabel="col" cCol md="7">Unassigned Users</label>
+                          <select cSelect name="leftProcess" size="8" multiple>
+                            <option *ngFor="let user of userList" [value]="user._id">
+                              {{user.name}}
+                            </option>
+                          </select>
+                        </td>
+                        <td class="manager-button-td" style="width: 10%;">
+                          <button cButton color="primary" (click)="moveRight('leftProcess','rightProcess');">
+                            {{'>>'}}
+                          </button>
+                          <br />
+                          <button cButton color="primary" style="margin-top: 10px;"
+                            (click)="moveRight('rightProcess','leftProcess')">
+                            {{'<<'}} </button>
+                        </td>
+                        <td style="width: 45%;">
+                          <label cLabel="col" cCol md="7">Assigned Users</label>
+                          <select cSelect name="rightProcess" size="8" multiple>
+                            <option *ngFor="let user of selectedUserList" [value]="user._id">
+                              {{user.name}}
+                            </option>
+                          </select>
+                        </td>
+                      </tr>
+                    </table>
+                  </form>
+                </c-col>
+              </c-form-group>
+              <c-form-group cRow *ngIf="!userForm.value.is_manager">
+                <label cLabel="col" cCol md="3" for="select1">Whom does the user report to? <c-icon name="cil-info"
+                    class="ml-3 text-primary" ngxTippy
+                    [tippyProps]="simpleProps('Choose Manager to which this User Reports.')"></c-icon></label>
+                <c-col md="5">
+                  <!-- <ng-select multiple="true" class="bootstrap" placeholder="Whom does the user report to?" [items]="managerArr"
+                    [clearable]="true" bindLabel="name" bindValue="_id" formControlName="manager_ids">
+                  </ng-select> -->
+
+                  <ng-select class="bootstrap" placeholder="Whom does the user report to?" [items]="managerArr"
+                            [clearable]="true" bindLabel="name" bindValue="_id" formControlName="manager_ids" multiple="true"
+                            [selectOnTab]="true">
+                        </ng-select>
+                        
+                </c-col>
+              </c-form-group>
+            </div>
+
+            <div class="common-form" *ngIf="!(authService.check_super_admin())">
+              <c-card-header class="p-0 pb-2">
+                <strong>Device Allocation </strong>
+              </c-card-header>
+              <c-form-group cRow>
+                <label cLabel="col" cCol md="3" for="select1"> Allocated device <span
+                    class="text-danger">*</span></label>
+                <c-col md="5">
+                  <div>
+                    <span *ngIf="userDetails.is_all_device_selected">All Device Selected</span>
+                    <span *ngIf="!userDetails.is_all_device_selected && userDetails.selected_device_ids && userDetails.selected_device_ids.length==0">No Device Selected</span>
+                    <i (click)="edit_popup(defaultModal)" class="fa fa-pencil mr-2 pull-right"></i>
+                  </div>
+                  <div *ngIf="!userDetails.is_all_device_selected && userDetails.selected_device_ids && userDetails.selected_device_ids.length>0">
+                    <h5>Allocated Devices</h5>
+                    <mat-table #table mat-table [dataSource]="dataSource" matSort matSortActive="createdAt" matSortDisableClear
+                        matSortDirection="desc" class="">
+
+                      <ng-container matColumnDef="is_selected">
+                        <mat-header-cell [ngClass]="'w-blank'" *matHeaderCellDef>
+                          
+                        </mat-header-cell>
+                        <mat-cell [ngClass]="'w-blank'" *matCellDef="let element">
+                        </mat-cell>
+                      </ng-container>
+
+                      <ng-container matColumnDef="id1">
+                        <mat-header-cell [ngClass]="'w-name'" *matHeaderCellDef>Name
+                        </mat-header-cell>
+                        <mat-cell [ngClass]="'w-name'" *matCellDef="let element">
+                          {{
+                          element.id1
+                          }}
+                        </mat-cell>
+                      </ng-container>
+                      <!-- Name Column -->
+                      <ng-container matColumnDef="location">
+                        <mat-header-cell [ngClass]="'w-name'" *matHeaderCellDef>Location
+                        </mat-header-cell>
+                        <mat-cell [ngClass]="'w-name'" *matCellDef="let element">
+                          {{ element.locationName | titlecase }}
+                        </mat-cell>
+                      </ng-container>
+                      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                      <mat-row *matRowDef="let row; columns: displayedColumns" [hidden]="check_selected_device(row._id)"></mat-row>
+                    </mat-table>
+                  </div>
+                </c-col>
+              </c-form-group>
+            </div>
+            <!--<div class="common-form">
+              <c-card-header class="p-0 pb-2">
+                <strong>Groups</strong>
+              </c-card-header>
+              <c-form-group cRow>
+                <label cLabel="col" cCol md="3" for="select1">Select User Groups</label>
+                <c-col md="4">
+                  <ng-select (add)="addGroup($event)" (remove)="removeGroup($event)" class="bootstrap"
+                    placeholder="Select User Groups" [items]="groupList" [clearable]="true" bindLabel="name"
+                    bindValue="_id" formControlName="groups" multiple="true" [selectOnTab]="true">
+                  </ng-select>
+                </c-col>
+                <button md="1" cButton color="primary" size="md" class="mfe-1" (click)="addGroupList()">
+                  <c-icon name="cil-plus" size="sm" class="text-white"></c-icon>
+                  <span> Add Group</span>
+                </button>
+              </c-form-group>
+            </div> -->
+            <!-- <c-form-group cRow>
+      <label cLabel="col" cCol md="3">Roles</label>
+      <c-col md="9" col="form-label">
+          <div>
+              <c-form-check inline custom variant="radio" class="mfe-3"
+                  *ngFor="let role of roles| keyvalue;let i=index;">
+                  <input cInput type="radio" id="radio-c{{i}}" value="{{role.value}}"
+                      class="custom-control-input" formControlName="role">
+                  <label class="custom-control-label" for="radio-c{{i}}">{{role.value}}</label>
+              </c-form-check>
+              <div *ngIf="submitted && f['role'].invalid" class="invalid-feedback d-block">
+                  <div *ngIf="f['role'].errors.required">{{formErrors.role.required}}</div>
+              </div>
+          </div>
+      </c-col>
+  </c-form-group> -->
+          </form>
+        </c-card-body>
+        <c-card-footer>
+          <button cButton type="submit" color="primary" size="md" class="mfe-1" (click)="save()" *ngIf="!userId">
+            <c-icon name="cil-check-circle" size="sm"></c-icon>
+            <span> Submit</span>
+          </button>
+          <button cButton type="submit" color="primary" size="md" class="mfe-1" *ngIf="userId" (click)="update()">
+            <c-icon name="cil-pencil" size="sm"></c-icon>
+            <span> Update</span>
+          </button>
+          <button cButton type="reset" color="danger" size="md" class="mfe-1" (click)="onReset()" *ngIf="!userId">
+            <c-icon name="cil-ban" size="sm"></c-icon>
+            <span> Reset</span>
+          </button>
+          <button cButton type="reset" color="secondary" size="md" class="mfe-1" routerLink="/user">
+            <c-icon name="cil-x-circle" size="sm"></c-icon>
+            <span> Cancel</span>
+          </button>
+        </c-card-footer>
+        <div class="massegeCls"
+          [ngClass]="{'errorRes' : gs.resMassage.status == 'error', 'succassRes' : gs.resMassage.status == 'success'}">
+          {{gs.resMassage.massage || ''}}
+        </div>
+      </c-card>
+    </c-col>
+  </c-row>
+</div>
+
+<div class="loading-indicator" *ngIf="loading">
+  <c-spinkit [name]="'bounce'"></c-spinkit>
+  </div> 
+
+
+<c-modal #defaultModal [closeOnBackdrop]="false">
+  <ng-template #modalHeader>
+    <h4 class="c-modal-title">Device Allocation</h4>
+  </ng-template>
+  <ng-template #modalBody>
+    <c-row class="mb-3">
+      <c-col md="12">
+        <div class="input-group">
+          <div class="input-group-prepend">
+            <span class="input-group-text"><i class="cil-search"></i></span>
+          </div>
+          <input cInput placeholder="Search here..." (input)="search($event)" />
+        </div>
+      </c-col>
+    </c-row>
+    <div>
+      <h5>Allocated Devices</h5>
+      <mat-table #table mat-table [dataSource]="dataSource" matSort matSortActive="createdAt" matSortDisableClear
+          matSortDirection="desc" class="">
+
+        <ng-container matColumnDef="is_selected">
+          <mat-header-cell [ngClass]="'w-checkbox'" *matHeaderCellDef>
+            <c-form-check variant="checkbox" inline custom>
+                <input cInput type="checkbox" id="is_all_device_selected" [checked]="is_all_device_selected"
+                    class="custom-control-input" (change)="select_unselect_all()">
+                <label cLabel variant="checkbox" for="is_all_device_selected" class="custom-control-label">
+                    
+                </label>
+            </c-form-check>
+          </mat-header-cell>
+          <mat-cell [ngClass]="'w-checkbox'" *matCellDef="let element">
+            <c-form-check variant="checkbox" *ngIf="element.is_selected" inline custom>
+                <input cInput type="checkbox" id="{{element._id}}" checked
+                    class="custom-control-input" (change)="unselect_device(element._id)">
+                <label cLabel variant="checkbox" for="{{element._id}}" class="custom-control-label">
+                    
+                </label>
+            </c-form-check>
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="id1">
+          <mat-header-cell [ngClass]="'w-name'" *matHeaderCellDef>Name
+          </mat-header-cell>
+          <mat-cell [ngClass]="'w-name'" *matCellDef="let element">
+            {{
+            element.id1
+            }}
+          </mat-cell>
+        </ng-container>
+        <!-- Name Column -->
+        <ng-container matColumnDef="location">
+          <mat-header-cell [ngClass]="'w-name'" *matHeaderCellDef>Location
+          </mat-header-cell>
+          <mat-cell [ngClass]="'w-name'" *matCellDef="let element">
+            {{ element.locationName | titlecase }}
+          </mat-cell>
+        </ng-container>
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns" [hidden]="!row.is_selected || check_search_data(row.id1)"></mat-row>
+      </mat-table>
+    </div>
+    <div style="margin-top: 30px;">
+      <h5>UnAllocated Devices</h5>
+      <mat-table #table mat-table [dataSource]="dataSource" matSort matSortActive="createdAt" matSortDisableClear
+          matSortDirection="desc" class="">
+        <ng-container matColumnDef="is_selected">
+          <mat-header-cell [ngClass]="'w-checkbox'" *matHeaderCellDef>
+          </mat-header-cell>
+          <mat-cell [ngClass]="'w-checkbox'" *matCellDef="let element">
+            <c-form-check variant="checkbox" *ngIf="!element.is_selected" inline custom>
+                <input cInput type="checkbox"  (change)="select_device(element._id)" id="{{element._id}}"
+                    class="custom-control-input">
+                <label cLabel variant="checkbox" for="{{element._id}}" class="custom-control-label">
+                    
+                </label>
+            </c-form-check>
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="id1">
+          <mat-header-cell [ngClass]="'w-name'" *matHeaderCellDef>
+          </mat-header-cell>
+          <mat-cell [ngClass]="'w-name'" *matCellDef="let element">
+            {{ element.id1 | titlecase }}
+          </mat-cell>
+        </ng-container>
+        <!-- Name Column -->
+        <ng-container matColumnDef="location">
+          <mat-header-cell [ngClass]="'w-name'" *matHeaderCellDef>
+          </mat-header-cell>
+          <mat-cell [ngClass]="'w-name'" *matCellDef="let element">
+            {{
+              element.locationName
+            }}
+          </mat-cell>
+        </ng-container>
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns" [hidden]="row.is_selected || check_search_data(row.id1)"></mat-row>
+      </mat-table>
+    </div>
+  </ng-template>
+  <ng-template #modalFooter>
+    <button cButton color="secondary" (click)="defaultModal.hide()">
+      Close
+    </button>
+    <button cButton color="primary" (click)="updateData(defaultModal)">
+      Update
+    </button>
+  </ng-template>
+</c-modal>

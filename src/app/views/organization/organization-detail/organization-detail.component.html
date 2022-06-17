@@ -1,0 +1,314 @@
+<div class="fade-in">
+    <c-card class="p-0">
+        <c-card-body class="p-0">
+            <c-tabset boxed="true" [activeTab]="'0'">
+                <c-tablist class="pt-2 px-2">
+                    <c-tab>
+                        Organization Details
+                    </c-tab>
+                    <c-tab>
+                        Contact Details
+                    </c-tab>
+                    <c-tab>
+                        Users
+                    </c-tab>
+                    <c-tab>
+                        Devices
+                    </c-tab>
+                    <c-tab>
+                        Custom Parameters
+                    </c-tab>
+                    <button cButton color="primary" size="md" class="mfe-1 mx-auto"
+                        style="margin-bottom: 5px;margin-top: -2px;" (click)="createPdf()">
+                        <c-icon name="cil-cloud-download" size="sm" class="text-white"></c-icon>
+                        <span> Export PDF</span>
+                    </button>
+                </c-tablist>
+                <c-tab-content>
+                    <c-tab-pane>
+                        <ng-container *ngIf="organizationData">
+                            <c-card>
+                                <c-card-body>
+                                    <c-row>
+                                        <label cLabel="col" cCol md="3"><strong> Organization Type :</strong>
+                                        </label>
+                                        <label cLabel="col" cCol md="9"> {{organizationData?.orgType
+                                            |titlecase}}</label>
+                                    </c-row>
+                                    <hr class="org-hr" />
+                                    <c-row *ngIf="organizationData?.resellerType">
+                                        <label cLabel="col" cCol md="3"><strong> Reseller Type :</strong>
+                                        </label>
+                                        <label cLabel="col" cCol md="9">
+                                            {{organizationData?.resellerType |titlecase}}</label>
+                                    </c-row>
+                                    <hr *ngIf="organizationData?.resellerType" class="org-hr" />
+                                    <c-row>
+                                        <label cLabel="col" cCol md="3"><strong> Organization Name :</strong>
+                                        </label>
+                                        <label cLabel="col" cCol md="9">
+                                            {{organizationData.organizationName}}</label>
+                                    </c-row>
+                                    <hr class="org-hr" />
+                                    <c-row>
+                                        <label cLabel="col" cCol md="3"><strong> Organization Unique ID
+                                                :</strong> </label>
+                                        <label cLabel="col" cCol md="9">
+                                            {{organizationData.organizationId}}</label>
+                                    </c-row>
+                                    <hr class="org-hr" />
+                                    <c-row>
+                                        <label cLabel="col" cCol md="3"><strong> Admin Name :</strong>
+                                        </label>
+                                        <label cLabel="col" cCol
+                                            md="9">{{organizationData.personDetail?organizationData.personDetail.name:'-'}}</label>
+                                    </c-row>
+                                    <hr class="org-hr" />
+                                    <c-row>
+                                        <label cLabel="col" cCol md="3"><strong> Admin Email :</strong>
+                                        </label>
+                                        <label cLabel="col" cCol md="9">
+                                            {{organizationData.personDetail?organizationData.personDetail.email:'-'}}</label>
+                                    </c-row>
+                                    <hr class="org-hr" />
+                                    <c-row>
+                                        <label cLabel="col" cCol md="3"><strong> Number of Users :</strong>
+                                        </label>
+                                        <label cLabel="col" cCol md="9">{{organizationData.numberOfUser}}</label>
+                                    </c-row>
+                                    <hr class="org-hr" />
+                                    <c-row>
+                                        <label cLabel="col" cCol md="3"><strong> Number of Registered Devices
+                                                :</strong>
+                                        </label>
+                                        <label cLabel="col" cCol md="9">{{organizationData.numberOfDevice}}</label>
+                                    </c-row>
+                                    <hr class="org-hr" />
+                                    <c-row>
+                                        <label cLabel="col" cCol md="3"><strong> Status :</strong> </label>
+                                        <label cLabel="col" cCol md="9">{{organizationData.status ==
+                                            '1'?'Active':'Inactive'}}</label>
+                                    </c-row>
+                                    <hr class="org-hr" />
+                                    <!--<c-row>
+                                <label cLabel="col" cCol md="3" ><strong> NFC Enabled :</strong>
+                                </label>
+                                <label cLabel="col" cCol md="9"
+                                    >{{organizationData.nfcEnabled ?'Yes':'No'}}</label>
+                            </c-row>
+                            <hr class="org-hr"/> -->
+                                    <c-row>
+                                        <label cLabel="col" cCol md="3"><strong> Reseller Name :</strong>
+                                        </label>
+                                        <label cLabel="col" cCol
+                                            md="9">{{organizationData.resellerName?organizationData.resellerName:'-'}}</label>
+                                    </c-row>
+                                    <hr class="org-hr" />
+                                </c-card-body>
+                            </c-card>
+                        </ng-container>
+                    </c-tab-pane>
+
+                    <c-tab-pane>
+                        <ng-container *ngIf="organizationData">
+                            <c-card>
+                                <c-card-body>
+                                    <c-row>
+                                        <label cLabel="col" cCol md="3"><strong> Address Line 1 :</strong>
+                                        </label>
+                                        <label cLabel="col" cCol md="9"> {{organizationData.billingAddress?.addressLine1}}</label>
+                                    </c-row>
+                                    <hr class="org-hr" />
+                                    <c-row>
+                                        <label cLabel="col" cCol md="3"><strong> Address Line 2 :</strong>
+                                        </label>
+                                        <label cLabel="col" cCol md="9"> {{organizationData.billingAddress?organizationData.billingAddress.addressLine2:'-'}}</label>
+                                    </c-row>
+                                    <hr class="org-hr" />
+                                    <c-row>
+                                        <label cLabel="col" cCol md="3"><strong> Country :</strong>
+                                        </label>
+                                        <label cLabel="col" cCol md="9"> {{organizationData.billingAddress?.country}}</label>
+                                    </c-row>
+                                    <hr class="org-hr" />
+                                    <c-row>
+                                        <label cLabel="col" cCol md="3"><strong> State :</strong>
+                                        </label>
+                                        <label cLabel="col" cCol md="9"> {{organizationData.billingAddress?.state}}</label>
+                                    </c-row>
+                                    <hr class="org-hr" />
+                                    <c-row>
+                                        <label cLabel="col" cCol md="3"><strong> Town :</strong>
+                                        </label>
+                                        <label cLabel="col" cCol md="9"> {{organizationData.billingAddress?.town}}</label>
+                                    </c-row>
+                                    <hr class="org-hr" />
+                                    <c-row>
+                                        <label cLabel="col" cCol md="3"><strong> Postcode :</strong>
+                                        </label>
+                                        <label cLabel="col" cCol md="9"> {{organizationData.billingAddress?.postCode}}</label>
+                                    </c-row>
+                                    <hr class="org-hr" />
+                                    <c-row>
+                                        <label cLabel="col" cCol md="3"><strong> Primary Phone No. :</strong>
+                                        </label>
+                                        <label cLabel="col" cCol md="9"> {{organizationData.personDetail?.primaryPhoneNo}}</label>
+                                    </c-row>
+                                    <hr class="org-hr" />
+                                    <c-row>
+                                        <label cLabel="col" cCol md="3"><strong> Secondary Phone No. :</strong>
+                                        </label>
+                                        <label cLabel="col" cCol md="9"> {{organizationData.personDetail?.secondaryPhoneNo}}</label>
+                                    </c-row>
+                                    <hr class="org-hr" />
+                                </c-card-body>
+                            </c-card>
+                        </ng-container>
+                    </c-tab-pane>
+
+                    <c-tab-pane>
+                        <!-- <c-card>
+                                <c-card-header class="d-flex align-items-center">
+                                    <h4 class="mb-0">List Of User</h4>
+                                </c-card-header>
+                                <c-card-body> -->
+                        <c-row class="mb-3">
+                            <c-col md="4">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="cil-search"></i></span>
+                                    </div>
+                                    <input cInput placeholder="Search here..." (input)="userSearch($event)" />
+                                </div>
+                            </c-col>
+                        </c-row>
+                        <mat-table #table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+
+                            <ng-container matColumnDef="name">
+                                <mat-header-cell [ngClass]="'w-name'" *matHeaderCellDef>Full Name </mat-header-cell>
+                                <mat-cell [ngClass]="'w-name'" *matCellDef="let element">
+                                    {{element.name |titlecase}}
+                                </mat-cell>
+                            </ng-container>
+
+                            <ng-container matColumnDef="email">
+                                <mat-header-cell [ngClass]="'w-email'" *matHeaderCellDef> Email Address
+                                </mat-header-cell>
+                                <mat-cell [ngClass]="'w-email'" *matCellDef="let element"> {{element.email}} </mat-cell>
+                            </ng-container>
+
+                            <ng-container matColumnDef="role">
+                                <mat-header-cell *matHeaderCellDef> Permission </mat-header-cell>
+                                <mat-cell *matCellDef="let element">
+                                    {{element.permissionDetail?element.permissionDetail.name:''}} </mat-cell>
+                            </ng-container>
+
+                            <ng-container matColumnDef="status">
+                                <mat-header-cell *matHeaderCellDef> Status </mat-header-cell>
+                                <mat-cell *matCellDef="let element">
+                                    <c-badge [color]="element.status == 'Active' ? 'success' : 'danger' " class="mx-1 px-2 py-1">
+                                        {{element.status}}
+                                    </c-badge>
+                                </mat-cell>
+                            </ng-container>
+                            <mat-header-row *matHeaderRowDef="userDisplayedColumns"></mat-header-row>
+                            <mat-row *matRowDef="let row; columns: userDisplayedColumns;"></mat-row>
+                        </mat-table>
+                        <div class="mat-table__message text-center mt-3" *ngIf="!userListArr.length">No records found
+                        </div>
+                        <!-- </c-card-body>
+                            </c-card> -->
+                    </c-tab-pane>
+                    <c-tab-pane>
+                        <!-- <c-card>
+                        <c-card-header class="d-flex align-items-center">
+                            <h4 class="mb-0">List Of Devices</h4>
+                        </c-card-header>
+                        <c-card-body> -->
+                        <c-row class="mb-3">
+                            <c-col md="4">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="cil-search"></i></span>
+                                    </div>
+                                    <input cInput placeholder="Search here..." (input)="deviceSearch($event)" />
+                                </div>
+                            </c-col>
+                        </c-row>
+                        <mat-table #table mat-table [dataSource]="deviceDataSource" class="mat-elevation-z8">
+
+                            <ng-container matColumnDef="id1">
+                                <mat-header-cell *matHeaderCellDef>ID</mat-header-cell>
+                                <mat-cell *matCellDef="let element">
+                                    {{element.id1}}
+                                </mat-cell>
+                            </ng-container>
+
+                            <ng-container matColumnDef="uid">
+                                <mat-header-cell *matHeaderCellDef> UID </mat-header-cell>
+                                <mat-cell *matCellDef="let element"> {{element.uid}} </mat-cell>
+                            </ng-container>
+
+                            <ng-container matColumnDef="location">
+                                <mat-header-cell *matHeaderCellDef> Coordinates </mat-header-cell>
+                                <mat-cell *matCellDef="let element"> <a href="javascript:void(0)"
+                                        *ngIf="element.location"
+                                        (click)="selectLocation(element.location)">{{element.location}}</a> </mat-cell>
+                            </ng-container>
+
+                            <ng-container matColumnDef="status">
+                                <mat-header-cell *matHeaderCellDef> Status </mat-header-cell>
+                                <mat-cell *matCellDef="let element;let i = index">
+                                    <c-badge
+                                        [color]="element.status == 'Active' ? 'success' : element.status == 'Inactive' ? 'danger' : 'warning'"
+                                        class="mx-1 px-2 py-1">{{element.status}}
+                                    </c-badge>
+                                </mat-cell>
+                            </ng-container>
+
+                            <mat-header-row *matHeaderRowDef="deviceDisplayedColumns"></mat-header-row>
+                            <mat-row *matRowDef="let row; columns: deviceDisplayedColumns;"></mat-row>
+                        </mat-table>
+                        <div class="mat-table__message text-center mt-3" *ngIf="!deviceListArr.length">No records found
+                        </div>
+                        <!-- </c-card-body>
+                    </c-card> -->
+                    </c-tab-pane>
+                    <c-tab-pane>
+                        <ng-container>
+                            <c-row>
+                                <label cLabel="col" cCol md="5"><strong> Time delay between scans (seconds) </strong>
+                                </label>
+                                <label cLabel="col" cCol md="7">{{customparameter.time_delay}}</label>
+                            </c-row>
+                            <hr class="org-hr" />
+                            <c-row>
+                                <label cLabel="col" cCol md="5"><strong> Map view flush time every day (HH:MM) </strong>
+                                </label>
+                                <label cLabel="col" cCol
+                                    md="7">{{customparameter.map_flush_timezone}}-{{customparameter.map_flush_time}}</label>
+                            </c-row>
+                            <hr class="org-hr" />
+                            <c-row>
+                                <label cLabel="col" cCol md="5"><strong> Scan NFC Tag Text </strong></label>
+                                <label cLabel="col" cCol md="7">{{customparameter.nfc_button_text}}</label>
+                            </c-row>
+                            <hr class="org-hr" />
+                            <c-row>
+                                <label cLabel="col" cCol md="5"><strong> Set Device Coordinates Button Text</strong>
+                                </label>
+                                <label cLabel="col" cCol md="7">{{customparameter.update_device_cordnate_text}}</label>
+                            </c-row>
+                            <hr class="org-hr" />
+                            <!-- </c-card-body>
+                        </c-card> -->
+                        </ng-container>
+                    </c-tab-pane>
+                </c-tab-content>
+            </c-tabset>
+        </c-card-body>
+    </c-card>
+</div>
+<div class="loading-indicator" *ngIf="loading">
+    <c-spinkit [name]="'bounce'"></c-spinkit>
+</div> 

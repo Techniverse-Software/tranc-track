@@ -1,0 +1,97 @@
+<div class="modal-content">
+    <div class="modal-header">
+        <h5 class="modal-title custom-title" id="exampleModalLabel">{{title}}</h5>
+    </div>
+    <div class="modal-body">
+        <form class="form-horizontal needs-validation" [formGroup]="addGroupForm" novalidate>
+            <!-- <c-form-group cRow>
+                <label cLabel="col" cCol md="3" for="email-input">Group Type</label>
+                <c-col md="9">
+                    <select cSelect id="select1" formControlName="groupType" (change)="selectType($event)">
+                        <option value='' selected>Select Group Type</option>
+                        <option value="device">Device</option>
+                        <option value="user">User</option>
+                    </select>
+                    <div *ngIf="submitted && f['groupType'].invalid" class="invalid-feedback d-block">
+                        <div *ngIf="f['groupType'].errors.required">
+                            {{formErrors.groupType.required}}
+                        </div>
+                    </div>
+                </c-col>
+            </c-form-group> -->
+            <div class="common-form">
+                <c-form-group cRow>
+                    <label cLabel="col" cCol md="3">Group Name</label>
+                    <c-col md="6">
+                        <input cInput type="text" formControlName="name" placeholder="Enter Group Name">
+                        <div *ngIf="submitted && f['name'].invalid" class="invalid-feedback d-block">
+                            <div *ngIf="f['name'].errors.required">
+                                {{formErrors.Groupname.required}}
+                            </div>
+                        </div>
+                    </c-col>
+                </c-form-group>
+            </div>
+            <div class="common-form" *ngIf="groupType ==='device'">
+                <c-form-group cRow>
+                    <label cLabel="col" cCol md="3">Select Devices</label>
+                    <c-col md="6">
+                        <ng-select class="bootstrap" placeholder="Select Devices" [items]="deviceList"
+                            [clearable]="true" bindLabel="id1" bindValue="_id" formControlName="devices" multiple="true"
+                            [selectOnTab]="true">
+                        </ng-select>
+                        <div *ngIf="submitted && f['devices'].invalid" class="invalid-feedback d-block">
+                            <div *ngIf="f['devices'].errors.required">
+                                {{formErrors.device.required}}
+                            </div>
+                        </div>
+                    </c-col>
+                </c-form-group>
+            </div>
+            <div class="common-form" *ngIf="groupType ==='user'">
+                <c-form-group cRow>
+                    <label cLabel="col" cCol md="3">Select Users</label>
+                    <c-col md="6">
+                        <ng-select class="bootstrap" placeholder="Select Users" [items]="userList" [clearable]="true"
+                            bindLabel="name" bindValue="_id" formControlName="users" multiple="true"
+                            [selectOnTab]="true">
+                        </ng-select>
+                        <div *ngIf="submitted && f['users'].invalid" class="invalid-feedback d-block">
+                            <div *ngIf="f['users'].errors.required">
+                                {{formErrors.user.required}}
+                            </div>
+                        </div>
+                    </c-col>
+                </c-form-group>
+            </div>
+            <div class="common-form">
+                <c-form-group cRow>
+                    <label cLabel="col" cCol md="3">Assign</label>
+                    <c-col md="6">
+                        <ng-select (add)="addGroup($event)" (remove)="removeGroup($event)" class="bootstrap"
+                            placeholder="Select Groups" [items]="groupList" [clearable]="true" bindLabel="name"
+                            bindValue="_id" formControlName="groups" multiple="true" [selectOnTab]="true">
+                        </ng-select>
+                        <!-- <div *ngIf="submitted && f['groups'].invalid" class="invalid-feedback d-block">
+                        <div *ngIf="f['groups'].errors.required">
+                            {{formErrors.groups.required}}
+                        </div>
+                    </div> -->
+                    </c-col>
+                </c-form-group>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button cButton color="primary" *ngIf="!(isUpdate)" (click)="craeteGroup()">{{submitButtonText}}</button>
+        <button cButton color="primary" *ngIf="(isUpdate)" (click)="updateGroup()">{{submitButtonText}}</button>
+        <button cButton color="secondary" (click)="cancle()">{{cancleButtonText}}</button>
+    </div>
+    <div class="massegeCls"
+        [ngClass]="{'errorRes' : gs.resMassage.status == 'error', 'succassRes' : gs.resMassage.status == 'success'}">
+        {{gs.resMassage.massage || ''}}
+    </div>
+</div>
+<div class="loading-indicator" *ngIf="loading">
+    <c-spinkit [name]="'bounce'"></c-spinkit>
+  </div> 
