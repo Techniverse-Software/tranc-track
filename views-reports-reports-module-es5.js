@@ -1,0 +1,1190 @@
+(function () {
+  function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+  function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+  function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+  (window["webpackJsonp"] = window["webpackJsonp"] || []).push([["views-reports-reports-module"], {
+    /***/
+    "8sM2":
+    /*!**********************************************************!*\
+      !*** ./src/app/views/reports/log-in/log-in.component.ts ***!
+      \**********************************************************/
+
+    /*! exports provided: LogInComponent */
+
+    /***/
+    function sM2(module, __webpack_exports__, __webpack_require__) {
+      "use strict";
+
+      __webpack_require__.r(__webpack_exports__);
+      /* harmony export (binding) */
+
+
+      __webpack_require__.d(__webpack_exports__, "LogInComponent", function () {
+        return LogInComponent;
+      });
+      /* harmony import */
+
+
+      var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(
+      /*! tslib */
+      "mrSG");
+      /* harmony import */
+
+
+      var _raw_loader_log_in_component_html__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(
+      /*! raw-loader!./log-in.component.html */
+      "kSS6");
+      /* harmony import */
+
+
+      var _log_in_component_scss__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(
+      /*! ./log-in.component.scss */
+      "MO1j");
+      /* harmony import */
+
+
+      var _angular_common__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(
+      /*! @angular/common */
+      "SVse");
+      /* harmony import */
+
+
+      var _angular_core__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(
+      /*! @angular/core */
+      "8Y7J");
+      /* harmony import */
+
+
+      var _angular_forms__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(
+      /*! @angular/forms */
+      "s7LF");
+      /* harmony import */
+
+
+      var _angular_material_table__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(
+      /*! @angular/material/table */
+      "OaSA");
+      /* harmony import */
+
+
+      var _services_auth_service__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(
+      /*! ../../../services/auth.service */
+      "lGQG");
+      /* harmony import */
+
+
+      var _services_http_req_service__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(
+      /*! ../../../services/http-req.service */
+      "J+oG");
+      /* harmony import */
+
+
+      var _services_report_service__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(
+      /*! ../../../services/report.service */
+      "ppW+");
+      /* harmony import */
+
+
+      var _services_role__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(
+      /*! ../../../services/role */
+      "WPje");
+      /* harmony import */
+
+
+      var _angular_material_sort__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(
+      /*! @angular/material/sort */
+      "LUZP");
+      /* harmony import */
+
+
+      var _angular_material_paginator__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(
+      /*! @angular/material/paginator */
+      "5QHs");
+
+      var LogInComponent = /*#__PURE__*/function () {
+        function LogInComponent(fb, httpReqService, reportService, datePipe, authService) {
+          _classCallCheck(this, LogInComponent);
+
+          this.fb = fb;
+          this.httpReqService = httpReqService;
+          this.reportService = reportService;
+          this.datePipe = datePipe;
+          this.authService = authService;
+          this.colorTheme = 'theme-dark-blue';
+          this.data = [];
+          this.gridOption = {
+            allrecords: false,
+            filter: {
+              dateRange: {
+                fromDate: '',
+                toDate: ''
+              },
+              status: {
+                $in: [0, 1]
+              }
+            },
+            sortField: 'createdAt',
+            sortOrder: 'desc',
+            limit: 10,
+            skip: 0
+          };
+          this.userGridOption = {
+            allrecords: true,
+            sortField: 'name',
+            sortOrder: 'asc',
+            filter: {
+              status: {
+                $in: [1, 4]
+              }
+            }
+          };
+          this.userListArr = [];
+          this.selectedLocation = {
+            lat: 0,
+            lng: 0
+          };
+          this.displayedColumns = [];
+          this.dataSource = new _angular_material_table__WEBPACK_IMPORTED_MODULE_6__["MatTableDataSource"]();
+          this.isDisplay = false;
+          this.head = ['Date Time', 'User', 'Organization'];
+          this.pdfData = [];
+          this.organizationArr = [];
+          this.loading = false;
+          this.createForm();
+        }
+
+        _createClass(LogInComponent, [{
+          key: "ngOnInit",
+          value: function ngOnInit() {
+            this.loading = true;
+            this.dataSource.sort = this.sort;
+            this.tokenData = this.authService.decodeToken(); // this.tokenData = this.tokenData.user;
+
+            this.bsConfig = Object.assign({}, {
+              containerClass: this.colorTheme,
+              customTodayClass: 'custom-today-class',
+              dateInputFormat: 'DD-MM-YYYY'
+            });
+            this.getUserList();
+
+            if (this.tokenData && this.tokenData.user.organizationId) {
+              this.displayedColumns = ['createdAt', 'userDetails.name'];
+            } else {
+              this.displayedColumns = ['createdAt', 'userDetails.name', 'organizationDetails.organizationName'];
+            }
+
+            this.generateReport();
+            this.getOrganizationList(); // this.loading = false;
+          }
+        }, {
+          key: "createForm",
+          value: function createForm() {
+            this.filterForm = this.fb.group({
+              userId: [''],
+              status: ['all'],
+              fromDate: [],
+              toDate: []
+            });
+          }
+        }, {
+          key: "getOrganizationList",
+          value: function getOrganizationList() {
+            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
+              var obj, response;
+              return regeneratorRuntime.wrap(function _callee$(_context) {
+                while (1) {
+                  switch (_context.prev = _context.next) {
+                    case 0:
+                      this.loading = true;
+                      obj = {
+                        allrecords: true,
+                        sortField: 'organizationName',
+                        sortOrder: 'asc',
+                        filter: {
+                          status: 1
+                        }
+                      };
+
+                      if (this.tokenData.user.organizationId) {
+                        obj['orgasnizationUniqueId'] = this.tokenData.user.organizationId;
+                      }
+
+                      obj.filter['user_id'] = this.tokenData.user._id;
+                      _context.next = 6;
+                      return this.httpReqService.post('organization/list', obj, false);
+
+                    case 6:
+                      response = _context.sent;
+
+                      if (response && response.items.length) {
+                        this.organizationArr = response.items;
+                      }
+
+                      this.loading = false;
+
+                    case 9:
+                    case "end":
+                      return _context.stop();
+                  }
+                }
+              }, _callee, this);
+            }));
+          }
+        }, {
+          key: "filterData",
+          value: function filterData(event, type) {
+            var val = event.target.value;
+
+            if (event.target.value) {
+              if (type === 'status') {
+                val = Number(val);
+              }
+
+              this.gridOption.filter[type] = val; // this.getData();
+            } else {
+              // this.getData();
+              delete this.gridOption.filter[type];
+            }
+          }
+        }, {
+          key: "getOrganizationDetail",
+          value: function getOrganizationDetail() {
+            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
+              var response;
+              return regeneratorRuntime.wrap(function _callee2$(_context2) {
+                while (1) {
+                  switch (_context2.prev = _context2.next) {
+                    case 0:
+                      this.loading = true;
+                      _context2.next = 3;
+                      return this.httpReqService.get('organizationByUniqueId', this.tokenData.user.organizationId);
+
+                    case 3:
+                      response = _context2.sent;
+
+                      if (response.items.length) {
+                        this.organiZationData = response.items[0];
+                      }
+
+                      this.loading = false;
+
+                    case 6:
+                    case "end":
+                      return _context2.stop();
+                  }
+                }
+              }, _callee2, this);
+            }));
+          }
+        }, {
+          key: "generateReport",
+          value: function generateReport() {
+            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee3() {
+              var formData, date, _date, response;
+
+              return regeneratorRuntime.wrap(function _callee3$(_context3) {
+                while (1) {
+                  switch (_context3.prev = _context3.next) {
+                    case 0:
+                      this.loading = true;
+                      this.isDisplay = true;
+                      formData = this.filterForm.value;
+
+                      if (formData.fromDate) {
+                        formData.fromDate = new Date(formData.fromDate);
+                        date = formData.fromDate.toISOString().split('T')[0];
+                        this.gridOption.filter['dateRange']['fromDate'] = date;
+                      }
+
+                      if (formData.toDate) {
+                        formData.toDate = new Date(formData.toDate);
+                        _date = formData.toDate.toISOString().split('T')[0];
+                        this.gridOption.filter['dateRange']['toDate'] = _date;
+                      }
+
+                      if (!formData.userId) {
+                        // if (formData.userId === 'null') {
+                        delete this.gridOption.filter.user;
+                      } else {
+                        this.gridOption.filter.user = formData.userId;
+                      }
+
+                      this.gridOption['isLookup'] = true;
+                      this.gridOption.filter['objectName'] = 'Login';
+                      this.userGridOption.filter['organizationUniqueId'] = this.tokenData.user.organizationId;
+
+                      if (this.sort) {
+                        this.gridOption.sortField = this.sort.active;
+                        this.gridOption.sortOrder = this.sort.direction;
+                      }
+
+                      this.gridOption.filter['user_id'] = this.tokenData.user._id;
+                      _context3.next = 13;
+                      return this.httpReqService.post('logs/list', this.gridOption, false);
+
+                    case 13:
+                      response = _context3.sent;
+                      this.data = response.items;
+                      this.dataSource = new _angular_material_table__WEBPACK_IMPORTED_MODULE_6__["MatTableDataSource"](this.data);
+                      this.resultsLength = response.totalCount;
+                      this.loading = false;
+
+                    case 18:
+                    case "end":
+                      return _context3.stop();
+                  }
+                }
+              }, _callee3, this);
+            }));
+          }
+        }, {
+          key: "sortChange",
+          value: function sortChange() {
+            this.gridOption.sortField = this.sort.active;
+            this.gridOption.sortOrder = this.sort.direction;
+            this.generateReport();
+          }
+        }, {
+          key: "pageChange",
+          value: function pageChange() {
+            this.gridOption.limit = this.paginator.pageSize;
+            this.gridOption.skip = this.paginator.pageSize * this.paginator.pageIndex;
+            this.generateReport();
+          }
+        }, {
+          key: "getUserList",
+          value: function getUserList() {
+            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee4() {
+              var response;
+              return regeneratorRuntime.wrap(function _callee4$(_context4) {
+                while (1) {
+                  switch (_context4.prev = _context4.next) {
+                    case 0:
+                      this.loading = true;
+
+                      if (this.tokenData.role !== _services_role__WEBPACK_IMPORTED_MODULE_10__["Role"].superAdmin) {
+                        this.userGridOption.filter['organizationUniqueId'] = this.tokenData.user.organizationId;
+                      }
+
+                      this.userGridOption.filter['user_id'] = this.tokenData.user._id;
+                      _context4.next = 5;
+                      return this.httpReqService.post('users/list', this.userGridOption, false);
+
+                    case 5:
+                      response = _context4.sent;
+                      this.userListArr = response.items;
+                      this.loading = false;
+
+                    case 8:
+                    case "end":
+                      return _context4.stop();
+                  }
+                }
+              }, _callee4, this);
+            }));
+          }
+        }, {
+          key: "createPdf",
+          value: function createPdf() {
+            var data = {
+              header: this.head,
+              coloumn: this.displayedColumns,
+              data: this.data,
+              fileName: 'log_in_report_',
+              organiZationData: this.organiZationData,
+              tokenData: this.tokenData,
+              title: 'Log-In Report'
+            };
+
+            if (this.filterForm.value.fromDate) {
+              data['fromDate'] = this.datePipe.transform(this.filterForm.value.fromDate, 'medium');
+            }
+
+            if (this.filterForm.value.toDate) {
+              data['toDate'] = this.datePipe.transform(this.filterForm.value.toDate, 'medium');
+            }
+
+            this.reportService.createReport(data);
+          }
+        }]);
+
+        return LogInComponent;
+      }();
+
+      LogInComponent.ctorParameters = function () {
+        return [{
+          type: _angular_forms__WEBPACK_IMPORTED_MODULE_5__["FormBuilder"]
+        }, {
+          type: _services_http_req_service__WEBPACK_IMPORTED_MODULE_8__["HttpReqService"]
+        }, {
+          type: _services_report_service__WEBPACK_IMPORTED_MODULE_9__["ReportService"]
+        }, {
+          type: _angular_common__WEBPACK_IMPORTED_MODULE_3__["DatePipe"]
+        }, {
+          type: _services_auth_service__WEBPACK_IMPORTED_MODULE_7__["AuthService"]
+        }];
+      };
+
+      LogInComponent.propDecorators = {
+        sort: [{
+          type: _angular_core__WEBPACK_IMPORTED_MODULE_4__["ViewChild"],
+          args: [_angular_material_sort__WEBPACK_IMPORTED_MODULE_11__["MatSort"]]
+        }],
+        paginator: [{
+          type: _angular_core__WEBPACK_IMPORTED_MODULE_4__["ViewChild"],
+          args: [_angular_material_paginator__WEBPACK_IMPORTED_MODULE_12__["MatPaginator"]]
+        }]
+      };
+      LogInComponent = Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"])([Object(_angular_core__WEBPACK_IMPORTED_MODULE_4__["Component"])({
+        selector: 'app-log-in',
+        template: _raw_loader_log_in_component_html__WEBPACK_IMPORTED_MODULE_1__["default"],
+        encapsulation: _angular_core__WEBPACK_IMPORTED_MODULE_4__["ViewEncapsulation"].None,
+        styles: [_log_in_component_scss__WEBPACK_IMPORTED_MODULE_2__["default"]]
+      })], LogInComponent);
+      /***/
+    },
+
+    /***/
+    "DduO":
+    /*!**************************************************************!*\
+      !*** ./src/app/views/reports/check-in/check-in.component.ts ***!
+      \**************************************************************/
+
+    /*! exports provided: CheckInComponent */
+
+    /***/
+    function DduO(module, __webpack_exports__, __webpack_require__) {
+      "use strict";
+
+      __webpack_require__.r(__webpack_exports__);
+      /* harmony export (binding) */
+
+
+      __webpack_require__.d(__webpack_exports__, "CheckInComponent", function () {
+        return CheckInComponent;
+      });
+      /* harmony import */
+
+
+      var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(
+      /*! tslib */
+      "mrSG");
+      /* harmony import */
+
+
+      var _raw_loader_check_in_component_html__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(
+      /*! raw-loader!./check-in.component.html */
+      "QIKI");
+      /* harmony import */
+
+
+      var _check_in_component_scss__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(
+      /*! ./check-in.component.scss */
+      "m9hd");
+      /* harmony import */
+
+
+      var _angular_common__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(
+      /*! @angular/common */
+      "SVse");
+      /* harmony import */
+
+
+      var _angular_core__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(
+      /*! @angular/core */
+      "8Y7J");
+      /* harmony import */
+
+
+      var _angular_forms__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(
+      /*! @angular/forms */
+      "s7LF");
+      /* harmony import */
+
+
+      var _angular_material_table__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(
+      /*! @angular/material/table */
+      "OaSA");
+      /* harmony import */
+
+
+      var ngx_bootstrap_modal__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(
+      /*! ngx-bootstrap/modal */
+      "LqlI");
+      /* harmony import */
+
+
+      var _services_role__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(
+      /*! ../../../services/role */
+      "WPje");
+      /* harmony import */
+
+
+      var _partial_modals_location_modal_location_modal_component__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(
+      /*! ../../../partial/modals/location-modal/location-modal.component */
+      "SR4K");
+      /* harmony import */
+
+
+      var _services_auth_service__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(
+      /*! ../../../services/auth.service */
+      "lGQG");
+      /* harmony import */
+
+
+      var _services_http_req_service__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(
+      /*! ../../../services/http-req.service */
+      "J+oG");
+      /* harmony import */
+
+
+      var _services_report_service__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(
+      /*! ../../../services/report.service */
+      "ppW+");
+      /* harmony import */
+
+
+      var _angular_material_sort__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(
+      /*! @angular/material/sort */
+      "LUZP");
+      /* harmony import */
+
+
+      var _angular_material_paginator__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(
+      /*! @angular/material/paginator */
+      "5QHs");
+
+      var CheckInComponent = /*#__PURE__*/function () {
+        function CheckInComponent(fb, httpReqService, modalService, datePipe, authService, reportService) {
+          _classCallCheck(this, CheckInComponent);
+
+          this.fb = fb;
+          this.httpReqService = httpReqService;
+          this.modalService = modalService;
+          this.datePipe = datePipe;
+          this.authService = authService;
+          this.reportService = reportService;
+          this.loading = false;
+          this.colorTheme = "theme-dark-blue";
+          this.data = [];
+          this.gridOption = {
+            allrecords: false,
+            filter: {
+              dateRange: {
+                fromDate: "",
+                toDate: ""
+              },
+              status: {
+                $in: [0, 1]
+              }
+            },
+            sortField: "createdAt",
+            sortOrder: "desc",
+            limit: 10,
+            skip: 0
+          };
+          this.userGridOption = {
+            allrecords: true,
+            sortField: "name",
+            sortOrder: "asc",
+            filter: {
+              status: {
+                $in: [1, 4]
+              }
+            }
+          };
+          this.userListArr = [];
+          this.selectedLocation = {
+            lat: 0,
+            lng: 0
+          };
+          this.displayedColumns = [];
+          this.dataSource = new _angular_material_table__WEBPACK_IMPORTED_MODULE_6__["MatTableDataSource"]();
+          this.isDisplay = false;
+          this.head = ["Coordinates", "Date Time", "User", "Status"];
+          this.pdfData = [];
+          this.organizationArr = [];
+          this.createForm();
+        }
+
+        _createClass(CheckInComponent, [{
+          key: "ngOnInit",
+          value: function ngOnInit() {
+            this.loading = true;
+            this.dataSource.sort = this.sort;
+            this.tokenData = this.authService.decodeToken(); // this.tokenData = this.tokenData.user;
+
+            this.bsConfig = Object.assign({}, {
+              containerClass: this.colorTheme,
+              customTodayClass: "custom-today-class",
+              dateInputFormat: "DD-MM-YYYY"
+            });
+            this.getUserList();
+
+            if (this.tokenData && this.tokenData.user.organizationId) {
+              this.displayedColumns = ["location", "createdAt", "userDetail.name", "status"];
+            } else {
+              this.displayedColumns = ["location", "organizationDetail.organizationName", "createdAt", "userDetail.name", "status"];
+            }
+
+            this.generateReport();
+            this.getOrganizationList(); // this.getOrganizationDetail();
+            // this.loading = false;
+          }
+        }, {
+          key: "createForm",
+          value: function createForm() {
+            this.filterForm = this.fb.group({
+              userId: [""],
+              status: ["all"],
+              fromDate: [],
+              toDate: []
+            });
+          }
+        }, {
+          key: "getOrganizationList",
+          value: function getOrganizationList() {
+            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee5() {
+              var obj, response;
+              return regeneratorRuntime.wrap(function _callee5$(_context5) {
+                while (1) {
+                  switch (_context5.prev = _context5.next) {
+                    case 0:
+                      this.loading = true;
+                      obj = {
+                        allrecords: true,
+                        sortField: "organizationDetail.organizationName",
+                        sortOrder: "asc",
+                        filter: {
+                          status: 1
+                        }
+                      };
+
+                      if (this.tokenData.user.organizationId) {
+                        obj["orgasnizationUniqueId"] = this.tokenData.user.organizationId;
+                      }
+
+                      obj.filter["user_id"] = this.tokenData.user._id;
+                      _context5.next = 6;
+                      return this.httpReqService.post("organization/list", obj, false);
+
+                    case 6:
+                      response = _context5.sent;
+
+                      if (response && response.items.length) {
+                        this.organizationArr = response.items;
+                      }
+
+                      this.loading = false;
+
+                    case 9:
+                    case "end":
+                      return _context5.stop();
+                  }
+                }
+              }, _callee5, this);
+            }));
+          }
+        }, {
+          key: "filterData",
+          value: function filterData(event, type) {
+            this.loading = true;
+            var val = event.target.value;
+
+            if (event.target.value) {
+              if (type === "status") {
+                val = Number(val);
+              }
+
+              this.gridOption.filter[type] = val; // this.getData();
+            } else {
+              // this.getData();
+              delete this.gridOption.filter[type];
+            }
+
+            this.loading = false;
+          }
+        }, {
+          key: "getOrganizationDetail",
+          value: function getOrganizationDetail() {
+            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee6() {
+              var response;
+              return regeneratorRuntime.wrap(function _callee6$(_context6) {
+                while (1) {
+                  switch (_context6.prev = _context6.next) {
+                    case 0:
+                      this.loading = true;
+                      _context6.next = 3;
+                      return this.httpReqService.get("organizationByUniqueId", this.tokenData.organizationId);
+
+                    case 3:
+                      response = _context6.sent;
+
+                      if (response.items.length) {
+                        this.organiZationData = response.items[0];
+                      }
+
+                      this.loading = false;
+
+                    case 6:
+                    case "end":
+                      return _context6.stop();
+                  }
+                }
+              }, _callee6, this);
+            }));
+          }
+        }, {
+          key: "generateReport",
+          value: function generateReport() {
+            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee7() {
+              var formData, date, _date2, response;
+
+              return regeneratorRuntime.wrap(function _callee7$(_context7) {
+                while (1) {
+                  switch (_context7.prev = _context7.next) {
+                    case 0:
+                      this.loading = true;
+                      this.isDisplay = true;
+                      formData = this.filterForm.value;
+
+                      if (formData.fromDate) {
+                        formData.fromDate = new Date(formData.fromDate);
+                        date = formData.fromDate.toISOString().split("T")[0];
+                        this.gridOption.filter["dateRange"]["fromDate"] = date;
+                      }
+
+                      if (formData.toDate) {
+                        formData.toDate = new Date(formData.toDate);
+                        _date2 = formData.toDate.toISOString().split("T")[0];
+                        this.gridOption.filter["dateRange"]["toDate"] = _date2;
+                      }
+
+                      if (formData.userId) {
+                        this.gridOption.filter.userId = formData.userId;
+                      } else {
+                        delete this.gridOption.filter.userId;
+                      }
+
+                      if (formData.status == 0 || formData.status == 1) {
+                        this.gridOption.filter.status = Number(formData.status);
+                      } else {
+                        this.gridOption.filter.status = {
+                          $in: [0, 1]
+                        };
+                      } // this.gridOption.searchfields = ['scanType'];
+                      // this.gridOption.search = 'scan';
+                      // this.gridOption['isLookup'] = true;
+                      // if (this.tokenData.role !== Role.superAdmin) {
+                      //   this.gridOption.filter['organizationUniqueId'] = this.tokenData.organizationId;
+                      // }
+
+
+                      if (this.sort) {
+                        this.gridOption.sortField = this.sort.active;
+                        this.gridOption.sortOrder = this.sort.direction;
+                      } // this.gridOption.filter['user_id'] = this.tokenData._id;
+                      // this.gridOption.sortField = this.sort.active;
+                      // this.gridOption.sortOrder = this.sort.direction;
+
+
+                      this.gridOption.filter["user_id"] = this.tokenData.user._id;
+                      this.gridOption.filter["scanType"] = "scan";
+                      this.gridOption.filter["organizationUniqueId"] = this.tokenData.user.organizationId;
+                      _context7.next = 13;
+                      return this.httpReqService.post("scanHistory/list", this.gridOption, false);
+
+                    case 13:
+                      response = _context7.sent;
+                      this.data = response.items;
+                      this.dataSource = new _angular_material_table__WEBPACK_IMPORTED_MODULE_6__["MatTableDataSource"](this.data);
+                      this.resultsLength = response.totalCount;
+                      this.loading = false;
+
+                    case 18:
+                    case "end":
+                      return _context7.stop();
+                  }
+                }
+              }, _callee7, this);
+            }));
+          }
+        }, {
+          key: "getUserList",
+          value: function getUserList() {
+            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee8() {
+              var response;
+              return regeneratorRuntime.wrap(function _callee8$(_context8) {
+                while (1) {
+                  switch (_context8.prev = _context8.next) {
+                    case 0:
+                      this.loading = true;
+
+                      if (this.tokenData.role !== _services_role__WEBPACK_IMPORTED_MODULE_8__["Role"].superAdmin) {
+                        this.userGridOption.filter["organizationUniqueId"] = this.tokenData.user.organizationId;
+                      }
+
+                      this.userGridOption.filter["user_id"] = this.tokenData.user._id;
+                      _context8.next = 5;
+                      return this.httpReqService.post("users/list", this.userGridOption, false);
+
+                    case 5:
+                      response = _context8.sent;
+                      this.userListArr = response.items;
+                      this.loading = false;
+
+                    case 8:
+                    case "end":
+                      return _context8.stop();
+                  }
+                }
+              }, _callee8, this);
+            }));
+          }
+        }, {
+          key: "sortChange",
+          value: function sortChange() {
+            this.gridOption.sortField = this.sort.active;
+            this.gridOption.sortOrder = this.sort.direction;
+            this.generateReport();
+          }
+        }, {
+          key: "pageChange",
+          value: function pageChange() {
+            this.gridOption.limit = this.paginator.pageSize;
+            this.gridOption.skip = this.paginator.pageSize * this.paginator.pageIndex;
+            this.generateReport();
+          }
+        }, {
+          key: "selectLocation",
+          value: function selectLocation(data) {
+            var location = data.split(",");
+            this.selectedLocation["lat"] = Number(location[0]);
+            this.selectedLocation["lng"] = Number(location[1]);
+            var initialState = {
+              title: "Checkin Location",
+              list: this.selectedLocation
+            };
+            this.modalRef = this.modalService.show(_partial_modals_location_modal_location_modal_component__WEBPACK_IMPORTED_MODULE_9__["LocationModalComponent"], {
+              "class": "modal-xl modal-dialog-centered",
+              initialState: initialState,
+              backdrop: "static",
+              keyboard: false
+            });
+            this.modalRef.content.cancleButtonText = "Close";
+          }
+        }, {
+          key: "createPdf",
+          value: function createPdf() {
+            var data = {
+              header: this.head,
+              coloumn: this.displayedColumns,
+              data: this.data,
+              fileName: "check_in_report_",
+              organiZationData: this.organiZationData,
+              tokenData: this.tokenData,
+              title: "Check-In Report"
+            };
+
+            if (this.filterForm.value.fromDate) {
+              data["fromDate"] = this.datePipe.transform(this.filterForm.value.fromDate, "medium");
+            }
+
+            if (this.filterForm.value.toDate) {
+              data["toDate"] = this.datePipe.transform(this.filterForm.value.toDate, "medium");
+            }
+
+            this.reportService.createReport(data);
+          }
+        }]);
+
+        return CheckInComponent;
+      }();
+
+      CheckInComponent.ctorParameters = function () {
+        return [{
+          type: _angular_forms__WEBPACK_IMPORTED_MODULE_5__["FormBuilder"]
+        }, {
+          type: _services_http_req_service__WEBPACK_IMPORTED_MODULE_11__["HttpReqService"]
+        }, {
+          type: ngx_bootstrap_modal__WEBPACK_IMPORTED_MODULE_7__["BsModalService"]
+        }, {
+          type: _angular_common__WEBPACK_IMPORTED_MODULE_3__["DatePipe"]
+        }, {
+          type: _services_auth_service__WEBPACK_IMPORTED_MODULE_10__["AuthService"]
+        }, {
+          type: _services_report_service__WEBPACK_IMPORTED_MODULE_12__["ReportService"]
+        }];
+      };
+
+      CheckInComponent.propDecorators = {
+        paginator: [{
+          type: _angular_core__WEBPACK_IMPORTED_MODULE_4__["ViewChild"],
+          args: [_angular_material_paginator__WEBPACK_IMPORTED_MODULE_14__["MatPaginator"]]
+        }],
+        sort: [{
+          type: _angular_core__WEBPACK_IMPORTED_MODULE_4__["ViewChild"],
+          args: [_angular_material_sort__WEBPACK_IMPORTED_MODULE_13__["MatSort"]]
+        }]
+      };
+      CheckInComponent = Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"])([Object(_angular_core__WEBPACK_IMPORTED_MODULE_4__["Component"])({
+        selector: "app-check-in",
+        template: _raw_loader_check_in_component_html__WEBPACK_IMPORTED_MODULE_1__["default"],
+        encapsulation: _angular_core__WEBPACK_IMPORTED_MODULE_4__["ViewEncapsulation"].None,
+        providers: [_angular_common__WEBPACK_IMPORTED_MODULE_3__["DatePipe"]],
+        styles: [_check_in_component_scss__WEBPACK_IMPORTED_MODULE_2__["default"]]
+      })], CheckInComponent);
+      /***/
+    },
+
+    /***/
+    "MO1j":
+    /*!************************************************************!*\
+      !*** ./src/app/views/reports/log-in/log-in.component.scss ***!
+      \************************************************************/
+
+    /*! exports provided: default */
+
+    /***/
+    function MO1j(module, __webpack_exports__, __webpack_require__) {
+      "use strict";
+
+      __webpack_require__.r(__webpack_exports__);
+      /* harmony default export */
+
+
+      __webpack_exports__["default"] = "/* .bs-datepicker */\n.bs-datepicker {\n  display: flex;\n  align-items: stretch;\n  flex-flow: row wrap;\n  background: #fff;\n  box-shadow: 0 0 10px 0 #aaa;\n  position: relative;\n  z-index: 1;\n  /* button */\n  /* .bs-datepicker-head */\n  /* .bs-datepicker-body */\n  /* .current-timedate */\n  /* .bs-datepicker-multiple */\n  /* .bs-datepicker-btns */\n  /*.bs-datepicker-custom-range */\n  /* .bs-datepicker-predefined-btns */\n  /* .bs-datepicker-buttons */\n}\n.bs-datepicker:after {\n  clear: both;\n  content: \"\";\n  display: block;\n}\n.bs-datepicker bs-day-picker {\n  float: left;\n}\n.bs-datepicker button:hover,\n.bs-datepicker button:focus,\n.bs-datepicker button:active,\n.bs-datepicker input:hover,\n.bs-datepicker input:focus,\n.bs-datepicker input:active, .bs-datepicker-btns button:hover, .bs-datepicker-btns button:focus, .bs-datepicker-btns button:active, .bs-datepicker-predefined-btns button:active, .bs-datepicker-predefined-btns button:focus {\n  outline: none;\n}\n.bs-datepicker-head {\n  min-width: 270px;\n  height: 50px;\n  padding: 10px;\n  border-radius: 3px 3px 0 0;\n  text-align: justify;\n  /* .bs-datepicker-head button */\n}\n.bs-datepicker-head:after {\n  content: \"\";\n  display: inline-block;\n  vertical-align: top;\n  width: 100%;\n}\n.bs-datepicker-head button {\n  display: inline-block;\n  vertical-align: top;\n  padding: 0;\n  height: 30px;\n  line-height: 30px;\n  border: 0;\n  background: transparent;\n  text-align: center;\n  cursor: pointer;\n  color: #fff;\n  transition: 0.3s;\n}\n.bs-datepicker-head button[disabled], .bs-datepicker-head button[disabled]:hover, .bs-datepicker-head button[disabled]:active {\n  background: rgba(221, 221, 221, 0.3);\n  color: #f5f5f5;\n  cursor: not-allowed;\n}\n.bs-datepicker-head button.next, .bs-datepicker-head button.previous {\n  border-radius: 50%;\n  width: 30px;\n  height: 30px;\n}\n.bs-datepicker-head button.next span, .bs-datepicker-head button.previous span {\n  font-size: 28px;\n  line-height: 1;\n  display: inline-block;\n  position: relative;\n  height: 100%;\n  width: 100%;\n  border-radius: 50%;\n}\n.bs-datepicker-head button.current {\n  border-radius: 15px;\n  max-width: 155px;\n  padding: 0 13px;\n}\n.bs-datepicker-head button:hover {\n  background-color: rgba(0, 0, 0, 0.1);\n}\n.bs-datepicker-head button:active {\n  background-color: rgba(0, 0, 0, 0.2);\n}\n.bs-datepicker-body {\n  padding: 10px;\n  border-radius: 0 0 3px 3px;\n  min-height: 232px;\n  min-width: 278px;\n  border: 1px solid #e9edf0;\n  /* .bs-datepicker-body table */\n}\n.bs-datepicker-body .days.weeks {\n  position: relative;\n  z-index: 1;\n}\n.bs-datepicker-body table {\n  width: 100%;\n  border-collapse: separate;\n  border-spacing: 0;\n  /* .bs-datepicker-body table.days */\n  /* .bs-datepicker-body table.weeks */\n}\n.bs-datepicker-body table th {\n  font-size: 13px;\n  color: #9aaec1;\n  font-weight: 400;\n  text-align: center;\n}\n.bs-datepicker-body table td {\n  color: #54708b;\n  text-align: center;\n  position: relative;\n  padding: 0;\n}\n.bs-datepicker-body table td span {\n  display: block;\n  margin: 0 auto;\n  font-size: 13px;\n  border-radius: 50%;\n  /*z-index: 1;*/\n  -moz-user-select: none;\n  -webkit-user-select: none;\n  -ms-user-select: none;\n}\n.bs-datepicker-body table td:not(.disabled):not(.week) span:not(.disabled):not(.is-other-month) {\n  cursor: pointer;\n}\n.bs-datepicker-body table td.is-highlighted:not(.disabled):not(.selected) span,\n.bs-datepicker-body table td span.is-highlighted:not(.disabled):not(.selected) {\n  background-color: #e9edf0;\n  transition: 0s;\n}\n.bs-datepicker-body table td.is-active-other-month:not(.disabled):not(.selected) span,\n.bs-datepicker-body table td span.is-active-other-month:not(.disabled):not(.selected) {\n  background-color: #e9edf0;\n  transition: 0s;\n  cursor: pointer;\n}\n.bs-datepicker-body table td span.disabled, .bs-datepicker-body table td.disabled span {\n  color: #9aaec1;\n}\n.bs-datepicker-body table td span.selected, .bs-datepicker-body table td.selected span {\n  color: #fff;\n}\n.bs-datepicker-body table td span.is-other-month, .bs-datepicker-body table td.is-other-month span {\n  color: rgba(0, 0, 0, 0.25);\n}\n.bs-datepicker-body table td.active {\n  position: relative;\n}\n.bs-datepicker-body table td.active.select-start:before {\n  left: 35%;\n}\n.bs-datepicker-body table td.active.select-end:before {\n  left: -85%;\n}\n.bs-datepicker-body table td span.active.select-start:after,\n.bs-datepicker-body table td span.active.select-end:after, .bs-datepicker-body table td.active.select-start span:after, .bs-datepicker-body table td.active.select-end span:after {\n  content: \"\";\n  display: block;\n  position: absolute;\n  z-index: -1;\n  width: 100%;\n  height: 100%;\n  transition: 0.3s;\n  top: 0;\n  border-radius: 50%;\n}\n.bs-datepicker-body table td:before,\n.bs-datepicker-body table td span:before {\n  content: \"\";\n  display: block;\n  position: absolute;\n  z-index: -1;\n  top: 6px;\n  bottom: 6px;\n  left: -3px;\n  right: -2px;\n  box-sizing: content-box;\n  background: transparent;\n}\n.bs-datepicker-body table td.active.select-start + td.active:before {\n  left: -20%;\n}\n.bs-datepicker-body table td:last-child.active:before {\n  border-radius: 0 3px 3px 0;\n  width: 125%;\n  left: -25%;\n}\n.bs-datepicker-body table td span[class*=select-], .bs-datepicker-body table td[class*=select-] span {\n  border-radius: 50%;\n  color: #fff;\n}\n.bs-datepicker-body table.days td.active:not(.select-start):before, .bs-datepicker-body table.days td.in-range:not(.select-start):before,\n.bs-datepicker-body table.days span.active:not(.select-start):before,\n.bs-datepicker-body table.days span.in-range:not(.select-start):before {\n  background: #e9edf0;\n}\n.bs-datepicker-body table.days span {\n  width: 32px;\n  height: 32px;\n  line-height: 32px;\n}\n.bs-datepicker-body table.days span.select-start {\n  z-index: 2;\n}\n.bs-datepicker-body table.days span.is-highlighted.in-range:before {\n  right: 3px;\n  left: 0;\n}\n.bs-datepicker-body table.days span.in-range.select-end:before {\n  right: 4px;\n  left: 0;\n}\n.bs-datepicker-body table.days td.select-start + td.select-end:before, .bs-datepicker-body table.days td.select-start + td.is-highlighted:before, .bs-datepicker-body table.days td.active + td.is-highlighted:before, .bs-datepicker-body table.days td.active + td.select-end:before, .bs-datepicker-body table.days td.in-range + td.is-highlighted:before, .bs-datepicker-body table.days td.in-range + td.select-end:before {\n  background: #e9edf0;\n  width: 100%;\n}\n.bs-datepicker-body table.weeks tr td:nth-child(2).active:before {\n  border-radius: 3px 0 0 3px;\n  left: 0;\n  width: 100%;\n}\n.bs-datepicker-body table:not(.weeks) tr td:first-child:before {\n  border-radius: 3px 0 0 3px;\n}\n.bs-datepicker-body table.years td span {\n  width: 46px;\n  height: 46px;\n  line-height: 45px;\n  margin: 0 auto;\n}\n.bs-datepicker-body table.years tr:not(:last-child) td span {\n  margin-bottom: 8px;\n}\n.bs-datepicker-body table.months td {\n  height: 52px;\n}\n.bs-datepicker-body table.months td span {\n  padding: 6px;\n  border-radius: 15px;\n}\n.bs-datepicker .current-timedate {\n  color: #54708b;\n  font-size: 15px;\n  text-align: center;\n  height: 30px;\n  line-height: 30px;\n  border-radius: 20px;\n  border: 1px solid #e9edf0;\n  margin-bottom: 10px;\n  cursor: pointer;\n  text-transform: uppercase;\n  -moz-user-select: none;\n  -webkit-user-select: none;\n  -ms-user-select: none;\n}\n.bs-datepicker .current-timedate span:not(:empty):before {\n  content: \"\";\n  width: 15px;\n  height: 16px;\n  display: inline-block;\n  margin-right: 4px;\n  vertical-align: text-bottom;\n  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAQCAYAAADJViUEAAABMklEQVQoU9VTwW3CQBCcOUgBtEBKSAukAnBKME+wFCAlYIhk8sQlxFABtJAScAsuAPBEewYcxCP8ouxrPDsza61uiVN1o6RNHD4htSCmq49RfO71BvMJqBBkITRf1kmUW49nQRC9h1I5AZlBClaL8aP1fKgOOxCx8aSLs+Q19eZuNO8QmPqJRtDFguy7OAcDbJPs+/BKVPDIPrvD2ZJgWAmVe7O0rI0Vqs1seyWUXpuJoppYCa5L+U++NpNPkr5OE2oMdARsb3gykJT5ydZcL8Z9Ww60nxg2LhjON9li9OwXZzo+xLbp3nC2s9CL2RrueGyVrgwNm8HpsCzZ9EEW6kqXlo1GQe03FzP/7W8Hl0dBtu7Bf7zt6mIwvX1RvzDCm7+q3mAW0Dl/GPdUCeXrZLT9BrDrGkm4qlPvAAAAAElFTkSuQmCC);\n}\n.bs-datepicker-multiple {\n  border-radius: 4px 0 0 4px;\n}\n.bs-datepicker-multiple + .bs-datepicker-multiple {\n  margin-left: 10px;\n}\n.bs-datepicker-multiple .bs-datepicker {\n  box-shadow: none;\n  position: relative;\n}\n.bs-datepicker-multiple .bs-datepicker:not(:last-child) {\n  padding-right: 10px;\n}\n.bs-datepicker-multiple .bs-datepicker + .bs-datepicker:after {\n  content: \"\";\n  display: block;\n  width: 14px;\n  height: 10px;\n  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAKCAYAAABrGwT5AAAA1ElEQVQoU42RsQrCUAxF77VuDu7O4oMWW//BURBBpZvgKk4uIrjoqKOTf+DopIO4uYggtFTfw3+pkQqCW1/G5J7kJiFy4m5MxUlxAzgIPHX+lzMPzupRYlYgxiR7vqsOP8YKzsTx0yxFMCUZ+q7aZzlr+OvgoWcAFyAHgat2jLWu48252DdqAihDJGSSJNUUxYmQjs3+hPQBlAh2rG2LCOPnaw3IiGDX99TRCs7ASJsNhUOA7d/LcuHvRG22FIZvsNXw1MX6VZExCilOQKEfeLXr/10+aC9Ho7arh7oAAAAASUVORK5CYII=);\n  position: absolute;\n  top: 25px;\n  left: -8px;\n}\n.bs-datepicker-multiple .bs-datepicker .left {\n  float: left;\n}\n.bs-datepicker-multiple .bs-datepicker .right {\n  float: right;\n}\n.bs-datepicker-container {\n  padding: 15px;\n}\n.bs-datepicker .bs-media-container {\n  display: flex;\n}\n@media (max-width: 768px) {\n  .bs-datepicker .bs-media-container {\n    flex-direction: column;\n  }\n}\n.bs-datepicker-custom-range {\n  padding: 15px;\n  background: #eee;\n}\n.bs-datepicker-predefined-btns button {\n  width: 100%;\n  display: block;\n  height: 30px;\n  background-color: #9aaec1;\n  border-radius: 4px;\n  color: #fff;\n  border: 0;\n  margin-bottom: 10px;\n  padding: 0 18px;\n  text-align: left;\n  transition: 0.3s;\n}\n.bs-datepicker-predefined-btns button:hover {\n  background-color: #54708b;\n}\n.bs-datepicker-buttons {\n  display: flex;\n  flex-flow: row wrap;\n  justify-content: flex-end;\n  padding-top: 10px;\n  border-top: 1px solid #e9edf0;\n}\n.bs-datepicker-buttons .btn-default {\n  margin-left: 10px;\n}\n.bs-datepicker-buttons .btn-today-wrapper {\n  display: flex;\n  flex-flow: row wrap;\n}\n.bs-datepicker-buttons .clear-right,\n.bs-datepicker-buttons .today-right {\n  flex-grow: 0;\n}\n.bs-datepicker-buttons .clear-left,\n.bs-datepicker-buttons .today-left {\n  flex-grow: 1;\n}\n.bs-datepicker-buttons .clear-center,\n.bs-datepicker-buttons .today-center {\n  flex-grow: 0.5;\n}\n/* .bs-timepicker */\n.bs-timepicker-container {\n  padding: 10px 0;\n}\n.bs-timepicker-label {\n  color: #54708b;\n  margin-bottom: 10px;\n}\n.bs-timepicker-controls {\n  display: inline-block;\n  vertical-align: top;\n  margin-right: 10px;\n}\n.bs-timepicker-controls button {\n  width: 20px;\n  height: 20px;\n  border-radius: 50%;\n  border: 0;\n  background-color: #e9edf0;\n  color: #54708b;\n  font-size: 16px;\n  font-weight: 700;\n  vertical-align: middle;\n  line-height: 0;\n  padding: 0;\n  transition: 0.3s;\n}\n.bs-timepicker-controls button:hover {\n  background-color: #d5dadd;\n}\n.bs-timepicker-controls input {\n  width: 35px;\n  height: 25px;\n  border-radius: 13px;\n  text-align: center;\n  border: 1px solid #e9edf0;\n}\n.bs-timepicker .switch-time-format {\n  text-transform: uppercase;\n  min-width: 54px;\n  height: 25px;\n  border-radius: 20px;\n  border: 1px solid #e9edf0;\n  background: #fff;\n  color: #54708b;\n  font-size: 13px;\n}\n.bs-timepicker .switch-time-format img {\n  vertical-align: initial;\n  margin-left: 4px;\n}\nbs-datepicker-container,\nbs-daterangepicker-container {\n  z-index: 1080;\n}\n/* screen size < 1024px */\n@media (max-width: 768px) {\n  .bs-datepicker-multiple {\n    display: flex;\n  }\n  .bs-datepicker-multiple + .bs-datepicker-multiple {\n    margin-top: 10px;\n    margin-left: 0;\n  }\n}\n/* theming */\n.theme-default .bs-datepicker-head {\n  background-color: #777;\n}\n.theme-default .btn-today-wrapper .btn-success, .theme-default .btn-clear-wrapper .btn-success {\n  background-color: #777;\n  border-color: #777;\n}\n.theme-default .btn-today-wrapper .btn-success:not(:disabled):not(.disabled):active:focus, .theme-default .btn-clear-wrapper .btn-success:not(:disabled):not(.disabled):active:focus {\n  box-shadow: none;\n}\n.theme-default .btn-today-wrapper .btn-success:focus, .theme-default .btn-clear-wrapper .btn-success:focus {\n  box-shadow: none;\n}\n.theme-default .btn-today-wrapper .btn-success:not(:disabled):not(.disabled):active, .theme-default .btn-clear-wrapper .btn-success:not(:disabled):not(.disabled):active {\n  background-color: #616161;\n  border-color: #616161;\n}\n.theme-default .btn-today-wrapper .btn-success:hover, .theme-default .btn-clear-wrapper .btn-success:hover {\n  background-color: #6F6E6E;\n  border-color: #6F6E6E;\n}\n.theme-default .bs-datepicker-predefined-btns button.selected {\n  background-color: #777;\n}\n.theme-default .bs-datepicker-body table td span.selected, .theme-default .bs-datepicker-body table td.selected span,\n.theme-default .bs-datepicker-body table td span[class*=select-]:after, .theme-default .bs-datepicker-body table td[class*=select-] span:after {\n  background-color: #777;\n}\n.theme-default .bs-datepicker-body table td.week span {\n  color: #777;\n}\n.theme-default .bs-datepicker-body table td.active-week span:hover {\n  cursor: pointer;\n  background-color: #777;\n  color: #fff;\n  opacity: 0.5;\n  transition: 0s;\n}\n.theme-green .bs-datepicker-head {\n  background-color: #5cb85c;\n}\n.theme-green .btn-today-wrapper .btn-success, .theme-green .btn-clear-wrapper .btn-success {\n  background-color: #5cb85c;\n  border-color: #5cb85c;\n}\n.theme-green .btn-today-wrapper .btn-success:not(:disabled):not(.disabled):active:focus, .theme-green .btn-clear-wrapper .btn-success:not(:disabled):not(.disabled):active:focus {\n  box-shadow: none;\n}\n.theme-green .btn-today-wrapper .btn-success:focus, .theme-green .btn-clear-wrapper .btn-success:focus {\n  box-shadow: none;\n}\n.theme-green .btn-today-wrapper .btn-success:not(:disabled):not(.disabled):active, .theme-green .btn-clear-wrapper .btn-success:not(:disabled):not(.disabled):active {\n  background-color: #1e7e34;\n  border-color: #1e7e34;\n}\n.theme-green .btn-today-wrapper .btn-success:hover, .theme-green .btn-clear-wrapper .btn-success:hover {\n  background-color: #218838;\n  border-color: #218838;\n}\n.theme-green .bs-datepicker-predefined-btns button.selected {\n  background-color: #5cb85c;\n}\n.theme-green .bs-datepicker-body table td span.selected, .theme-green .bs-datepicker-body table td.selected span,\n.theme-green .bs-datepicker-body table td span[class*=select-]:after, .theme-green .bs-datepicker-body table td[class*=select-] span:after {\n  background-color: #5cb85c;\n}\n.theme-green .bs-datepicker-body table td.week span {\n  color: #5cb85c;\n}\n.theme-green .bs-datepicker-body table td.active-week span:hover {\n  cursor: pointer;\n  background-color: #5cb85c;\n  color: #fff;\n  opacity: 0.5;\n  transition: 0s;\n}\n.theme-blue .bs-datepicker-head {\n  background-color: #5bc0de;\n}\n.theme-blue .btn-today-wrapper .btn-success, .theme-blue .btn-clear-wrapper .btn-success {\n  background-color: #5bc0de;\n  border-color: #5bc0de;\n}\n.theme-blue .btn-today-wrapper .btn-success:not(:disabled):not(.disabled):active:focus, .theme-blue .btn-clear-wrapper .btn-success:not(:disabled):not(.disabled):active:focus {\n  box-shadow: none;\n}\n.theme-blue .btn-today-wrapper .btn-success:focus, .theme-blue .btn-clear-wrapper .btn-success:focus {\n  box-shadow: none;\n}\n.theme-blue .btn-today-wrapper .btn-success:not(:disabled):not(.disabled):active, .theme-blue .btn-clear-wrapper .btn-success:not(:disabled):not(.disabled):active {\n  background-color: #2AA8CD;\n  border-color: #2AA8CD;\n}\n.theme-blue .btn-today-wrapper .btn-success:hover, .theme-blue .btn-clear-wrapper .btn-success:hover {\n  background-color: #3AB3D7;\n  border-color: #3AB3D7;\n}\n.theme-blue .bs-datepicker-predefined-btns button.selected {\n  background-color: #5bc0de;\n}\n.theme-blue .bs-datepicker-body table td span.selected, .theme-blue .bs-datepicker-body table td.selected span,\n.theme-blue .bs-datepicker-body table td span[class*=select-]:after, .theme-blue .bs-datepicker-body table td[class*=select-] span:after {\n  background-color: #5bc0de;\n}\n.theme-blue .bs-datepicker-body table td.week span {\n  color: #5bc0de;\n}\n.theme-blue .bs-datepicker-body table td.active-week span:hover {\n  cursor: pointer;\n  background-color: #5bc0de;\n  color: #fff;\n  opacity: 0.5;\n  transition: 0s;\n}\n.theme-dark-blue .bs-datepicker-head {\n  background-color: #337ab7;\n}\n.theme-dark-blue .btn-today-wrapper .btn-success, .theme-dark-blue .btn-clear-wrapper .btn-success {\n  background-color: #337ab7;\n  border-color: #337ab7;\n}\n.theme-dark-blue .btn-today-wrapper .btn-success:not(:disabled):not(.disabled):active:focus, .theme-dark-blue .btn-clear-wrapper .btn-success:not(:disabled):not(.disabled):active:focus {\n  box-shadow: none;\n}\n.theme-dark-blue .btn-today-wrapper .btn-success:focus, .theme-dark-blue .btn-clear-wrapper .btn-success:focus {\n  box-shadow: none;\n}\n.theme-dark-blue .btn-today-wrapper .btn-success:not(:disabled):not(.disabled):active, .theme-dark-blue .btn-clear-wrapper .btn-success:not(:disabled):not(.disabled):active {\n  background-color: #266498;\n  border-color: #266498;\n}\n.theme-dark-blue .btn-today-wrapper .btn-success:hover, .theme-dark-blue .btn-clear-wrapper .btn-success:hover {\n  background-color: #2C6FA9;\n  border-color: #2C6FA9;\n}\n.theme-dark-blue .bs-datepicker-predefined-btns button.selected {\n  background-color: #337ab7;\n}\n.theme-dark-blue .bs-datepicker-body table td span.selected, .theme-dark-blue .bs-datepicker-body table td.selected span,\n.theme-dark-blue .bs-datepicker-body table td span[class*=select-]:after, .theme-dark-blue .bs-datepicker-body table td[class*=select-] span:after {\n  background-color: #337ab7;\n}\n.theme-dark-blue .bs-datepicker-body table td.week span {\n  color: #337ab7;\n}\n.theme-dark-blue .bs-datepicker-body table td.active-week span:hover {\n  cursor: pointer;\n  background-color: #337ab7;\n  color: #fff;\n  opacity: 0.5;\n  transition: 0s;\n}\n.theme-red .bs-datepicker-head {\n  background-color: #d9534f;\n}\n.theme-red .btn-today-wrapper .btn-success, .theme-red .btn-clear-wrapper .btn-success {\n  background-color: #d9534f;\n  border-color: #d9534f;\n}\n.theme-red .btn-today-wrapper .btn-success:not(:disabled):not(.disabled):active:focus, .theme-red .btn-clear-wrapper .btn-success:not(:disabled):not(.disabled):active:focus {\n  box-shadow: none;\n}\n.theme-red .btn-today-wrapper .btn-success:focus, .theme-red .btn-clear-wrapper .btn-success:focus {\n  box-shadow: none;\n}\n.theme-red .btn-today-wrapper .btn-success:not(:disabled):not(.disabled):active, .theme-red .btn-clear-wrapper .btn-success:not(:disabled):not(.disabled):active {\n  background-color: #D23531;\n  border-color: #D23531;\n}\n.theme-red .btn-today-wrapper .btn-success:hover, .theme-red .btn-clear-wrapper .btn-success:hover {\n  background-color: #E33732;\n  border-color: #E33732;\n}\n.theme-red .bs-datepicker-predefined-btns button.selected {\n  background-color: #d9534f;\n}\n.theme-red .bs-datepicker-body table td span.selected, .theme-red .bs-datepicker-body table td.selected span,\n.theme-red .bs-datepicker-body table td span[class*=select-]:after, .theme-red .bs-datepicker-body table td[class*=select-] span:after {\n  background-color: #d9534f;\n}\n.theme-red .bs-datepicker-body table td.week span {\n  color: #d9534f;\n}\n.theme-red .bs-datepicker-body table td.active-week span:hover {\n  cursor: pointer;\n  background-color: #d9534f;\n  color: #fff;\n  opacity: 0.5;\n  transition: 0s;\n}\n.theme-orange .bs-datepicker-head {\n  background-color: #f0ad4e;\n}\n.theme-orange .btn-today-wrapper .btn-success, .theme-orange .btn-clear-wrapper .btn-success {\n  background-color: #f0ad4e;\n  border-color: #f0ad4e;\n}\n.theme-orange .btn-today-wrapper .btn-success:not(:disabled):not(.disabled):active:focus, .theme-orange .btn-clear-wrapper .btn-success:not(:disabled):not(.disabled):active:focus {\n  box-shadow: none;\n}\n.theme-orange .btn-today-wrapper .btn-success:focus, .theme-orange .btn-clear-wrapper .btn-success:focus {\n  box-shadow: none;\n}\n.theme-orange .btn-today-wrapper .btn-success:not(:disabled):not(.disabled):active, .theme-orange .btn-clear-wrapper .btn-success:not(:disabled):not(.disabled):active {\n  background-color: #ED9C29;\n  border-color: #ED9C29;\n}\n.theme-orange .btn-today-wrapper .btn-success:hover, .theme-orange .btn-clear-wrapper .btn-success:hover {\n  background-color: #FFAC35;\n  border-color: #FFAC35;\n}\n.theme-orange .bs-datepicker-predefined-btns button.selected {\n  background-color: #f0ad4e;\n}\n.theme-orange .bs-datepicker-body table td span.selected, .theme-orange .bs-datepicker-body table td.selected span,\n.theme-orange .bs-datepicker-body table td span[class*=select-]:after, .theme-orange .bs-datepicker-body table td[class*=select-] span:after {\n  background-color: #f0ad4e;\n}\n.theme-orange .bs-datepicker-body table td.week span {\n  color: #f0ad4e;\n}\n.theme-orange .bs-datepicker-body table td.active-week span:hover {\n  cursor: pointer;\n  background-color: #f0ad4e;\n  color: #fff;\n  opacity: 0.5;\n  transition: 0s;\n}\n.c-dark-theme ~ * .bs-datepicker {\n  background-color: #23242d !important;\n}\n.c-dark-theme ~ * .bs-datepicker .bs-datepicker-head button {\n  color: black !important;\n}\n.c-dark-theme ~ * .bs-datepicker .bs-datepicker-body td {\n  color: #9d9fb2 !important;\n}\n.c-dark-theme ~ * .bs-datepicker .bs-datepicker-body {\n  border-color: #393b4a !important;\n}\n.c-dark-theme ~ * .bs-datepicker .bs-datepicker-body table td.disabled span,\n.c-dark-theme ~ * .bs-datepicker .bs-datepicker-body table td span.disabled {\n  color: #9d9fb2 !important;\n}\n.c-dark-theme ~ * .bs-datepicker .bs-datepicker-body table.days span.in-range:not(.select-start):before {\n  background-color: black !important;\n}\n.c-dark-theme ~ * .bs-datepicker .bs-datepicker-buttons {\n  border-top-color: #393b4a !important;\n}\n:host c-input-group-prepend c-input-group-text c-icon:only-child {\n  display: flex;\n}\n:host c-input-group-append c-input-group-text c-icon:only-child {\n  display: flex;\n}\n.theme-dark-blue .bs-datepicker-head, .custom-today-class, .theme-dark-blue .bs-datepicker-body table td span.selected, .theme-dark-blue .bs-datepicker-body table td.selected span, .theme-dark-blue .bs-datepicker-body table td span[class*=select-]:after, .theme-dark-blue .bs-datepicker-body table td[class*=select-] span:after {\n  background-color: #257796 !important;\n  color: white !important;\n}\n.theme-dark-blue .bs-datepicker-body table td.week span {\n  color: #3C4B64 !important;\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uL25vZGVfbW9kdWxlcy9uZ3gtYm9vdHN0cmFwL2RhdGVwaWNrZXIvYnMtZGF0ZXBpY2tlci5zY3NzIiwiLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vbm9kZV9tb2R1bGVzL25neC1ib290c3RyYXAvZGF0ZXBpY2tlci91dGlscy9zY3NzL3ZhcmlhYmxlcy5zY3NzIiwiLi4vLi4vLi4vLi4vLi4vbG9nLWluLmNvbXBvbmVudC5zY3NzIiwiLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vbm9kZV9tb2R1bGVzL25neC1ib290c3RyYXAvZGF0ZXBpY2tlci91dGlscy9zY3NzL21peGlucy5zY3NzIiwiLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vc2Nzcy92ZW5kb3JzL2JzLWRhdGVwaWNrZXIvZGF0ZXBpY2tlci5zY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUdBLG1CQUFBO0FBQ0E7RUFDRSxhQUFBO0VBQ0Esb0JBQUE7RUFDQSxtQkFBQTtFQUNBLGdCQ1JnQjtFRFNoQiwyQkFBQTtFQUNBLGtCQUFBO0VBQ0EsVUFBQTtFQVlBLFdBQUE7RUFlQSx3QkFBQTtFQXlFQSx3QkFBQTtFQXNPQSxzQkFBQTtFQTJCQSw0QkFBQTtFQXFDQSx3QkFBQTtFQVlBLCtCQUFBO0VBTUEsbUNBQUE7RUFxQkEsMkJBQUE7QUUxYUY7QUZMRTtFQUNFLFdBQUE7RUFDQSxXQUFBO0VBQ0EsY0FBQTtBRU9KO0FGSkU7RUFDRSxXQUFBO0FFTUo7QUZGRTs7Ozs7O0VBV0UsYUFBQTtBRURKO0FGS0U7RUFDRSxnQkFBQTtFQUNBLFlBQUE7RUFDQSxhQUFBO0VBQ0EsMEJBQUE7RUFDQSxtQkFBQTtFQVNBLCtCQUFBO0FFWEo7QUZJSTtFQUNFLFdBQUE7RUFDQSxxQkFBQTtFQUNBLG1CQUFBO0VBQ0EsV0FBQTtBRUZOO0FGTUk7RUFDRSxxQkFBQTtFQUNBLG1CQUFBO0VBQ0EsVUFBQTtFQUNBLFlBQUE7RUFD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QkFBQTtBRCtjVjtBQzVjTTtFQUNFLGdCQUFBO0FEOGNSO0FDeGNRO0VBQ0UseUJGVVc7RUVUWCxxQkZTVztBQ2ljckI7QUN2Y1E7RUFDRSx5QkZGVTtFRUdWLHFCRkhVO0FDNGNwQjtBQzVYVTtFQUNFLHlCRnBFQztBQ2tjYjtBQ3RYVTs7RUFJRSx5QkZoRkM7QUNzY2I7QUNuWFU7RUFDRSxjRnBGQztBQ3ljYjtBQ2xYVTtFQUNFLGVBQUE7RUFDQSx5QkZ6RkM7RUUwRkQsV0YvSE07RUVnSU4sWUFBQTtFQUNBLGNBQUE7QURvWFo7QUN0Zkk7RUFDRSx5QkZxQ087QUNvZGI7QUNyZk07RUFDRSx5QkZnQ0s7RUUvQkwscUJGK0JLO0FDd2RiO0FDcGZRO0VBQ0UsZ0JBQUE7QURzZlY7QUNuZk07RUFDRSxnQkFBQTtBRHFmUjtBQ2plUTtFQUNFLHlCRkhVO0VFSVYscUJGSlU7QUN1ZXBCO0FDaGVRO0VBQ0UseUJGZlM7RUVnQlQscUJGaEJTO0FDa2ZuQjtBQ25hVTtFQUNFLHlCRnBFQztBQ3llYjtBQzdaVTs7RUFJRSx5QkZoRkM7QUM2ZWI7QUMxWlU7RUFDRSxjRnBGQztBQ2dmYjtBQ3paVTtFQUNFLGVBQUE7RUFDQSx5QkZ6RkM7RUUwRkQsV0YvSE07RUVnSU4sWUFBQTtFQUNBLGNBQUE7QUQyWlo7QUM3aEJJO0VBQ0UseUJGcUNPO0FDMmZiO0FDNWhCTTtFQUNFLHlCRmdDSztFRS9CTCxxQkYrQks7QUMrZmI7QUMzaEJRO0VBQ0UsZ0JBQUE7QUQ2aEJWO0FDMWhCTTtFQUNFLGdCQUFBO0FENGhCUjtBQzFmUTtFQUNFLHlCRmhCZTtFRWlCZixxQkZqQmU7QUM2Z0J6QjtBQ3pmUTtFQUNFLHlCRjVCYztFRTZCZCxxQkY3QmM7QUN3aEJ4QjtBQzFjVTtFQUNFLHlCRnBFQztBQ2doQmI7QUNwY1U7O0VBSUUseUJGaEZDO0FDb2hCYjtBQ2pjVTtFQUNFLGNGcEZDO0FDdWhCYjtBQ2hjVTtFQUNFLGVBQUE7RUFDQSx5QkZ6RkM7RUUwRkQsV0YvSE07RUVnSU4sWUFBQTtFQUNBLGNBQUE7QURrY1o7QUNwa0JJO0VBQ0UseUJGcUNPO0FDa2lCYjtBQ25rQk07RUFDRSx5QkZnQ0s7RUUvQkwscUJGK0JLO0FDc2lCYjtBQ2xrQlE7RUFDRSxnQkFBQTtBRG9rQlY7QUNqa0JNO0VBQ0UsZ0JBQUE7QURta0JSO0FDcmdCUTtFQUNFLHlCRjFDUztFRTJDVCxxQkYzQ1M7QUNrakJuQjtBQ3BnQlE7RUFDRSx5QkZ0RFE7RUV1RFIscUJGdkRRO0FDNmpCbEI7QUNqZlU7RUFDRSx5QkZwRUM7QUN1akJiO0FDM2VVOztFQUlFLHlCRmhGQztBQzJqQmI7QUN4ZVU7RUFDRSxjRnBGQztBQzhqQmI7QUN2ZVU7RUFDRSxlQUFBO0VBQ0EseUJGekZDO0VFMEZELFdGL0hNO0VFZ0lOLFlBQUE7RUFDQSxjQUFBO0FEeWVaO0FDM21CSTtFQUNFLHlCRnFDTztBQ3lrQmI7QUMxbUJNO0VBQ0UseUJGZ0NLO0VFL0JMLHFCRitCSztBQzZrQmI7QUN6bUJRO0VBQ0UsZ0JBQUE7QUQybUJWO0FDeG1CTTtFQUNFLGdCQUFBO0FEMG1CUjtBQzFqQlE7RUFDRSx5QkY3Qlk7RUU4QloscUJGOUJZO0FDMGxCdEI7QUN6akJRO0VBQ0UseUJGekNXO0VFMENYLHFCRjFDVztBQ3FtQnJCO0FDeGhCVTtFQUNFLHlCRnBFQztBQzhsQmI7QUNsaEJVOztFQUlFLHlCRmhGQztBQ2ttQmI7QUMvZ0JVO0VBQ0UsY0ZwRkM7QUNxbUJiO0FDOWdCVTtFQUNFLGVBQUE7RUFDQSx5QkZ6RkM7RUUwRkQsV0YvSE07RUVnSU4sWUFBQTtFQUNBLGNBQUE7QURnaEJaO0FFcHBCQTtFQUNFLG9DQUFBO0FGdXBCRjtBRXRwQkU7RUFDRSx1QkFBQTtBRndwQko7QUV0cEJFO0VBQ0UseUJBQUE7QUZ3cEJKO0FFdHBCRTtFQUNFLGdDQUFBO0FGd3BCSjtBRXRwQkU7O0VBRUUseUJBQUE7QUZ3cEJKO0FFdHBCRTtFQUNFLGtDQUFBO0FGd3BCSjtBRXRwQkU7RUFDRSxvQ0FBQTtBRndwQko7QUF4cUJFO0VBQ0UsYUFBQTtBQTJxQko7QUF0cUJFO0VBQ0UsYUFBQTtBQXlxQko7QUF0cUJBO0VBQ0ksb0NBQUE7RUFDQSx1QkFBQTtBQXlxQko7QUF2cUJBO0VBQ0sseUJBQUE7QUEwcUJMIiwiZmlsZSI6ImxvZy1pbi5jb21wb25lbnQuc2NzcyIsInNvdXJjZXNDb250ZW50IjpbIkBpbXBvcnQgJ3V0aWxzL3Njc3MvdmFyaWFibGVzJztcbkBpbXBvcnQgJ3V0aWxzL3Njc3MvbWl4aW5zJztcblxuLyogLmJzLWRhdGVwaWNrZXIgKi9cbi5icy1kYXRlcGlja2VyIHtcbiAgZGlzcGxheTogZmxleDtcbiAgYWxpZ24taXRlbXM6IHN0cmV0Y2g7XG4gIGZsZXgtZmxvdzogcm93IHdyYXA7XG4gIGJhY2tncm91bmQ6ICRtYWluLWJnO1xuICBib3gtc2hhZG93OiAwIDAgMTBweCAwICRtYWluLWJveC1zaGFkb3c7XG4gIHBvc2l0aW9uOiByZWxhdGl2ZTtcbiAgei1pbmRleDogMTtcblxuICAmOmFmdGVyIHtcbiAgICBjbGVhcjogYm90aDtcbiAgICBjb250ZW50OiAnJztcbiAgICBkaXNwbGF5OiBibG9jaztcbiAgfVxuXG4gIGJzLWRheS1waWNrZXIge1xuICAgIGZsb2F0OiBsZWZ0O1xuICB9XG5cbiAgLyogYnV0dG9uICovXG4gIGJ1dHRvbjpob3ZlcixcbiAgYnV0dG9uOmZvY3VzLFxuICBidXR0b246YWN0aXZlLFxuICBpbnB1dDpob3ZlcixcbiAgaW5wdXQ6Zm9jdXMsXG4gIGlucHV0OmFjdGl2ZSxcbiAgJi1idG5zIGJ1dHRvbjpob3ZlcixcbiAgJi1idG5zIGJ1dHRvbjpmb2N1cyxcbiAgJi1idG5zIGJ1dHRvbjphY3RpdmUsXG4gICYtcHJlZGVmaW5lZC1idG5zIGJ1dHRvbjphY3RpdmUsXG4gICYtcHJlZGVmaW5lZC1idG5zIGJ1dHRvbjpmb2N1cyB7XG4gICAgb3V0bGluZTogbm9uZTtcbiAgfVxuXG4gIC8qIC5icy1kYXRlcGlja2VyLWhlYWQgKi9cbiAgJi1oZWFkIHtcbiAgICBtaW4td2lkdGg6IDI3MHB4O1xuICAgIGhlaWdodDogNTBweDtcbiAgICBwYWRkaW5nOiAxMHB4O1xuICAgIGJvcmRlci1yYWRpdXM6IDNweCAzcHggMCAwO1xuICAgIHRleHQtYWxpZ246IGp1c3RpZnk7XG5cbiAgICAmOmFmdGVyIHtcbiAgICAgIGNvbnRlbnQ6IFwiXCI7XG4gICAgICBkaXNwbGF5OiBpbmxpbmUtYmxvY2s7XG4gICAgICB2ZXJ0aWNhbC1hbGlnbjogdG9wO1xuICAgICAgd2lkdGg6IDEwMCU7XG4gICAgfVxuXG4gICAgLyogLmJzLWRhdGVwaWNrZXItaGVhZCBidXR0b24gKi9cbiAgICBidXR0b24ge1xuICAgICAgZGlzcGxheTogaW5saW5lLWJsb2NrO1xuICAgICAgdmVydGljYWwtYWxpZ246IHRvcDtcbiAgICAgIHBhZGRpbmc6IDA7XG4gICAgICBoZWlnaHQ6IDMwcHg7XG4gICAgICBsaW5lLWhlaWdodDogMzBweDtcbiAgICAgIGJvcmRlcjogMDtcbiAgICAgIGJhY2tncm91bmQ6IHRyYW5zcGFyZW50O1xuICAgICAgdGV4dC1hbGlnbjogY2VudGVyO1xuICAgICAgY3Vyc29yOiBwb2ludGVyO1xuICAgICAgY29sb3I6ICRmb250LWNvbG9yLTAxO1xuICAgICAgdHJhbnNpdGlvbjogMC4zcztcblxuICAgICAgJltkaXNhYmxlZF0sXG4gICAgICAmW2Rpc2FibGVkXTpob3ZlcixcbiAgICAgICZbZGlzYWJsZWRdOmFjdGl2ZSB7XG4gICAgICAgIGJhY2tncm91bmQ6ICRkaXNhYmxlZC1iYWNrZ3JvdW5kO1xuICAgICAgICBjb2xvcjogJGRpc2FibGVkLWNvbG9yO1xuICAgICAgICBjdXJzb3I6IG5vdC1hbGxvd2VkO1xuICAgICAgfVxuXG4gICAgICAmLm5leHQsXG4gICAgICAmLnByZXZpb3VzIHtcbiAgICAgICAgYm9yZGVyLXJhZGl1czogNTAlO1xuICAgICAgICB3aWR0aDogMzBweDtcbiAgICAgICAgaGVpZ2h0OiAzMHB4O1xuXG4gICAgICAgIHNwYW4ge1xuICAgICAgICAgIGZvbnQtc2l6ZTogMjhweDtcbiAgICAgICAgICBsaW5lLWhlaWdodDogMTtcbiAgICAgICAgICBkaXNwbGF5OiBpbmxpbmUtYmxvY2s7XG4gICAgICAgICAgcG9zaXRpb246IHJlbGF0aXZlO1xuICAgICAgICAgIGhlaWdodDogMTAwJTtcbiAgICAgICAgICB3aWR0aDogMTAwJTtcbiAgICAgICAgICBib3JkZXItcmFkaXVzOiA1MCU7XG4gICAgICAgIH1cbiAgICAgIH1cblxuICAgICAgJi5jdXJyZW50IHtcbiAgICAgICAgYm9yZGVyLXJhZGl1czogMTVweDtcbiAgICAgICAgbWF4LXdpZHRoOiAxNTVweDtcbiAgICAgICAgcGFkZGluZzogMCAxM3B4O1xuICAgICAgfVxuICAgIH1cbiAgfVxuXG4gICYtaGVhZCB7XG4gICAgYnV0dG9uIHtcbiAgICAgICY6aG92ZXIge1xuICAgICAgICBiYWNrZ3JvdW5kLWNvbG9yOiByZ2JhKDAsIDAsIDAsIDAuMSk7XG4gICAgICB9XG4gICAgICAmOmFjdGl2ZSB7XG4gICAgICAgIGJhY2tncm91bmQtY29sb3I6IHJnYmEoMCwgMCwgMCwgMC4yKTtcbiAgICAgIH1cbiAgICB9XG4gIH1cblxuICAvKiAuYnMtZGF0ZXBpY2tlci1ib2R5ICovXG4gICYtYm9keSB7XG4gICAgcGFkZGluZzogMTBweDtcbiAgICBib3JkZXItcmFkaXVzOiAwIDAgM3B4IDNweDtcbiAgICBtaW4taGVpZ2h0OiAyMzJweDtcbiAgICBtaW4td2lkdGg6IDI3OHB4O1xuICAgIGJvcmRlcjogMXB4IHNvbGlkICRib3JkZXItY29sb3I7XG5cbiAgICAuZGF5cy53ZWVrcyB7XG4gICAgICBwb3NpdGlvbjogcmVsYXRpdmU7XG4gICAgICB6LWluZGV4OiAxO1xuICAgIH1cblxuICAgIC8qIC5icy1kYXRlcGlja2VyLWJvZHkgdGFibGUgKi9cbiAgICB0YWJsZSB7XG4gICAgICB3aWR0aDogMTAwJTtcbiAgICAgIGJvcmRlci1jb2xsYXBzZTogc2VwYXJhdGU7XG4gICAgICBib3JkZXItc3BhY2luZzogMDtcblxuICAgICAgdGgge1xuICAgICAgICBmb250LXNpemU6IDEzcHg7XG4gICAgICAgIGNvbG9yOiAkZm9udC1jb2xvci0wMjtcbiAgICAgICAgZm9udC13ZWlnaHQ6IDQwMDtcbiAgICAgICAgdGV4dC1hbGlnbjogY2VudGVyO1xuICAgICAgfVxuXG4gICAgICB0ZCB7XG4gICAgICAgIGNvbG9yOiAkZm9udC1jb2xvci0wMztcbiAgICAgICAgdGV4dC1hbGlnbjogY2VudGVyO1xuICAgICAgICBwb3NpdGlvbjogcmVsYXRpdmU7XG4gICAgICAgIHBhZGRpbmc6IDA7XG5cbiAgICAgICAgc3BhbiB7XG4gICAgICAgICAgZGlzcGxheTogYmxvY2s7XG4gICAgICAgICAgbWFyZ2luOiAwIGF1dG87XG4gICAgICAgICAgZm9udC1zaXplOiAxM3B4O1xuICAgICAgICAgIGJvcmRlci1yYWRpdXM6IDUwJTtcbiAgICAgICAgICAvKnotaW5kZXg6IDE7Ki9cbiAgICAgICAgICAtbW96LXVzZXItc2VsZWN0OiBub25lO1xuICAgICAgICAgIC13ZWJraXQtdXNlci1zZWxlY3Q6IG5vbmU7XG4gICAgICAgICAgLW1zLXVzZXItc2VsZWN0OiBub25lO1xuICAgICAgICB9XG5cbiAgICAgICAgLy8gdG9kbzogY2hlY2sgZmlyc3QgOm5vdCguZGlzYWJsZWQpIHVzYWdlXG4gICAgICAgICY6bm90KC5kaXNhYmxlZCk6bm90KC53ZWVrKSBzcGFuOm5vdCguZGlzYWJsZWQpOm5vdCguaXMtb3RoZXItbW9udGgpIHtcbiAgICAgICAgICBjdXJzb3I6IHBvaW50ZXI7XG4gICAgICAgIH1cblxuICAgICAgICAmLmlzLWhpZ2hsaWdodGVkOm5vdCguZGlzYWJsZWQpOm5vdCguc2VsZWN0ZWQpIHNwYW4sXG4gICAgICAgIHNwYW4uaXMtaGlnaGxpZ2h0ZWQ6bm90KC5kaXNhYmxlZCk6bm90KC5zZWxlY3RlZCkge1xuICAgICAgICAgIGJhY2tncm91bmQtY29sb3I6ICRoaWdobGlnaHRlZDtcbiAgICAgICAgICB0cmFuc2l0aW9uOiAwcztcbiAgICAgICAgfVxuXG4gICAgICAgICYuaXMtYWN0aXZlLW90aGVyLW1vbnRoOm5vdCguZGlzYWJsZWQpOm5vdCguc2VsZWN0ZWQpIHNwYW4sXG4gICAgICAgIHNwYW4uaXMtYWN0aXZlLW90aGVyLW1vbnRoOm5vdCguZGlzYWJsZWQpOm5vdCguc2VsZWN0ZWQpIHtcbiAgICAgICAgICBiYWNrZ3JvdW5kLWNvbG9yOiAkaGlnaGxpZ2h0ZWQ7XG4gICAgICAgICAgdHJhbnNpdGlvbjogMHM7XG4gICAgICAgICAgY3Vyc29yOiBwb2ludGVyO1xuICAgICAgICB9XG5cbiAgICAgICAgc3Bhbi5kaXNhYmxlZCxcbiAgICAgICAgJi5kaXNhYmxlZCBzcGFuIHtcbiAgICAgICAgICBjb2xvcjogJGZvbnQtY29sb3ItMDI7XG4gICAgICAgIH1cblxuICAgICAgICBzcGFuLnNlbGVjdGVkLFxuICAgICAgICAmLnNlbGVjdGVkIHNwYW4ge1xuICAgICAgICAgIGNvbG9yOiAkZm9udC1jb2xvci0wMTtcbiAgICAgICAgfVxuXG4gICAgICAgIHNwYW4uaXMtb3RoZXItbW9udGgsXG4gICAgICAgICYuaXMtb3RoZXItbW9udGggc3BhbiB7XG4gICAgICAgICAgY29sb3I6IHJnYmEoMCwgMCwgMCwgMC4yNSk7XG4gICAgICAgIH1cblxuICAgICAgICAmLmFjdGl2ZSB7XG4gICAgICAgICAgcG9zaXRpb246IHJlbGF0aXZlO1xuXG4gICAgICAgICAgJi5zZWxlY3Qtc3RhcnQ6YmVmb3JlIHtcbiAgICAgICAgICAgIGxlZnQ6IDM1JTtcbiAgICAgICAgICB9XG5cbiAgICAgICAgICAmLnNlbGVjdC1lbmQ6YmVmb3JlIHtcbiAgICAgICAgICAgIGxlZnQ6IC04NSU7XG4gICAgICAgICAgfVxuICAgICAgICB9XG5cbiAgICAgICAgc3Bhbi5hY3RpdmUuc2VsZWN0LXN0YXJ0OmFmdGVyLFxuICAgICAgICBzcGFuLmFjdGl2ZS5zZWxlY3QtZW5kOmFmdGVyLFxuICAgICAgICAmLmFjdGl2ZS5zZWxlY3Qtc3RhcnQgc3BhbjphZnRlcixcbiAgICAgICAgJi5hY3RpdmUuc2VsZWN0LWVuZCBzcGFuOmFmdGVyIHtcbiAgICAgICAgICBjb250ZW50OiBcIlwiO1xuICAgICAgICAgIGRpc3BsYXk6IGJsb2NrO1xuICAgICAgICAgIHBvc2l0aW9uOiBhYnNvbHV0ZTtcbiAgICAgICAgICB6LWluZGV4OiAtMTtcbiAgICAgICAgICB3aWR0aDogMTAwJTtcbiAgICAgICAgICBoZWlnaHQ6IDEwMCU7XG4gICAgICAgICAgdHJhbnNpdGlvbjogMC4zcztcbiAgICAgICAgICB0b3A6IDA7XG4gICAgICAgICAgYm9yZGVyLXJhZGl1czogNTAlO1xuICAgICAgICB9XG5cbiAgICAgICAgJjpiZWZvcmUsXG4gICAgICAgIHNwYW46YmVmb3JlIHtcbiAgICAgICAgICBjb250ZW50OiBcIlwiO1xuICAgICAgICAgIGRpc3BsYXk6IGJsb2NrO1xuICAgICAgICAgIHBvc2l0aW9uOiBhYnNvbHV0ZTtcbiAgICAgICAgICB6LWluZGV4OiAtMTtcbiAgICAgICAgICB0b3A6IDZweDtcbiAgICAgICAgICBib3R0b206IDZweDtcbiAgICAgICAgICBsZWZ0OiAtM3B4O1xuICAgICAgICAgIHJpZ2h0OiAtMnB4O1xuICAgICAgICAgIGJveC1zaXppbmc6IGNvbnRlbnQtYm94O1xuICAgICAgICAgIGJhY2tncm91bmQ6IHRyYW5zcGFyZW50O1xuICAgICAgICB9XG5cbiAgICAgICAgJi5hY3RpdmUuc2VsZWN0LXN0YXJ0ICsgdGQuYWN0aXZlOmJlZm9yZSB7XG4gICAgICAgICAgbGVmdDogLTIwJTtcbiAgICAgICAgfVxuXG4gICAgICAgICY6bGFzdC1jaGlsZC5hY3RpdmU6YmVmb3JlIHtcbiAgICAgICAgICBib3JkZXItcmFkaXVzOiAwIDNweCAzcHggMDtcbiAgICAgICAgICB3aWR0aDogMTI1JTtcbiAgICAgICAgICBsZWZ0OiAtMjUlO1xuICAgICAgICB9XG5cbiAgICAgICAgc3BhbltjbGFzcyo9XCJzZWxlY3QtXCJdLFxuICAgICAgICAmW2NsYXNzKj1cInNlbGVjdC1cIl0gc3BhbiB7XG4gICAgICAgICAgYm9yZGVyLXJhZGl1czogNTAlO1xuICAgICAgICAgIGNvbG9yOiAkZm9udC1jb2xvci0wMTtcbiAgICAgICAgfVxuICAgICAgfVxuXG4gICAgICAvKiAuYnMtZGF0ZXBpY2tlci1ib2R5IHRhYmxlLmRheXMgKi9cbiAgICAgICYuZGF5cyB7XG4gICAgICAgIHRkLFxuICAgICAgICBzcGFuIHtcbiAgICAgICAgICAmLmFjdGl2ZTpub3QoLnNlbGVjdC1zdGFydCk6YmVmb3JlLFxuICAgICAgICAgICYuaW4tcmFuZ2U6bm90KC5zZWxlY3Qtc3RhcnQpOmJlZm9yZSB7XG4gICAgICAgICAgICBiYWNrZ3JvdW5kOiAkaGlnaGxpZ2h0ZWQ7XG4gICAgICAgICAgfVxuICAgICAgICB9XG5cbiAgICAgICAgc3BhbiB7XG4gICAgICAgICAgd2lkdGg6IDMycHg7XG4gICAgICAgICAgaGVpZ2h0OiAzMnB4O1xuICAgICAgICAgIGxpbmUtaGVpZ2h0OiAzMnB4O1xuXG4gICAgICAgICAgJi5zZWxlY3Qtc3RhcnQge1xuICAgICAgICAgICAgei1pbmRleDogMjtcbiAgICAgICAgICB9XG4gICAgICAgICAgJi5pcy1oaWdobGlnaHRlZC5pbi1yYW5nZTpiZWZvcmUge1xuICAgICAgICAgICAgcmlnaHQ6IDNweDtcbiAgICAgICAgICAgIGxlZnQ6IDA7XG4gICAgICAgICAgfVxuICAgICAgICAgICYuaW4tcmFuZ2Uuc2VsZWN0LWVuZDpiZWZvcmUge1xuICAgICAgICAgICAgcmlnaHQ6IDRweDtcbiAgICAgICAgICAgIGxlZnQ6IDA7XG4gICAgICAgICAgfVxuICAgICAgICB9XG5cbiAgICAgICAgdGQge1xuICAgICAgICAgICYuc2VsZWN0LXN0YXJ0ICsgdGQuc2VsZWN0LWVuZDpiZWZvcmUsXG4gICAgICAgICAgJi5zZWxlY3Qtc3RhcnQgKyB0ZC5pcy1oaWdobGlnaHRlZDpiZWZvcmUsXG4gICAgICAgICAgJi5hY3RpdmUgKyB0ZC5pcy1oaWdobGlnaHRlZDpiZWZvcmUsXG4gICAgICAgICAgJi5hY3RpdmUgKyB0ZC5zZWxlY3QtZW5kOmJlZm9yZSxcbiAgICAgICAgICAmLmluLXJhbmdlICsgdGQuaXMtaGlnaGxpZ2h0ZWQ6YmVmb3JlLFxuICAgICAgICAgICYuaW4tcmFuZ2UgKyB0ZC5zZWxlY3QtZW5kOmJlZm9yZSB7XG4gICAgICAgICAgICBiYWNrZ3JvdW5kOiAkaGlnaGxpZ2h0ZWQ7XG4gICAgICAgICAgICB3aWR0aDogMTAwJTtcbiAgICAgICAgICB9XG4gICAgICAgIH1cbiAgICAgIH1cblxuICAgICAgLyogLmJzLWRhdGVwaWNrZXItYm9keSB0YWJsZS53ZWVrcyAqL1xuICAgICAgJi53ZWVrcyB7XG4gICAgICAgIHRyIHtcbiAgICAgICAgICB0ZCB7XG4gICAgICAgICAgICAmOm50aC1jaGlsZCgyKS5hY3RpdmU6YmVmb3JlIHtcbiAgICAgICAgICAgICAgYm9yZGVyLXJhZGl1czogM3B4IDAgMCAzcHg7XG4gICAgICAgICAgICAgIGxlZnQ6IDA7XG4gICAgICAgICAgICAgIHdpZHRoOiAxMDAlO1xuICAgICAgICAgICAgfVxuICAgICAgICAgIH1cbiAgICAgICAgfVxuICAgICAgfVxuXG4gICAgICAmOm5vdCgud2Vla3MpIHtcbiAgICAgICAgdHIge1xuICAgICAgICAgIHRke1xuICAgICAgICAgICAgJjpmaXJzdC1jaGlsZDpiZWZvcmUge1xuICAgICAgICAgICAgICBib3JkZXItcmFkaXVzOiAzcHggMCAwIDNweDtcbiAgICAgICAgICAgIH1cbiAgICAgICAgICB9XG4gICAgICAgIH1cbiAgICAgIH1cblxuICAgICAgJi55ZWFycyB7XG4gICAgICAgIHRkIHtcbiAgICAgICAgICBzcGFuIHtcbiAgICAgICAgICAgIHdpZHRoOiA0NnB4O1xuICAgICAgICAgICAgaGVpZ2h0OiA0NnB4O1xuICAgICAgICAgICAgbGluZS1oZWlnaHQ6IDQ1cHg7XG4gICAgICAgICAgICBtYXJnaW46IDAgYXV0bztcbiAgICAgICAgICB9XG4gICAgICAgIH1cblxuICAgICAgICB0cjpub3QoOmxhc3QtY2hpbGQpIHtcbiAgICAgICAgICB0ZCB7XG4gICAgICAgICAgICBzcGFuIHtcbiAgICAgICAgICAgICAgbWFyZ2luLWJvdHRvbTogOHB4O1xuICAgICAgICAgICAgfVxuICAgICAgICAgIH1cbiAgICAgICAgfVxuICAgICAgfVxuXG4gICAgICAmLm1vbnRocyB7XG4gICAgICAgIHRkIHtcbiAgICAgICAgICBoZWlnaHQ6IDUycHg7XG5cbiAgICAgICAgICBzcGFuIHtcbiAgICAgICAgICAgIHBhZGRpbmc6IDZweDtcbiAgICAgICAgICAgIGJvcmRlci1yYWRpdXM6IDE1cHg7XG4gICAgICAgICAgfVxuICAgICAgICB9XG4gICAgICB9XG4gICAgfVxuICB9XG5cbiAgLyogLmN1cnJlbnQtdGltZWRhdGUgKi9cbiAgLmN1cnJlbnQtdGltZWRhdGUge1xuICAgIGNvbG9yOiAkZm9udC1jb2xvci0wMztcbiAgICBmb250LXNpemU6IDE1cHg7XG4gICAgdGV4dC1hbGlnbjogY2VudGVyO1xuICAgIGhlaWdodDogMzBweDtcbiAgICBsaW5lLWhlaWdodDogMzBweDtcbiAgICBib3JkZXItcmFkaXVzOiAyMHB4O1xuICAgIGJvcmRlcjogMXB4IHNvbGlkICRib3JkZXItY29sb3I7XG4gICAgbWFyZ2luLWJvdHRvbTogMTBweDtcbiAgICBjdXJzb3I6IHBvaW50ZXI7XG4gICAgdGV4dC10cmFuc2Zvcm06IHVwcGVyY2FzZTtcbiAgICAtbW96LXVzZXItc2VsZWN0OiBub25lO1xuICAgIC13ZWJraXQtdXNlci1zZWxlY3Q6IG5vbmU7XG4gICAgLW1zLXVzZXItc2VsZWN0OiBub25lO1xuXG4gICAgc3Bhbjpub3QoOmVtcHR5KTpiZWZvcmUge1xuICAgICAgY29udGVudDogXCJcIjtcbiAgICAgIHdpZHRoOiAxNXB4O1xuICAgICAgaGVpZ2h0OiAxNnB4O1xuICAgICAgZGlzcGxheTogaW5saW5lLWJsb2NrO1xuICAgICAgbWFyZ2luLXJpZ2h0OiA0cHg7XG4gICAgICB2ZXJ0aWNhbC1hbGlnbjogdGV4dC1ib3R0b207XG4gICAgICBiYWNrZ3JvdW5kOiB1cmwoZGF0YTppbWFnZS9wbmc7YmFzZTY0LGlWQk9SdzBLR2dvQUFBQU5TVWhFVWdBQUFBOEFBQUFRQ0FZQUFBREpWaVVFQUFBQk1rbEVRVlFvVTlWVHdXM0NRQkNjT1VnQnRFQktTQXVrQW5CS01FK3dGQ0FsWUloazhzUWx4RkFCdEpBU2NBc3VBUEJFZXdZY3hDUDhvdXhyUERzemE2MXVpVk4xbzZSTkhENGh0U0NtcTQ5UmZPNzFCdk1KcUJCa0lUUmYxa21VVzQ5blFSQzloMUk1QVpsQkNsYUw4YVAxZktnT094Q3g4YVNMcytRMTllWnVOTzhRbVBxSlJ0REZndXk3T0FjRGJKUHMrL0JLVlBESVBydkQyWkpnV0FtVmU3TzBySTBWcXMxc2V5V1VYcHVKb3BwWUNhNUwrVSsrTnBOUGtyNU9FMm9NZEFSc2IzZ3lrSlQ1eWRaY0w4WjlXdzYwbnhnMkxoak9OOWxpOU93WFp6byt4TGJwM25DMnM5Q0wyUnJ1ZUd5VnJnd05tOEhwc0N6WjlFRVc2a3FYbG8xR1FlMDNGelAvN1c4SGwwZEJ0dTdCZjd6dDZtSXd2WDFSdnpEQ203K3EzbUFXMERsL0dQZFVDZVhyWkxUOUJyRHJHa200cWxQdkFBQUFBRWxGVGtTdVFtQ0MpO1xuICAgIH1cbiAgfVxuXG4gIC8qIC5icy1kYXRlcGlja2VyLW11bHRpcGxlICovXG4gICYtbXVsdGlwbGUge1xuICAgIGJvcmRlci1yYWRpdXM6IDRweCAwIDAgNHB4O1xuXG4gICAgJiArICYge1xuICAgICAgbWFyZ2luLWxlZnQ6IDEwcHg7XG4gICAgfVxuXG4gICAgLmJzLWRhdGVwaWNrZXIge1xuICAgICAgYm94LXNoYWRvdzogbm9uZTtcbiAgICAgIHBvc2l0aW9uOiByZWxhdGl2ZTtcblxuICAgICAgJjpub3QoOmxhc3QtY2hpbGQpIHtcbiAgICAgICAgcGFkZGluZy1yaWdodDogMTBweDtcbiAgICAgIH1cblxuICAgICAgJiArIC5icy1kYXRlcGlja2VyOmFmdGVyIHtcbiAgICAgICAgY29udGVudDogXCJcIjtcbiAgICAgICAgZGlzcGxheTogYmxvY2s7XG4gICAgICAgIHdpZHRoOiAxNHB4O1xuICAgICAgICBoZWlnaHQ6IDEwcHg7XG4gICAgICAgIGJhY2tncm91bmQ6IHVybChkYXRhOmltYWdlL3BuZztiYXNlNjQsaVZCT1J3MEtHZ29BQUFBTlNVaEVVZ0FBQUE4QUFBQUtDQVlBQUFCckd3VDVBQUFBMUVsRVFWUW9VNDJSc1FyQ1VBeEY3N1Z1RHU3TzRvTVdXLy9CVVJCQnBadmdLazR1SXJqb3FLT1RmK0RvcElPNHVZZ2d0RlRmdzMrcGtRcUNXMS9HNUo3a0ppRnk0bTVNeFVseEF6Z0lQSFgrbHpNUHp1cFJZbFlneGlSN3Zxc09QOFlLenNUeDB5eEZNQ1VaK3E3YVp6bHIrT3Znb1djQUZ5QUhnYXQyakxXdTQ4MjUyRGRxQWloREpHU1NKTlVVeFltUWpzMytoUFFCbEFoMnJHMkxDT1BuYXczSWlHRFg5OVRSQ3M3QVNKc05oVU9BN2QvTGN1SHZSRzIyRkladnNOWHcxTVg2VlpFeENpbE9RS0VmZUxYci8xMCthQzlIbzdhcmg3b0FBQUFBU1VWT1JLNUNZSUk9KTtcbiAgICAgICAgcG9zaXRpb246IGFic29sdXRlO1xuICAgICAgICB0b3A6IDI1cHg7XG4gICAgICAgIGxlZnQ6IC04cHg7XG4gICAgICB9XG5cbiAgICAgIC5sZWZ0IHtcbiAgICAgICAgZmxvYXQ6IGxlZnQ7XG4gICAgICB9XG5cbiAgICAgIC5yaWdodCB7XG4gICAgICAgIGZsb2F0OiByaWdodDtcbiAgICAgIH1cbiAgICB9XG4gIH1cblxuICAvKiAuYnMtZGF0ZXBpY2tlci1idG5zICovXG4gICYtY29udGFpbmVyIHtcbiAgICBwYWRkaW5nOiAxNXB4O1xuICB9XG5cbiAgLmJzLW1lZGlhLWNvbnRhaW5lciB7XG4gICAgZGlzcGxheTogZmxleDtcbiAgICBAbWVkaWEobWF4LXdpZHRoOiA3NjhweCkge1xuICAgICAgZmxleC1kaXJlY3Rpb246IGNvbHVtbjtcbiAgICB9XG4gIH1cblxuICAvKi5icy1kYXRlcGlja2VyLWN1c3RvbS1yYW5nZSAqL1xuICAmLWN1c3RvbS1yYW5nZSB7XG4gICAgcGFkZGluZzogMTVweDtcbiAgICBiYWNrZ3JvdW5kOiAkY3VzdG9tLXJhbmdlLWJnO1xuICB9XG5cbiAgLyogLmJzLWRhdGVwaWNrZXItcHJlZGVmaW5lZC1idG5zICovXG4gICYtcHJlZGVmaW5lZC1idG5zIHtcbiAgICBidXR0b24ge1xuICAgICAgd2lkdGg6IDEwMCU7XG4gICAgICBkaXNwbGF5OiBibG9jaztcbiAgICAgIGhlaWdodDogMzBweDtcbiAgICAgIGJhY2tncm91bmQtY29sb3I6ICRidG4tYmcyO1xuICAgICAgYm9yZGVyLXJhZGl1czogNHB4O1xuICAgICAgY29sb3I6ICRmb250LWNvbG9yLTAxO1xuICAgICAgYm9yZGVyOiAwO1xuICAgICAgbWFyZ2luLWJvdHRvbTogMTBweDtcbiAgICAgIHBhZGRpbmc6IDAgMThweDtcbiAgICAgIHRleHQtYWxpZ246IGxlZnQ7XG4gICAgICB0cmFuc2l0aW9uOiAwLjNzO1xuXG4gICAgICAmOmhvdmVyIHtcbiAgICAgICAgYmFja2dyb3VuZC1jb2xvcjogJGJ0bi1iZzItaG92ZXI7XG4gICAgICB9XG4gICAgfVxuICB9XG5cbiAgLyogLmJzLWRhdGVwaWNrZXItYnV0dG9ucyAqL1xuICAmLWJ1dHRvbnMge1xuICAgIGRpc3BsYXk6IGZsZXg7XG4gICAgZmxleC1mbG93OiByb3cgd3JhcDtcbiAgICBqdXN0aWZ5LWNvbnRlbnQ6IGZsZXgtZW5kO1xuICAgIHBhZGRpbmctdG9wOiAxMHB4O1xuICAgIGJvcmRlci10b3A6IDFweCBzb2xpZCAkYm9yZGVyLWNvbG9yO1xuXG4gICAgLmJ0bi1kZWZhdWx0IHtcbiAgICAgIG1hcmdpbi1sZWZ0OiAxMHB4O1xuICAgIH1cblxuICAgIC5idG4tdG9kYXktd3JhcHBlciB7XG4gICAgICBkaXNwbGF5OiBmbGV4O1xuICAgICAgZmxleC1mbG93OiByb3cgd3JhcDtcbiAgICB9XG5cbiAgICAuY2xlYXItcmlnaHQsXG4gICAgLnRvZGF5LXJpZ2h0IHtcbiAgICAgIGZsZXgtZ3JvdzogMDtcbiAgICB9XG4gICAgLmNsZWFyLWxlZnQsXG4gICAgLnRvZGF5LWxlZnQge1xuICAgICAgZmxleC1ncm93OiAxO1xuICAgIH1cblxuICAgIC5jbGVhci1jZW50ZXIsXG4gICAgLnRvZGF5LWNlbnRlciB7XG4gICAgICBmbGV4LWdyb3c6IDAuNTtcbiAgICB9XG4gIH1cbn1cblxuLyogLmJzLXRpbWVwaWNrZXIgKi9cbi5icy10aW1lcGlja2VyIHtcbiAgJi1jb250YWluZXIge1xuICAgIHBhZGRpbmc6IDEwcHggMDtcbiAgfVxuXG4gICYtbGFiZWwge1xuICAgIGNvbG9yOiAkZm9udC1jb2xvci0wMztcbiAgICBtYXJnaW4tYm90dG9tOiAxMHB4O1xuICB9XG5cbiAgJi1jb250cm9scyB7XG4gICAgZGlzcGxheTogaW5saW5lLWJsb2NrO1xuICAgIHZlcnRpY2FsLWFsaWduOiB0b3A7XG4gICAgbWFyZ2luLXJpZ2h0OiAxMHB4O1xuXG4gICAgYnV0dG9uIHtcbiAgICAgIHdpZHRoOiAyMHB4O1xuICAgICAgaGVpZ2h0OiAyMHB4O1xuICAgICAgYm9yZGVyLXJhZGl1czogNTAlO1xuICAgICAgYm9yZGVyOiAwO1xuICAgICAgYmFja2dyb3VuZC1jb2xvcjogJGJ0bi1iZztcbiAgICAgIGNvbG9yOiAkZm9udC1jb2xvci0wMztcbiAgICAgIGZvbnQtc2l6ZTogMTZweDtcbiAgICAgIGZvbnQtd2VpZ2h0OiA3MDA7XG4gICAgICB2ZXJ0aWNhbC1hbGlnbjogbWlkZGxlO1xuICAgICAgbGluZS1oZWlnaHQ6IDA7XG4gICAgICBwYWRkaW5nOiAwO1xuICAgICAgdHJhbnNpdGlvbjogMC4zcztcblxuICAgICAgJjpob3ZlciB7XG4gICAgICAgIGJhY2tncm91bmQtY29sb3I6ICRidG4tYmctaG92ZXI7XG4gICAgICB9XG4gICAgfVxuXG4gICAgaW5wdXQge1xuICAgICAgd2lkdGg6IDM1cHg7XG4gICAgICBoZWlnaHQ6IDI1cHg7XG4gICAgICBib3JkZXItcmFkaXVzOiAxM3B4O1xuICAgICAgdGV4dC1hbGlnbjogY2VudGVyO1xuICAgICAgYm9yZGVyOiAxcHggc29saWQgJGJvcmRlci1jb2xvcjtcbiAgICB9XG4gIH1cblxuICAuc3dpdGNoLXRpbWUtZm9ybWF0IHtcbiAgICB0ZXh0LXRyYW5zZm9ybTogdXBwZXJjYXNlO1xuICAgIG1pbi13aWR0aDogNTRweDtcbiAgICBoZWlnaHQ6IDI1cHg7XG4gICAgYm9yZGVyLXJhZGl1czogMjBweDtcbiAgICBib3JkZXI6IDFweCBzb2xpZCAkYm9yZGVyLWNvbG9yO1xuICAgIGJhY2tncm91bmQ6ICRtYWluLWJnO1xuICAgIGNvbG9yOiAkZm9udC1jb2xvci0wMztcbiAgICBmb250LXNpemU6IDEzcHg7XG5cbiAgICBpbWcge1xuICAgICAgdmVydGljYWwtYWxpZ246IGluaXRpYWw7XG4gICAgICBtYXJnaW4tbGVmdDogNHB4O1xuICAgIH1cbiAgfVxufVxuXG5icy1kYXRlcGlja2VyLWNvbnRhaW5lcixcbmJzLWRhdGVyYW5nZXBpY2tlci1jb250YWluZXIge1xuICB6LWluZGV4OiAxMDgwO1xufVxuXG4vKiBzY3JlZW4gc2l6ZSA8IDEwMjRweCAqL1xuQG1lZGlhIChtYXgtd2lkdGg6IDc2OHB4KSB7XG4gIC5icy1kYXRlcGlja2VyIHtcbiAgICAmLW11bHRpcGxlIHtcbiAgICAgIGRpc3BsYXk6IGZsZXg7XG5cbiAgICAgICYgKyAmIHtcbiAgICAgICAgbWFyZ2luLXRvcDogMTBweDtcbiAgICAgICAgbWFyZ2luLWxlZnQ6IDA7XG4gICAgICB9XG4gICAgfVxuICB9XG59XG5cbi8qIHRoZW1pbmcgKi9cbkBlYWNoICRuYW1lLCAkY29sb3IgaW4gJHRoZW1lLWxpc3Qge1xuICBAaW5jbHVkZSB0aGVtaW5nKCRuYW1lLCAkY29sb3IpO1xufVxuIiwiJG1haW4tYmc6ICAgICAgICAgI2ZmZiAhZGVmYXVsdDtcbiRjdXN0b20tcmFuZ2UtYmc6ICNlZWUgIWRlZmF1bHQ7XG5cbiRtYWluLWJveC1zaGFkb3c6ICNhYWEgIWRlZmF1bHQ7XG5cbiRmb250LWNvbG9yLTAxOiAgICNmZmYgIWRlZmF1bHQ7XG4kZm9udC1jb2xvci0wMjogICAjOWFhZWMxICFkZWZhdWx0O1xuJGZvbnQtY29sb3ItMDM6ICAgIzU0NzA4YiAhZGVmYXVsdDtcblxuJGJvcmRlci1jb2xvcjogICAgI2U5ZWRmMCAhZGVmYXVsdDtcbiRoaWdobGlnaHRlZDogICAgICNlOWVkZjAgIWRlZmF1bHQ7XG5cbiRidG4tYmc6ICAgICAgICAgICNlOWVkZjAgIWRlZmF1bHQ7XG4kYnRuLWJnLWhvdmVyOiAgICAjZDVkYWRkICFkZWZhdWx0O1xuXG4kYnRuLWJnMjogICAgICAgICAjOWFhZWMxICFkZWZhdWx0O1xuJGJ0bi1iZzItaG92ZXI6ICAgIzU0NzA4YiAhZGVmYXVsdDtcblxuJHRoZW1lLWdyYXk6ICAgICAgIzc3NyAhZGVmYXVsdDtcbiR0aGVtZS1ncmVlbjogICAgICM1Y2I4NWMgIWRlZmF1bHQ7XG4kdGhlbWUtYmx1ZTogICAgICAjNWJjMGRlICFkZWZhdWx0O1xuJHRoZW1lLWRhcmstYmx1ZTogIzMzN2FiNyAhZGVmYXVsdDtcbiR0aGVtZS1yZWQ6ICAgICAgICNkOTUzNGYgIWRlZmF1bHQ7XG4kdGhlbWUtb3JhbmdlOiAgICAjZjBhZDRlICFkZWZhdWx0O1xuXG4kZGlzYWJsZWQtYmFja2dyb3VuZDogIHJnYmEoMjIxLCAyMjEsIDIyMSwgMC4zKSAhZGVmYXVsdDtcbiRkaXNhYmxlZC1jb2xvcjogICAgICAgI2Y1ZjVmNSAhZGVmYXVsdDtcblxuJGhvdmVyLXRoZW1lLWRlZmF1bHQ6ICM2RjZFNkU7XG4kaG92ZXItdGhlbWUtZ3JlZW46ICMyMTg4Mzg7XG4kaG92ZXItdGhlbWUtYmx1ZTogIzNBQjNENztcbiRob3Zlci10aGVtZS1kYXJrLWJsdWU6ICMyQzZGQTk7XG4kaG92ZXItdGhlbWUtb3JhbmdlOiAjRkZBQzM1O1xuJGhvdmVyLXRoZW1lLXJlZDogI0UzMzczMjtcblxuJGFjdGl2ZS10aGVtZS1kZWZhdWx0OiAjNjE2MTYxO1xuJGFjdGl2ZS10aGVtZS1ncmVlbjogIzFlN2UzNDtcbiRhY3RpdmUtdGhlbWUtYmx1ZTogIzJBQThDRDtcbiRhY3RpdmUtdGhlbWUtZGFyay1ibHVlOiAjMjY2NDk4O1xuJGFjdGl2ZS10aGVtZS1vcmFuZ2U6ICNFRDlDMjk7XG4kYWN0aXZlLXRoZW1lLXJlZDogI0QyMzUzMTtcblxuJHRoZW1lLWxpc3Q6IChcbiAgJ2RlZmF1bHQnOiAkdGhlbWUtZ3JheSxcbiAgJ2dyZWVuJzogJHRoZW1lLWdyZWVuLFxuICAnYmx1ZSc6ICR0aGVtZS1ibHVlLFxuICAnZGFyay1ibHVlJzogJHRoZW1lLWRhcmstYmx1ZSxcbiAgJ3JlZCc6ICR0aGVtZS1yZWQsXG4gICdvcmFuZ2UnOiAkdGhlbWUtb3JhbmdlLFxuKSAhZGVmYXVsdDtcbiIsIkBpbXBvcnQgJ35uZ3gtYm9vdHN0cmFwL2RhdGVwaWNrZXIvYnMtZGF0ZXBpY2tlci5zY3NzJztcbkBpbXBvcnQgJy4vc3JjL3Njc3MvdmVuZG9ycy9icy1kYXRlcGlja2VyL2RhdGVwaWNrZXInO1xuXG5cbjpob3N0IGMtaW5wdXQtZ3JvdXAtcHJlcGVuZCBjLWlucHV0LWdyb3VwLXRleHQgYy1pY29uIHtcbiAgJjpvbmx5LWNoaWxkIHtcbiAgICBkaXNwbGF5OiBmbGV4O1xuICB9XG59XG5cbjpob3N0IGMtaW5wdXQtZ3JvdXAtYXBwZW5kIGMtaW5wdXQtZ3JvdXAtdGV4dCBjLWljb24ge1xuICAmOm9ubHktY2hpbGQge1xuICAgIGRpc3BsYXk6IGZsZXg7XG4gIH1cbn1cbi50aGVtZS1kYXJrLWJsdWUgLmJzLWRhdGVwaWNrZXItaGVhZCwuY3VzdG9tLXRvZGF5LWNsYXNzLC50aGVtZS1kYXJrLWJsdWUgLmJzLWRhdGVwaWNrZXItYm9keSB0YWJsZSB0ZCBzcGFuLnNlbGVjdGVkLCAudGhlbWUtZGFyay1ibHVlIC5icy1kYXRlcGlja2VyLWJvZHkgdGFibGUgdGQuc2VsZWN0ZWQgc3BhbiwgLnRoZW1lLWRhcmstYmx1ZSAuYnMtZGF0ZXBpY2tlci1ib2R5IHRhYmxlIHRkIHNwYW5bY2xhc3MqPXNlbGVjdC1dOmFmdGVyLCAudGhlbWUtZGFyay1ibHVlIC5icy1kYXRlcGlja2VyLWJvZHkgdGFibGUgdGRbY2xhc3MqPXNlbGVjdC1dIHNwYW46YWZ0ZXJ7XG4gICAgYmFja2dyb3VuZC1jb2xvcjogIzI1Nzc5NiAhaW1wb3J0YW50O1xuICAgIGNvbG9yOiB3aGl0ZSAhaW1wb3J0YW50O1xufVxuLnRoZW1lLWRhcmstYmx1ZSAuYnMtZGF0ZXBpY2tlci1ib2R5IHRhYmxlIHRkLndlZWsgc3BhbntcbiAgICAgY29sb3I6ICMzQzRCNjQgIWltcG9ydGFudDtcbn0iLCJAaW1wb3J0ICd2YXJpYWJsZXMnO1xuXG5AbWl4aW4gdGhlbWluZygkbmFtZSwgJGNvbG9yKSB7XG4gIC50aGVtZS0jeyRuYW1lfSB7XG4gICAgLmJzLWRhdGVwaWNrZXItaGVhZCB7XG4gICAgICBiYWNrZ3JvdW5kLWNvbG9yOiAkY29sb3I7XG4gICAgfVxuXG4gICAgLmJ0bi10b2RheS13cmFwcGVyLCAuYnRuLWNsZWFyLXdyYXBwZXIge1xuICAgICAgLmJ0bi1zdWNjZXNzIHtcbiAgICAgICAgYmFja2dyb3VuZC1jb2xvcjogJGNvbG9yO1xuICAgICAgICBib3JkZXItY29sb3I6ICRjb2xvcjtcbiAgICAgIH1cbiAgICAgIC5idG4tc3VjY2Vzczpub3QoOmRpc2FibGVkKTpub3QoLmRpc2FibGVkKTphY3RpdmUge1xuICAgICAgICAmOmZvY3VzIHtcbiAgICAgICAgICBib3gtc2hhZG93OiBub25lO1xuICAgICAgICB9XG4gICAgICB9XG4gICAgICAuYnRuLXN1Y2Nlc3M6Zm9jdXMge1xuICAgICAgICBib3gtc2hhZG93OiBub25lO1xuICAgICAgfVxuICAgIH1cblxuICAgIEBpZiAkbmFtZSA9PSAnZ3JlZW4nIHtcbiAgICAgIC5idG4tdG9kYXktd3JhcHBlciwgLmJ0bi1jbGVhci13cmFwcGVyIHtcbiAgICAgICAgLmJ0bi1zdWNjZXNzOm5vdCg6ZGlzYWJsZWQpOm5vdCguZGlzYWJsZWQpOmFjdGl2ZSB7XG4gICAgICAgICAgYmFja2dyb3VuZC1jb2xvcjogJGFjdGl2ZS10aGVtZS1ncmVlbjtcbiAgICAgICAgICBib3JkZXItY29sb3I6ICRhY3RpdmUtdGhlbWUtZ3JlZW47XG4gICAgICAgIH1cblxuICAgICAgICAuYnRuLXN1Y2Nlc3M6aG92ZXIge1xuICAgICAgICAgIGJhY2tncm91bmQtY29sb3I6ICRob3Zlci10aGVtZS1ncmVlbjtcbiAgICAgICAgICBib3JkZXItY29sb3I6ICRob3Zlci10aGVtZS1ncmVlbjtcbiAgICAgICAgfVxuICAgICAgfVxuICAgIH1cblxuICAgIEBpZiAkbmFtZSA9PSAnYmx1ZScge1xuICAgICAgLmJ0bi10b2RheS13cmFwcGVyLCAuYnRuLWNsZWFyLXdyYXBwZXIge1xuICAgICAgICAuYnRuLXN1Y2Nlc3M6bm90KDpkaXNhYmxlZCk6bm90KC5kaXNhYmxlZCk6YWN0aXZlIHtcbiAgICAgICAgICBiYWNrZ3JvdW5kLWNvbG9yOiAkYWN0aXZlLXRoZW1lLWJsdWU7XG4gICAgICAgICAgYm9yZGVyLWNvbG9yOiAkYWN0aXZlLXRoZW1lLWJsdWU7XG4gICAgICAgIH1cblxuICAgICAgICAuYnRuLXN1Y2Nlc3M6aG92ZXIge1xuICAgICAgICAgIGJhY2tncm91bmQtY29sb3I6ICRob3Zlci10aGVtZS1ibHVlO1xuICAgICAgICAgIGJvcmRlci1jb2xvcjogJGhvdmVyLXRoZW1lLWJsdWU7XG4gICAgICAgIH1cbiAgICAgIH1cbiAgICB9XG5cbiAgICBAaWYgJG5hbWUgPT0gJ2RhcmstYmx1ZScge1xuICAgICAgLmJ0bi10b2RheS13cmFwcGVyLCAuYnRuLWNsZWFyLXdyYXBwZXIge1xuICAgICAgICAuYnRuLXN1Y2Nlc3M6bm90KDpkaXNhYmxlZCk6bm90KC5kaXNhYmxlZCk6YWN0aXZlIHtcbiAgICAgICAgICBiYWNrZ3JvdW5kLWNvbG9yOiAkYWN0aXZlLXRoZW1lLWRhcmstYmx1ZTtcbiAgICAgICAgICBib3JkZXItY29sb3I6ICRhY3RpdmUtdGhlbWUtZGFyay1ibHVlO1xuICAgICAgICB9XG5cbiAgICAgICAgLmJ0bi1zdWNjZXNzOmhvdmVyIHtcbiAgICAgICAgICBiYWNrZ3JvdW5kLWNvbG9yOiAkaG92ZXItdGhlbWUtZGFyay1ibHVlO1xuICAgICAgICAgIGJvcmRlci1jb2xvcjogJGhvdmVyLXRoZW1lLWRhcmstYmx1ZTtcbiAgICAgICAgfVxuICAgICAgfVxuICAgIH1cblxuICAgIEBpZiAkbmFtZSA9PSAnb3JhbmdlJyB7XG4gICAgICAuYnRuLXRvZGF5LXdyYXBwZXIsIC5idG4tY2xlYXItd3JhcHBlciB7XG4gICAgICAgIC5idG4tc3VjY2Vzczpub3QoOmRpc2FibGVkKTpub3QoLmRpc2FibGVkKTphY3RpdmUge1xuICAgICAgICAgIGJhY2tncm91bmQtY29sb3I6ICRhY3RpdmUtdGhlbWUtb3JhbmdlO1xuICAgICAgICAgIGJvcmRlci1jb2xvcjogJGFjdGl2ZS10aGVtZS1vcmFuZ2U7XG4gICAgICAgIH1cblxuICAgICAgICAuYnRuLXN1Y2Nlc3M6aG92ZXIge1xuICAgICAgICAgIGJhY2tncm91bmQtY29sb3I6ICRob3Zlci10aGVtZS1vcmFuZ2U7XG4gICAgICAgICAgYm9yZGVyLWNvbG9yOiAkaG92ZXItdGhlbWUtb3JhbmdlO1xuICAgICAgICB9XG4gICAgICB9XG4gICAgfVxuXG4gICAgQGlmICRuYW1lID09ICdyZWQnIHtcbiAgICAgIC5idG4tdG9kYXktd3JhcHBlciwgLmJ0bi1jbGVhci13cmFwcGVyIHtcbiAgICAgICAgLmJ0bi1zdWNjZXNzOm5vdCg6ZGlzYWJsZWQpOm5vdCguZGlzYWJsZWQpOmFjdGl2ZSB7XG4gICAgICAgICAgYmFja2dyb3VuZC1jb2xvcjogJGFjdGl2ZS10aGVtZS1yZWQ7XG4gICAgICAgICAgYm9yZGVyLWNvbG9yOiAkYWN0aXZlLXRoZW1lLXJlZDtcbiAgICAgICAgfVxuXG4gICAgICAgIC5idG4tc3VjY2Vzczpob3ZlciB7XG4gICAgICAgICAgYmFja2dyb3VuZC1jb2xvcjogJGhvdmVyLXRoZW1lLXJlZDtcbiAgICAgICAgICBib3JkZXItY29sb3I6ICRob3Zlci10aGVtZS1yZWQ7XG4gICAgICAgIH1cbiAgICAgIH1cbiAgICB9XG5cbiAgICBAaWYgJG5hbWUgPT0gJ2RlZmF1bHQnIHtcbiAgICAgIC5idG4tdG9kYXktd3JhcHBlciwgLmJ0bi1jbGVhci13cmFwcGVyIHtcbiAgICAgICAgLmJ0bi1zdWNjZXNzOm5vdCg6ZGlzYWJsZWQpOm5vdCguZGlzYWJsZWQpOmFjdGl2ZSB7XG4gICAgICAgICAgYmFja2dyb3VuZC1jb2xvcjogJGFjdGl2ZS10aGVtZS1kZWZhdWx0O1xuICAgICAgICAgIGJvcmRlci1jb2xvcjogJGFjdGl2ZS10aGVtZS1kZWZhdWx0O1xuICAgICAgICB9XG5cbiAgICAgICAgLmJ0bi1zdWNjZXNzOmhvdmVyIHtcbiAgICAgICAgICBiYWNrZ3JvdW5kLWNvbG9yOiAkaG92ZXItdGhlbWUtZGVmYXVsdDtcbiAgICAgICAgICBib3JkZXItY29sb3I6ICRob3Zlci10aGVtZS1kZWZhdWx0O1xuICAgICAgICB9XG4gICAgICB9XG4gICAgfVxuXG4gICAgICAuYnMtZGF0ZXBpY2tlci1wcmVkZWZpbmVkLWJ0bnMge1xuICAgICAgICBidXR0b24ge1xuICAgICAgICAgICYuc2VsZWN0ZWQge1xuICAgICAgICAgICAgYmFja2dyb3VuZC1jb2xvcjogJGNvbG9yIDtcbiAgICAgICAgICB9XG4gICAgICB9XG4gICAgfVxuXG4gICAgLmJzLWRhdGVwaWNrZXItYm9keSB7XG4gICAgICB0YWJsZSB7XG4gICAgICAgIHRkIHtcbiAgICAgICAgICBzcGFuLnNlbGVjdGVkLFxuICAgICAgICAgICYuc2VsZWN0ZWQgc3BhbixcbiAgICAgICAgICBzcGFuW2NsYXNzKj1cInNlbGVjdC1cIl06YWZ0ZXIsXG4gICAgICAgICAgJltjbGFzcyo9XCJzZWxlY3QtXCJdIHNwYW46YWZ0ZXIge1xuICAgICAgICAgICAgYmFja2dyb3VuZC1jb2xvcjogJGNvbG9yO1xuICAgICAgICAgIH1cblxuICAgICAgICAgICYud2VlayBzcGFuIHtcbiAgICAgICAgICAgIGNvbG9yOiAkY29sb3I7XG4gICAgICAgICAgfVxuXG4gICAgICAgICAgJi5hY3RpdmUtd2VlayBzcGFuOmhvdmVyIHtcbiAgICAgICAgICAgIGN1cnNvcjogcG9pbnRlcjtcbiAgICAgICAgICAgIGJhY2tncm91bmQtY29sb3I6ICRjb2xvcjtcbiAgICAgICAgICAgIGNvbG9yOiAkZm9udC1jb2xvci0wMTtcbiAgICAgICAgICAgIG9wYWNpdHk6IDAuNTtcbiAgICAgICAgICAgIHRyYW5zaXRpb246IDBzO1xuICAgICAgICAgIH1cbiAgICAgICAgfVxuICAgICAgfVxuICAgIH1cbiAgfVxufVxuIiwiLy8gdG9kbzogdGVtcCBjLWRhcmstdGhlbWUgcGx1bWJpbmcgZm9yIGJzLWRhdGVwaWNrZXJcblxuLmMtZGFyay10aGVtZSB+ICogLmJzLWRhdGVwaWNrZXIge1xuICBiYWNrZ3JvdW5kLWNvbG9yOiAjMjMyNDJkICFpbXBvcnRhbnQ7XG4gIC5icy1kYXRlcGlja2VyLWhlYWQgYnV0dG9uIHtcbiAgICBjb2xvcjogZGFya2VuKCMyMzI0MmQsIDUwJSkgIWltcG9ydGFudDtcbiAgfVxuICAuYnMtZGF0ZXBpY2tlci1ib2R5IHRkIHtcbiAgICBjb2xvcjogbGlnaHRlbigjMjMyNDJkLCA1MCUpICFpbXBvcnRhbnQ7XG4gIH1cbiAgLmJzLWRhdGVwaWNrZXItYm9keSB7XG4gICAgYm9yZGVyLWNvbG9yOiBsaWdodGVuKCMyMzI0MmQsIDEwJSkgIWltcG9ydGFudDtcbiAgfVxuICAuYnMtZGF0ZXBpY2tlci1ib2R5IHRhYmxlIHRkLmRpc2FibGVkIHNwYW4sXG4gIC5icy1kYXRlcGlja2VyLWJvZHkgdGFibGUgdGQgc3Bhbi5kaXNhYmxlZCB7XG4gICAgY29sb3I6IGxpZ2h0ZW4oIzIzMjQyZCwgNTAlKSAhaW1wb3J0YW50O1xuICB9XG4gIC5icy1kYXRlcGlja2VyLWJvZHkgdGFibGUuZGF5cyBzcGFuLmluLXJhbmdlOm5vdCguc2VsZWN0LXN0YXJ0KTpiZWZvcmUge1xuICAgIGJhY2tncm91bmQtY29sb3I6IGRhcmtlbigjMjMyNDJkLCA5MCUpICFpbXBvcnRhbnQ7XG4gIH1cbiAgLmJzLWRhdGVwaWNrZXItYnV0dG9ucyB7XG4gICAgYm9yZGVyLXRvcC1jb2xvcjogbGlnaHRlbigjMjMyNDJkLCAxMCUpICFpbXBvcnRhbnQ7XG4gIH1cbn1cblxuIl19 */";
+      /***/
+    },
+
+    /***/
+    "QIKI":
+    /*!******************************************************************************************************!*\
+      !*** ./node_modules/raw-loader/dist/cjs.js!./src/app/views/reports/check-in/check-in.component.html ***!
+      \******************************************************************************************************/
+
+    /*! exports provided: default */
+
+    /***/
+    function QIKI(module, __webpack_exports__, __webpack_require__) {
+      "use strict";
+
+      __webpack_require__.r(__webpack_exports__);
+      /* harmony default export */
+
+
+      __webpack_exports__["default"] = "<div class=\"fade-in\">\n  <c-card>\n    <c-card-header class=\"d-flex align-items-center\">\n      <h4 class=\"mb-0\">Check-In Report</h4>\n      <c-card-header-actions class=\"ml-auto\">\n        <button\n          cButton\n          color=\"primary\"\n          size=\"md\"\n          class=\"mfe-1\"\n          (click)=\"generateReport()\"\n        >\n          <c-icon name=\"cil-file\" size=\"sm\" class=\"text-white\"></c-icon>\n          <span> Generate Report</span>\n        </button>\n        <button\n          cButton\n          color=\"primary\"\n          size=\"md\"\n          class=\"mfe-1\"\n          (click)=\"createPdf()\"\n          *ngIf=\"data.length\"\n        >\n          <c-icon\n            name=\"cil-cloud-download\"\n            size=\"sm\"\n            class=\"text-white\"\n          ></c-icon>\n          <span> Export PDF</span>\n        </button>\n      </c-card-header-actions>\n    </c-card-header>\n\n    <c-card-body>\n      <form [formGroup]=\"filterForm\">\n        <c-row class=\"mb-3\">\n          <c-col md=\"3\">\n            <div class=\"input-group align-items-center\">\n              <select cSelect id=\"user\" formControlName=\"userId\">\n                <option value=\"\" selected>All Users</option>\n                <option [value]=\"user._id\" *ngFor=\"let user of userListArr\">\n                  {{ user.name }}\n                </option>\n              </select>\n            </div>\n          </c-col>\n          <c-col md=\"3\">\n            <div class=\"input-group align-items-center\">\n              <select cSelect id=\"select1\" formControlName=\"status\">\n                <option [value]=\"'all'\" selected>All Status</option>\n                <option [value]=\"1\">Successful</option>\n                <option [value]=\"0\">Failed</option>\n              </select>\n            </div>\n          </c-col>\n          <c-col md=\"3\">\n            <div class=\"input-group\">\n              <input\n                cInput\n                #dp=\"bsDatepicker\"\n                bsDatepicker\n                [bsConfig]=\"bsConfig\"\n                placeholder=\"From Date\"\n                formControlName=\"fromDate\"\n              />\n            </div>\n          </c-col>\n          <c-col md=\"3\">\n            <div class=\"input-group\">\n              <input\n                cInput\n                [minDate]=\"filterForm.value.fromDate\"\n                #dp=\"bsDatepicker\"\n                bsDatepicker\n                [bsConfig]=\"bsConfig\"\n                placeholder=\"To Date\"\n                formControlName=\"toDate\"\n              />\n            </div>\n          </c-col>\n        </c-row>\n        <c-row class=\"mb-3\">\n          <c-col\n            md=\"3\"\n            *ngIf=\"\n              organizationArr.length &&\n              tokenData &&\n              !tokenData.user.organizationId\n            \"\n            (change)=\"filterData($event, 'orgasnizationUniqueId')\"\n          >\n            <select cSelect id=\"select1\" name=\"select1\">\n              <option value=\"\">All Organization</option>\n              <option\n                [value]=\"organization.organizationId\"\n                *ngFor=\"let organization of organizationArr\"\n              >\n                {{ organization.organizationName | titlecase }}\n              </option>\n            </select>\n          </c-col>\n        </c-row>\n      </form>\n      <hr />\n      <mat-table\n        #table\n        mat-table\n        [dataSource]=\"dataSource\"\n        matSort\n        matSortActive=\"createdAt\"\n        matSortDisableClear\n        matSortDirection=\"desc\"\n        class=\"mat-elevation-z8\"\n        (matSortChange)=\"sortChange()\"\n        *ngIf=\"isDisplay\"\n      >\n        <ng-container matColumnDef=\"location\">\n          <mat-header-cell\n            [ngClass]=\"'c-name'\"\n            *matHeaderCellDef\n            mat-sort-header\n          >\n            Coordinates\n          </mat-header-cell>\n          <mat-cell [ngClass]=\"'c-name'\" *matCellDef=\"let element\">\n            <div class=\"mt-10\">\n              <a\n                href=\"javascript:void(0)\"\n                *ngIf=\"element.location\"\n                (click)=\"selectLocation(element.location)\"\n              >\n                {{ element.location }}</a\n              >\n              <br />\n              <p>{{ element.installationLocation }}</p>\n            </div>\n          </mat-cell>\n        </ng-container>\n\n        <ng-container matColumnDef=\"organizationDetail.organizationName\">\n          <mat-header-cell\n            [ngClass]=\"'w-name'\"\n            *matHeaderCellDef\n            mat-sort-header\n          >\n            Organization Name\n          </mat-header-cell>\n          <mat-cell [ngClass]=\"'w-name'\" *matCellDef=\"let element\">\n            <a\n              [routerLink]\n              class=\"c-header-nav-link mr-2\"\n              data-toggle=\"dropdown\"\n              role=\"button\"\n              aria-haspopup=\"true\"\n              aria-expanded=\"false\"\n              dropdownToggle\n              (click)=\"(false)\"\n            >\n            </a>\n            {{ element.organizationDetail?.organizationName }}\n          </mat-cell>\n        </ng-container>\n\n        <ng-container matColumnDef=\"createdAt\">\n          <mat-header-cell\n            [ngClass]=\"'d-name'\"\n            *matHeaderCellDef\n            mat-sort-header\n          >\n            Date and Time\n          </mat-header-cell>\n          <mat-cell [ngClass]=\"'d-name'\" *matCellDef=\"let element\">\n            {{ element.createdAt | date: \"dd/MM/yyyy, h:mm:ss\" }}\n            {{ element.createdAt | date: \"a\" | lowercase }}\n          </mat-cell>\n        </ng-container>\n\n        <ng-container matColumnDef=\"userDetail.name\">\n          <mat-header-cell *matHeaderCellDef mat-sort-header>\n            User Name</mat-header-cell\n          >\n          <mat-cell *matCellDef=\"let element\">\n            {{ element.userDetail?.name }}\n          </mat-cell>\n        </ng-container>\n\n        <ng-container matColumnDef=\"status\">\n          <mat-header-cell *matHeaderCellDef mat-sort-header>\n            Status\n          </mat-header-cell>\n          <mat-cell *matCellDef=\"let element\" class=\"status-icon\">\n            {{ element.status == 1 ? \"Successful\" : element.title }}\n          </mat-cell>\n        </ng-container>\n\n        <mat-header-row *matHeaderRowDef=\"displayedColumns\"></mat-header-row>\n        <mat-row *matRowDef=\"let row; columns: displayedColumns\"></mat-row>\n      </mat-table>\n      <div class=\"mat-table__message text-center mt-3\" *ngIf=\"!resultsLength\">\n        No records found\n      </div>\n      <div class=\"mat-table__bottom\">\n        <mat-paginator\n          [pageSizeOptions]=\"[10, 25, 50, 100]\"\n          [length]=\"resultsLength\"\n          [showFirstLastButtons]\n          (page)=\"pageChange()\"\n        >\n        </mat-paginator>\n      </div>\n    </c-card-body>\n  </c-card>\n</div>\n\n<div class=\"loading-indicator\" *ngIf=\"loading\">\n  <c-spinkit [name]=\"'bounce'\"></c-spinkit>\n</div>\n";
+      /***/
+    },
+
+    /***/
+    "WPje":
+    /*!**********************************!*\
+      !*** ./src/app/services/role.ts ***!
+      \**********************************/
+
+    /*! exports provided: Role */
+
+    /***/
+    function WPje(module, __webpack_exports__, __webpack_require__) {
+      "use strict";
+
+      __webpack_require__.r(__webpack_exports__);
+      /* harmony export (binding) */
+
+
+      __webpack_require__.d(__webpack_exports__, "Role", function () {
+        return Role;
+      });
+
+      var Role = {
+        'admin': 'Organization Admin',
+        'manager': 'Organization Manager',
+        'resellers': 'Resellers',
+        'installer': 'Installer',
+        'scanner': 'Scanner',
+        'scannerAndInstaller': 'ScannerAndInstaller',
+        'superAdmin': 'Super Admin'
+      };
+      /***/
+    },
+
+    /***/
+    "kSS6":
+    /*!**************************************************************************************************!*\
+      !*** ./node_modules/raw-loader/dist/cjs.js!./src/app/views/reports/log-in/log-in.component.html ***!
+      \**************************************************************************************************/
+
+    /*! exports provided: default */
+
+    /***/
+    function kSS6(module, __webpack_exports__, __webpack_require__) {
+      "use strict";
+
+      __webpack_require__.r(__webpack_exports__);
+      /* harmony default export */
+
+
+      __webpack_exports__["default"] = "<div class=\"fade-in\">\n    <c-card>\n        <c-card-header class=\"d-flex align-items-center\">\n            <h4 class=\"mb-0\">Log-In Report</h4>\n            <c-card-header-actions class=\"ml-auto\">\n                <button cButton color=\"primary\" size=\"md\" class=\"mfe-1\" (click)=\"generateReport()\">\n                    <c-icon name=\"cil-file\" size=\"sm\" class=\"text-white\"></c-icon>\n                    <span> Generate Report</span>\n                </button>\n                <button cButton color=\"primary\" size=\"md\" class=\"mfe-1\" (click)=\"createPdf()\" *ngIf=\"data.length\">\n                    <c-icon name=\"cil-cloud-download\" size=\"sm\" class=\"text-white\"></c-icon>\n                    <span> Export PDF</span>\n                </button>\n            </c-card-header-actions>\n        </c-card-header>\n\n        <c-card-body>\n            <form [formGroup]=\"filterForm\">\n                <c-row class=\"mb-3\">\n                    <c-col md=\"3\">\n                        <div class=\"input-group align-items-center\">\n                            <select cSelect id=\"user\" formControlName=\"userId\">\n                                <option value='' selected>All Users</option>\n                                <option [value]=\"user._id\" *ngFor=\"let user of userListArr\"> {{user.name}}</option>\n                            </select>\n                        </div>\n                    </c-col>\n                    <c-col md=\"3\" *ngIf=\"organizationArr.length && tokenData && !tokenData.user.organizationId\"\n                        (change)=\"filterData($event,'orgasnizationUniqueId')\">\n                        <select cSelect id=\"select1\" name=\"select1\">\n                            <option value=\"\">All Organization</option>\n                            <option [value]=\"organization.organizationId\" *ngFor=\"let organization of organizationArr\">\n                                {{organization.organizationName | titlecase}}</option>\n                        </select>\n                    </c-col>\n                    <c-col md=\"3\">\n                        <div class=\"input-group\">\n                            <input cInput #dp=\"bsDatepicker\" bsDatepicker [bsConfig]=\"bsConfig\" placeholder=\"From Date\"\n                                formControlName=\"fromDate\">\n                        </div>\n                    </c-col>\n                    <c-col md=\"3\">\n                        <div class=\"input-group\">\n                            <input cInput [minDate]=\"filterForm.value.fromDate\" #dp=\"bsDatepicker\" bsDatepicker\n                                [bsConfig]=\"bsConfig\" placeholder=\"To Date\" formControlName=\"toDate\">\n                        </div>\n                    </c-col>\n                </c-row>\n            </form>\n            <mat-table #table mat-table [dataSource]=\"dataSource\" matSort matSortActive=\"createdAt\" matSortDisableClear\n                matSortDirection=\"desc\" class=\"mat-elevation-z8\" (matSortChange)=\"sortChange()\" *ngIf=\"isDisplay\">\n\n\n                <ng-container matColumnDef=\"createdAt\">\n                    <mat-header-cell *matHeaderCellDef mat-sort-header> Date Time</mat-header-cell>\n                    <mat-cell *matCellDef=\"let element\">\n                        {{ element.createdAt | date : 'dd/MM/yyyy, h:mm:ss' }}\n                        {{ element.createdAt | date : 'a' | lowercase }}\n                    </mat-cell>\n                </ng-container>\n\n\n                <ng-container matColumnDef=\"userDetails.name\">\n                    <mat-header-cell *matHeaderCellDef mat-sort-header> User </mat-header-cell>\n                    <mat-cell *matCellDef=\"let element\"> {{element.userDetails?.name}}\n                    </mat-cell>\n                </ng-container>\n                <ng-container matColumnDef=\"organizationDetails.organizationName\">\n                    <mat-header-cell *matHeaderCellDef mat-sort-header> Organization </mat-header-cell>\n                    <mat-cell *matCellDef=\"let element\"> {{element.organizationDetails?.organizationName}}\n                    </mat-cell>\n                </ng-container>\n\n                <mat-header-row *matHeaderRowDef=\"displayedColumns\"></mat-header-row>\n                <mat-row *matRowDef=\"let row; columns: displayedColumns;\"></mat-row>\n            </mat-table>\n            <div class=\"mat-table__message text-center mt-3\" *ngIf=\"!resultsLength && isDisplay\">No records found</div>\n            <div class=\"mat-table__bottom\">\n                <mat-paginator [pageSizeOptions]=\"[10, 25, 50, 100]\" [length]=\"resultsLength\" [showFirstLastButtons]\n                    (page)=\"pageChange()\">\n                </mat-paginator>\n            </div>\n        </c-card-body>\n    </c-card>\n</div>\n<div class=\"loading-indicator\" *ngIf=\"loading\">\n    <c-spinkit [name]=\"'bounce'\"></c-spinkit>\n  </div> ";
+      /***/
+    },
+
+    /***/
+    "m9hd":
+    /*!****************************************************************!*\
+      !*** ./src/app/views/reports/check-in/check-in.component.scss ***!
+      \****************************************************************/
+
+    /*! exports provided: default */
+
+    /***/
+    function m9hd(module, __webpack_exports__, __webpack_require__) {
+      "use strict";
+
+      __webpack_require__.r(__webpack_exports__);
+      /* harmony default export */
+
+
+      __webpack_exports__["default"] = "/* .bs-datepicker */\n.bs-datepicker {\n  display: flex;\n  align-items: stretch;\n  flex-flow: row wrap;\n  background: #fff;\n  box-shadow: 0 0 10px 0 #aaa;\n  position: relative;\n  z-index: 1;\n  /* button */\n  /* .bs-datepicker-head */\n  /* .bs-datepicker-body */\n  /* .current-timedate */\n  /* .bs-datepicker-multiple */\n  /* .bs-datepicker-btns */\n  /*.bs-datepicker-custom-range */\n  /* .bs-datepicker-predefined-btns */\n  /* .bs-datepicker-buttons */\n}\n.bs-datepicker:after {\n  clear: both;\n  content: \"\";\n  display: block;\n}\n.bs-datepicker bs-day-picker {\n  float: left;\n}\n.bs-datepicker button:hover,\n.bs-datepicker button:focus,\n.bs-datepicker button:active,\n.bs-datepicker input:hover,\n.bs-datepicker input:focus,\n.bs-datepicker input:active, .bs-datepicker-btns button:hover, .bs-datepicker-btns button:focus, .bs-datepicker-btns button:active, .bs-datepicker-predefined-btns button:active, .bs-datepicker-predefined-btns button:focus {\n  outline: none;\n}\n.bs-datepicker-head {\n  min-width: 270px;\n  height: 50px;\n  padding: 10px;\n  border-radius: 3px 3px 0 0;\n  text-align: justify;\n  /* .bs-datepicker-head button */\n}\n.bs-datepicker-head:after {\n  content: \"\";\n  display: inline-block;\n  vertical-align: top;\n  width: 100%;\n}\n.bs-datepicker-head button {\n  display: inline-block;\n  vertical-align: top;\n  padding: 0;\n  height: 30px;\n  line-height: 30px;\n  border: 0;\n  background: transparent;\n  text-align: center;\n  cursor: pointer;\n  color: #fff;\n  transition: 0.3s;\n}\n.bs-datepicker-head button[disabled], .bs-datepicker-head button[disabled]:hover, .bs-datepicker-head button[disabled]:active {\n  background: rgba(221, 221, 221, 0.3);\n  color: #f5f5f5;\n  cursor: not-allowed;\n}\n.bs-datepicker-head button.next, .bs-datepicker-head button.previous {\n  border-radius: 50%;\n  width: 30px;\n  height: 30px;\n}\n.bs-datepicker-head button.next span, .bs-datepicker-head button.previous span {\n  font-size: 28px;\n  line-height: 1;\n  display: inline-block;\n  position: relative;\n  height: 100%;\n  width: 100%;\n  border-radius: 50%;\n}\n.bs-datepicker-head button.current {\n  border-radius: 15px;\n  max-width: 155px;\n  padding: 0 13px;\n}\n.bs-datepicker-head button:hover {\n  background-color: rgba(0, 0, 0, 0.1);\n}\n.bs-datepicker-head button:active {\n  background-color: rgba(0, 0, 0, 0.2);\n}\n.bs-datepicker-body {\n  padding: 10px;\n  border-radius: 0 0 3px 3px;\n  min-height: 232px;\n  min-width: 278px;\n  border: 1px solid #e9edf0;\n  /* .bs-datepicker-body table */\n}\n.bs-datepicker-body .days.weeks {\n  position: relative;\n  z-index: 1;\n}\n.bs-datepicker-body table {\n  width: 100%;\n  border-collapse: separate;\n  border-spacing: 0;\n  /* .bs-datepicker-body table.days */\n  /* .bs-datepicker-body table.weeks */\n}\n.bs-datepicker-body table th {\n  font-size: 13px;\n  color: #9aaec1;\n  font-weight: 400;\n  text-align: center;\n}\n.bs-datepicker-body table td {\n  color: #54708b;\n  text-align: center;\n  position: relative;\n  padding: 0;\n}\n.bs-datepicker-body table td span {\n  display: block;\n  margin: 0 auto;\n  font-size: 13px;\n  border-radius: 50%;\n  /*z-index: 1;*/\n  -moz-user-select: none;\n  -webkit-user-select: none;\n  -ms-user-select: none;\n}\n.bs-datepicker-body table td:not(.disabled):not(.week) span:not(.disabled):not(.is-other-month) {\n  cursor: pointer;\n}\n.bs-datepicker-body table td.is-highlighted:not(.disabled):not(.selected) span,\n.bs-datepicker-body table td span.is-highlighted:not(.disabled):not(.selected) {\n  background-color: #e9edf0;\n  transition: 0s;\n}\n.bs-datepicker-body table td.is-active-other-month:not(.disabled):not(.selected) span,\n.bs-datepicker-body table td span.is-active-other-month:not(.disabled):not(.selected) {\n  background-color: #e9edf0;\n  transition: 0s;\n  cursor: pointer;\n}\n.bs-datepicker-body table td span.disabled, .bs-datepicker-body table td.disabled span {\n  color: #9aaec1;\n}\n.bs-datepicker-body table td span.selected, .bs-datepicker-body table td.selected span {\n  color: #fff;\n}\n.bs-datepicker-body table td span.is-other-month, .bs-datepicker-body table td.is-other-month span {\n  color: rgba(0, 0, 0, 0.25);\n}\n.bs-datepicker-body table td.active {\n  position: relative;\n}\n.bs-datepicker-body table td.active.select-start:before {\n  left: 35%;\n}\n.bs-datepicker-body table td.active.select-end:before {\n  left: -85%;\n}\n.bs-datepicker-body table td span.active.select-start:after,\n.bs-datepicker-body table td span.active.select-end:after, .bs-datepicker-body table td.active.select-start span:after, .bs-datepicker-body table td.active.select-end span:after {\n  content: \"\";\n  display: block;\n  position: absolute;\n  z-index: -1;\n  width: 100%;\n  height: 100%;\n  transition: 0.3s;\n  top: 0;\n  border-radius: 50%;\n}\n.bs-datepicker-body table td:before,\n.bs-datepicker-body table td span:before {\n  content: \"\";\n  display: block;\n  position: absolute;\n  z-index: -1;\n  top: 6px;\n  bottom: 6px;\n  left: -3px;\n  right: -2px;\n  box-sizing: content-box;\n  background: transparent;\n}\n.bs-datepicker-body table td.active.select-start + td.active:before {\n  left: -20%;\n}\n.bs-datepicker-body table td:last-child.active:before {\n  border-radius: 0 3px 3px 0;\n  width: 125%;\n  left: -25%;\n}\n.bs-datepicker-body table td span[class*=select-], .bs-datepicker-body table td[class*=select-] span {\n  border-radius: 50%;\n  color: #fff;\n}\n.bs-datepicker-body table.days td.active:not(.select-start):before, .bs-datepicker-body table.days td.in-range:not(.select-start):before,\n.bs-datepicker-body table.days span.active:not(.select-start):before,\n.bs-datepicker-body table.days span.in-range:not(.select-start):before {\n  background: #e9edf0;\n}\n.bs-datepicker-body table.days span {\n  width: 32px;\n  height: 32px;\n  line-height: 32px;\n}\n.bs-datepicker-body table.days span.select-start {\n  z-index: 2;\n}\n.bs-datepicker-body table.days span.is-highlighted.in-range:before {\n  right: 3px;\n  left: 0;\n}\n.bs-datepicker-body table.days span.in-range.select-end:before {\n  right: 4px;\n  left: 0;\n}\n.bs-datepicker-body table.days td.select-start + td.select-end:before, .bs-datepicker-body table.days td.select-start + td.is-highlighted:before, .bs-datepicker-body table.days td.active + td.is-highlighted:before, .bs-datepicker-body table.days td.active + td.select-end:before, .bs-datepicker-body table.days td.in-range + td.is-highlighted:before, .bs-datepicker-body table.days td.in-range + td.select-end:before {\n  background: #e9edf0;\n  width: 100%;\n}\n.bs-datepicker-body table.weeks tr td:nth-child(2).active:before {\n  border-radius: 3px 0 0 3px;\n  left: 0;\n  width: 100%;\n}\n.bs-datepicker-body table:not(.weeks) tr td:first-child:before {\n  border-radius: 3px 0 0 3px;\n}\n.bs-datepicker-body table.years td span {\n  width: 46px;\n  height: 46px;\n  line-height: 45px;\n  margin: 0 auto;\n}\n.bs-datepicker-body table.years tr:not(:last-child) td span {\n  margin-bottom: 8px;\n}\n.bs-datepicker-body table.months td {\n  height: 52px;\n}\n.bs-datepicker-body table.months td span {\n  padding: 6px;\n  border-radius: 15px;\n}\n.bs-datepicker .current-timedate {\n  color: #54708b;\n  font-size: 15px;\n  text-align: center;\n  height: 30px;\n  line-height: 30px;\n  border-radius: 20px;\n  border: 1px solid #e9edf0;\n  margin-bottom: 10px;\n  cursor: pointer;\n  text-transform: uppercase;\n  -moz-user-select: none;\n  -webkit-user-select: none;\n  -ms-user-select: none;\n}\n.bs-datepicker .current-timedate span:not(:empty):before {\n  content: \"\";\n  width: 15px;\n  height: 16px;\n  display: inline-block;\n  margin-right: 4px;\n  vertical-align: text-bottom;\n  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAQCAYAAADJViUEAAABMklEQVQoU9VTwW3CQBCcOUgBtEBKSAukAnBKME+wFCAlYIhk8sQlxFABtJAScAsuAPBEewYcxCP8ouxrPDsza61uiVN1o6RNHD4htSCmq49RfO71BvMJqBBkITRf1kmUW49nQRC9h1I5AZlBClaL8aP1fKgOOxCx8aSLs+Q19eZuNO8QmPqJRtDFguy7OAcDbJPs+/BKVPDIPrvD2ZJgWAmVe7O0rI0Vqs1seyWUXpuJoppYCa5L+U++NpNPkr5OE2oMdARsb3gykJT5ydZcL8Z9Ww60nxg2LhjON9li9OwXZzo+xLbp3nC2s9CL2RrueGyVrgwNm8HpsCzZ9EEW6kqXlo1GQe03FzP/7W8Hl0dBtu7Bf7zt6mIwvX1RvzDCm7+q3mAW0Dl/GPdUCeXrZLT9BrDrGkm4qlPvAAAAAElFTkSuQmCC);\n}\n.bs-datepicker-multiple {\n  border-radius: 4px 0 0 4px;\n}\n.bs-datepicker-multiple + .bs-datepicker-multiple {\n  margin-left: 10px;\n}\n.bs-datepicker-multiple .bs-datepicker {\n  box-shadow: none;\n  position: relative;\n}\n.bs-datepicker-multiple .bs-datepicker:not(:last-child) {\n  padding-right: 10px;\n}\n.bs-datepicker-multiple .bs-datepicker + .bs-datepicker:after {\n  content: \"\";\n  display: block;\n  width: 14px;\n  height: 10px;\n  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAKCAYAAABrGwT5AAAA1ElEQVQoU42RsQrCUAxF77VuDu7O4oMWW//BURBBpZvgKk4uIrjoqKOTf+DopIO4uYggtFTfw3+pkQqCW1/G5J7kJiFy4m5MxUlxAzgIPHX+lzMPzupRYlYgxiR7vqsOP8YKzsTx0yxFMCUZ+q7aZzlr+OvgoWcAFyAHgat2jLWu48252DdqAihDJGSSJNUUxYmQjs3+hPQBlAh2rG2LCOPnaw3IiGDX99TRCs7ASJsNhUOA7d/LcuHvRG22FIZvsNXw1MX6VZExCilOQKEfeLXr/10+aC9Ho7arh7oAAAAASUVORK5CYII=);\n  position: absolute;\n  top: 25px;\n  left: -8px;\n}\n.bs-datepicker-multiple .bs-datepicker .left {\n  float: left;\n}\n.bs-datepicker-multiple .bs-datepicker .right {\n  float: right;\n}\n.bs-datepicker-container {\n  padding: 15px;\n}\n.bs-datepicker .bs-media-container {\n  display: flex;\n}\n@media (max-width: 768px) {\n  .bs-datepicker .bs-media-container {\n    flex-direction: column;\n  }\n}\n.bs-datepicker-custom-range {\n  padding: 15px;\n  background: #eee;\n}\n.bs-datepicker-predefined-btns button {\n  width: 100%;\n  display: block;\n  height: 30px;\n  background-color: #9aaec1;\n  border-radius: 4px;\n  color: #fff;\n  border: 0;\n  margin-bottom: 10px;\n  padding: 0 18px;\n  text-align: left;\n  transition: 0.3s;\n}\n.bs-datepicker-predefined-btns button:hover {\n  background-color: #54708b;\n}\n.bs-datepicker-buttons {\n  display: flex;\n  flex-flow: row wrap;\n  justify-content: flex-end;\n  padding-top: 10px;\n  border-top: 1px solid #e9edf0;\n}\n.bs-datepicker-buttons .btn-default {\n  margin-left: 10px;\n}\n.bs-datepicker-buttons .btn-today-wrapper {\n  display: flex;\n  flex-flow: row wrap;\n}\n.bs-datepicker-buttons .clear-right,\n.bs-datepicker-buttons .today-right {\n  flex-grow: 0;\n}\n.bs-datepicker-buttons .clear-left,\n.bs-datepicker-buttons .today-left {\n  flex-grow: 1;\n}\n.bs-datepicker-buttons .clear-center,\n.bs-datepicker-buttons .today-center {\n  flex-grow: 0.5;\n}\n/* .bs-timepicker */\n.bs-timepicker-container {\n  padding: 10px 0;\n}\n.bs-timepicker-label {\n  color: #54708b;\n  margin-bottom: 10px;\n}\n.bs-timepicker-controls {\n  display: inline-block;\n  vertical-align: top;\n  margin-right: 10px;\n}\n.bs-timepicker-controls button {\n  width: 20px;\n  height: 20px;\n  border-radius: 50%;\n  border: 0;\n  background-color: #e9edf0;\n  color: #54708b;\n  font-size: 16px;\n  font-weight: 700;\n  vertical-align: middle;\n  line-height: 0;\n  padding: 0;\n  transition: 0.3s;\n}\n.bs-timepicker-controls button:hover {\n  background-color: #d5dadd;\n}\n.bs-timepicker-controls input {\n  width: 35px;\n  height: 25px;\n  border-radius: 13px;\n  text-align: center;\n  border: 1px solid #e9edf0;\n}\n.bs-timepicker .switch-time-format {\n  text-transform: uppercase;\n  min-width: 54px;\n  height: 25px;\n  border-radius: 20px;\n  border: 1px solid #e9edf0;\n  background: #fff;\n  color: #54708b;\n  font-size: 13px;\n}\n.bs-timepicker .switch-time-format img {\n  vertical-align: initial;\n  margin-left: 4px;\n}\nbs-datepicker-container,\nbs-daterangepicker-container {\n  z-index: 1080;\n}\n/* screen size < 1024px */\n@media (max-width: 768px) {\n  .bs-datepicker-multiple {\n    display: flex;\n  }\n  .bs-datepicker-multiple + .bs-datepicker-multiple {\n    margin-top: 10px;\n    margin-left: 0;\n  }\n}\n/* theming */\n.theme-default .bs-datepicker-head {\n  background-color: #777;\n}\n.theme-default .btn-today-wrapper .btn-success, .theme-default .btn-clear-wrapper .btn-success {\n  background-color: #777;\n  border-color: #777;\n}\n.theme-default .btn-today-wrapper .btn-success:not(:disabled):not(.disabled):active:focus, .theme-default .btn-clear-wrapper .btn-success:not(:disabled):not(.disabled):active:focus {\n  box-shadow: none;\n}\n.theme-default .btn-today-wrapper .btn-success:focus, .theme-default .btn-clear-wrapper .btn-success:focus {\n  box-shadow: none;\n}\n.theme-default .btn-today-wrapper .btn-success:not(:disabled):not(.disabled):active, .theme-default .btn-clear-wrapper .btn-success:not(:disabled):not(.disabled):active {\n  background-color: #616161;\n  border-color: #616161;\n}\n.theme-default .btn-today-wrapper .btn-success:hover, .theme-default .btn-clear-wrapper .btn-success:hover {\n  background-color: #6F6E6E;\n  border-color: #6F6E6E;\n}\n.theme-default .bs-datepicker-predefined-btns button.selected {\n  background-color: #777;\n}\n.theme-default .bs-datepicker-body table td span.selected, .theme-default .bs-datepicker-body table td.selected span,\n.theme-default .bs-datepicker-body table td span[class*=select-]:after, .theme-default .bs-datepicker-body table td[class*=select-] span:after {\n  background-color: #777;\n}\n.theme-default .bs-datepicker-body table td.week span {\n  color: #777;\n}\n.theme-default .bs-datepicker-body table td.active-week span:hover {\n  cursor: pointer;\n  background-color: #777;\n  color: #fff;\n  opacity: 0.5;\n  transition: 0s;\n}\n.theme-green .bs-datepicker-head {\n  background-color: #5cb85c;\n}\n.theme-green .btn-today-wrapper .btn-success, .theme-green .btn-clear-wrapper .btn-success {\n  background-color: #5cb85c;\n  border-color: #5cb85c;\n}\n.theme-green .btn-today-wrapper .btn-success:not(:disabled):not(.disabled):active:focus, .theme-green .btn-clear-wrapper .btn-success:not(:disabled):not(.disabled):active:focus {\n  box-shadow: none;\n}\n.theme-green .btn-today-wrapper .btn-success:focus, .theme-green .btn-clear-wrapper .btn-success:focus {\n  box-shadow: none;\n}\n.theme-green .btn-today-wrapper .btn-success:not(:disabled):not(.disabled):active, .theme-green .btn-clear-wrapper .btn-success:not(:disabled):not(.disabled):active {\n  background-color: #1e7e34;\n  border-color: #1e7e34;\n}\n.theme-green .btn-today-wrapper .btn-success:hover, .theme-green .btn-clear-wrapper .btn-success:hover {\n  background-color: #218838;\n  border-color: #218838;\n}\n.theme-green .bs-datepicker-predefined-btns button.selected {\n  background-color: #5cb85c;\n}\n.theme-green .bs-datepicker-body table td span.selected, .theme-green .bs-datepicker-body table td.selected span,\n.theme-green .bs-datepicker-body table td span[class*=select-]:after, .theme-green .bs-datepicker-body table td[class*=select-] span:after {\n  background-color: #5cb85c;\n}\n.theme-green .bs-datepicker-body table td.week span {\n  color: #5cb85c;\n}\n.theme-green .bs-datepicker-body table td.active-week span:hover {\n  cursor: pointer;\n  background-color: #5cb85c;\n  color: #fff;\n  opacity: 0.5;\n  transition: 0s;\n}\n.theme-blue .bs-datepicker-head {\n  background-color: #5bc0de;\n}\n.theme-blue .btn-today-wrapper .btn-success, .theme-blue .btn-clear-wrapper .btn-success {\n  background-color: #5bc0de;\n  border-color: #5bc0de;\n}\n.theme-blue .btn-today-wrapper .btn-success:not(:disabled):not(.disabled):active:focus, .theme-blue .btn-clear-wrapper .btn-success:not(:disabled):not(.disabled):active:focus {\n  box-shadow: none;\n}\n.theme-blue .btn-today-wrapper .btn-success:focus, .theme-blue .btn-clear-wrapper .btn-success:focus {\n  box-shadow: none;\n}\n.theme-blue .btn-today-wrapper .btn-success:not(:disabled):not(.disabled):active, .theme-blue .btn-clear-wrapper .btn-success:not(:disabled):not(.disabled):active {\n  background-color: #2AA8CD;\n  border-color: #2AA8CD;\n}\n.theme-blue .btn-today-wrapper .btn-success:hover, .theme-blue .btn-clear-wrapper .btn-success:hover {\n  background-color: #3AB3D7;\n  border-color: #3AB3D7;\n}\n.theme-blue .bs-datepicker-predefined-btns button.selected {\n  background-color: #5bc0de;\n}\n.theme-blue .bs-datepicker-body table td span.selected, .theme-blue .bs-datepicker-body table td.selected span,\n.theme-blue .bs-datepicker-body table td span[class*=select-]:after, .theme-blue .bs-datepicker-body table td[class*=select-] span:after {\n  background-color: #5bc0de;\n}\n.theme-blue .bs-datepicker-body table td.week span {\n  color: #5bc0de;\n}\n.theme-blue .bs-datepicker-body table td.active-week span:hover {\n  cursor: pointer;\n  background-color: #5bc0de;\n  color: #fff;\n  opacity: 0.5;\n  transition: 0s;\n}\n.theme-dark-blue .bs-datepicker-head {\n  background-color: #337ab7;\n}\n.theme-dark-blue .btn-today-wrapper .btn-success, .theme-dark-blue .btn-clear-wrapper .btn-success {\n  background-color: #337ab7;\n  border-color: #337ab7;\n}\n.theme-dark-blue .btn-today-wrapper .btn-success:not(:disabled):not(.disabled):active:focus, .theme-dark-blue .btn-clear-wrapper .btn-success:not(:disabled):not(.disabled):active:focus {\n  box-shadow: none;\n}\n.theme-dark-blue .btn-today-wrapper .btn-success:focus, .theme-dark-blue .btn-clear-wrapper .btn-success:focus {\n  box-shadow: none;\n}\n.theme-dark-blue .btn-today-wrapper .btn-success:not(:disabled):not(.disabled):active, .theme-dark-blue .btn-clear-wrapper .btn-success:not(:disabled):not(.disabled):active {\n  background-color: #266498;\n  border-color: #266498;\n}\n.theme-dark-blue .btn-today-wrapper .btn-success:hover, .theme-dark-blue .btn-clear-wrapper .btn-success:hover {\n  background-color: #2C6FA9;\n  border-color: #2C6FA9;\n}\n.theme-dark-blue .bs-datepicker-predefined-btns button.selected {\n  background-color: #337ab7;\n}\n.theme-dark-blue .bs-datepicker-body table td span.selected, .theme-dark-blue .bs-datepicker-body table td.selected span,\n.theme-dark-blue .bs-datepicker-body table td span[class*=select-]:after, .theme-dark-blue .bs-datepicker-body table td[class*=select-] span:after {\n  background-color: #337ab7;\n}\n.theme-dark-blue .bs-datepicker-body table td.week span {\n  color: #337ab7;\n}\n.theme-dark-blue .bs-datepicker-body table td.active-week span:hover {\n  cursor: pointer;\n  background-color: #337ab7;\n  color: #fff;\n  opacity: 0.5;\n  transition: 0s;\n}\n.theme-red .bs-datepicker-head {\n  background-color: #d9534f;\n}\n.theme-red .btn-today-wrapper .btn-success, .theme-red .btn-clear-wrapper .btn-success {\n  background-color: #d9534f;\n  border-color: #d9534f;\n}\n.theme-red .btn-today-wrapper .btn-success:not(:disabled):not(.disabled):active:focus, .theme-red .btn-clear-wrapper .btn-success:not(:disabled):not(.disabled):active:focus {\n  box-shadow: none;\n}\n.theme-red .btn-today-wrapper .btn-success:focus, .theme-red .btn-clear-wrapper .btn-success:focus {\n  box-shadow: none;\n}\n.theme-red .btn-today-wrapper .btn-success:not(:disabled):not(.disabled):active, .theme-red .btn-clear-wrapper .btn-success:not(:disabled):not(.disabled):active {\n  background-color: #D23531;\n  border-color: #D23531;\n}\n.theme-red .btn-today-wrapper .btn-success:hover, .theme-red .btn-clear-wrapper .btn-success:hover {\n  background-color: #E33732;\n  border-color: #E33732;\n}\n.theme-red .bs-datepicker-predefined-btns button.selected {\n  background-color: #d9534f;\n}\n.theme-red .bs-datepicker-body table td span.selected, .theme-red .bs-datepicker-body table td.selected span,\n.theme-red .bs-datepicker-body table td span[class*=select-]:after, .theme-red .bs-datepicker-body table td[class*=select-] span:after {\n  background-color: #d9534f;\n}\n.theme-red .bs-datepicker-body table td.week span {\n  color: #d9534f;\n}\n.theme-red .bs-datepicker-body table td.active-week span:hover {\n  cursor: pointer;\n  background-color: #d9534f;\n  color: #fff;\n  opacity: 0.5;\n  transition: 0s;\n}\n.theme-orange .bs-datepicker-head {\n  background-color: #f0ad4e;\n}\n.theme-orange .btn-today-wrapper .btn-success, .theme-orange .btn-clear-wrapper .btn-success {\n  background-color: #f0ad4e;\n  border-color: #f0ad4e;\n}\n.theme-orange .btn-today-wrapper .btn-success:not(:disabled):not(.disabled):active:focus, .theme-orange .btn-clear-wrapper .btn-success:not(:disabled):not(.disabled):active:focus {\n  box-shadow: none;\n}\n.theme-orange .btn-today-wrapper .btn-success:focus, .theme-orange .btn-clear-wrapper .btn-success:focus {\n  box-shadow: none;\n}\n.theme-orange .btn-today-wrapper .btn-success:not(:disabled):not(.disabled):active, .theme-orange .btn-clear-wrapper .btn-success:not(:disabled):not(.disabled):active {\n  background-color: #ED9C29;\n  border-color: #ED9C29;\n}\n.theme-orange .btn-today-wrapper .btn-success:hover, .theme-orange .btn-clear-wrapper .btn-success:hover {\n  background-color: #FFAC35;\n  border-color: #FFAC35;\n}\n.theme-orange .bs-datepicker-predefined-btns button.selected {\n  background-color: #f0ad4e;\n}\n.theme-orange .bs-datepicker-body table td span.selected, .theme-orange .bs-datepicker-body table td.selected span,\n.theme-orange .bs-datepicker-body table td span[class*=select-]:after, .theme-orange .bs-datepicker-body table td[class*=select-] span:after {\n  background-color: #f0ad4e;\n}\n.theme-orange .bs-datepicker-body table td.week span {\n  color: #f0ad4e;\n}\n.theme-orange .bs-datepicker-body table td.active-week span:hover {\n  cursor: pointer;\n  background-color: #f0ad4e;\n  color: #fff;\n  opacity: 0.5;\n  transition: 0s;\n}\n.c-dark-theme ~ * .bs-datepicker {\n  background-color: #23242d !important;\n}\n.c-dark-theme ~ * .bs-datepicker .bs-datepicker-head button {\n  color: black !important;\n}\n.c-dark-theme ~ * .bs-datepicker .bs-datepicker-body td {\n  color: #9d9fb2 !important;\n}\n.c-dark-theme ~ * .bs-datepicker .bs-datepicker-body {\n  border-color: #393b4a !important;\n}\n.c-dark-theme ~ * .bs-datepicker .bs-datepicker-body table td.disabled span,\n.c-dark-theme ~ * .bs-datepicker .bs-datepicker-body table td span.disabled {\n  color: #9d9fb2 !important;\n}\n.c-dark-theme ~ * .bs-datepicker .bs-datepicker-body table.days span.in-range:not(.select-start):before {\n  background-color: black !important;\n}\n.c-dark-theme ~ * .bs-datepicker .bs-datepicker-buttons {\n  border-top-color: #393b4a !important;\n}\n:host c-input-group-prepend c-input-group-text c-icon:only-child {\n  display: flex;\n}\n:host c-input-group-append c-input-group-text c-icon:only-child {\n  display: flex;\n}\n.theme-dark-blue .bs-datepicker-head,\n.custom-today-class,\n.theme-dark-blue .bs-datepicker-body table td span.selected,\n.theme-dark-blue .bs-datepicker-body table td.selected span,\n.theme-dark-blue .bs-datepicker-body table td span[class*=select-]:after,\n.theme-dark-blue .bs-datepicker-body table td[class*=select-] span:after {\n  background-color: #257796 !important;\n  color: white !important;\n}\n.theme-dark-blue .bs-datepicker-body table td.week span {\n  color: #3C4B64 !important;\n}\n.mt-10 {\n  margin-top: 10px;\n}\n.o-name {\n  min-width: 20% !important;\n}\n.c-name {\n  min-width: 30% !important;\n}\n.d-name {\n  min-width: 20% !important;\n}\n.w-name {\n  min-width: 20% !important;\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uL25vZGVfbW9kdWxlcy9uZ3gtYm9vdHN0cmFwL2RhdGVwaWNrZXIvYnMtZGF0ZXBpY2tlci5zY3NzIiwiLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vbm9kZV9tb2R1bGVzL25neC1ib290c3RyYXAvZGF0ZXBpY2tlci91dGlscy9zY3NzL3ZhcmlhYmxlcy5zY3NzIiwiLi4vLi4vLi4vLi4vLi4vY2hlY2staW4uY29tcG9uZW50LnNjc3MiLCIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9ub2RlX21vZHVsZXMvbmd4LWJvb3RzdHJhcC9kYXRlcGlja2VyL3V0aWxzL3Njc3MvbWl4aW5zLnNjc3MiLCIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9zY3NzL3ZlbmRvcnMvYnMtZGF0ZXBpY2tlci9kYXRlcGlja2VyLnNjc3MiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBR0EsbUJBQUE7QUFDQTtFQUNFLGFBQUE7RUFDQSxvQkFBQTtFQUNBLG1CQUFBO0VBQ0EsZ0JDUmdCO0VEU2hCLDJCQUFBO0VBQ0Esa0JBQUE7RUFDQSxVQUFBO0VBWUEsV0FBQTtFQWVBLHdCQUFBO0VBeUVBLHdCQUFBO0VBc09BLHNCQUFBO0VBMkJBLDRCQUFBO0VBcUNBLHdCQUFBO0VBWUEsK0JBQUE7RUFNQSxtQ0FBQTtFQXFCQSwyQkFBQTtBRTFhRjtBRkxFO0VBQ0UsV0FBQTtFQUNBLFdBQUE7RUFDQSxjQUFBO0FFT0o7QUZKRTtFQUNFLFdBQUE7QUVNSjtBRkZFOzs7Ozs7RUFXRSxhQUFBO0FFREo7QUZLRTtFQUNFLGdCQUFBO0VBQ0EsWUFBQTtFQUNBLGFBQUE7RUFDQSwwQkFBQTtFQUNBLG1CQUFBO0VBU0EsK0JBQUE7QUVYSjtBRklJO0VBQ0UsV0FBQTtFQUNBLHFCQUFBO0VBQ0EsbUJBQUE7RUFDQSxXQUFBO0FFRk47QUZNSTtFQUNFLHFCQUFBO0VBQ0EsbUJBQUE7RUFDQSxVQUFBO0VBQ0EsWUFBQTtFQUNBLGlCQUFBO0VBQ0EsU0FBQTtFQUNBLHVCQUFBO0VBQ0Esa0JBQUE7RUFDQSxlQUFBO0VBQ0EsV0MzRFk7RUQ0RFosZ0JBQUE7QUVKTjtBRk1NO0VBR0Usb0NDN0NlO0VEOENmLGNDN0NlO0VEOENmLG1CQUFBO0FFTlI7QUZTTTtFQUVFLGtCQUFBO0VBQ0EsV0FBQTtFQUNBLFlBQUE7QUVSUjtBRlVRO0VBQ0UsZUFBQTtFQUNBLGNBQUE7RUFDQSxxQkFBQTtFQUNBLGtCQUFBO0VBQ0EsWUFBQTtFQUNBLFdBQUE7RUFDQSxrQkFBQTtBRVJWO0FGWU07RUFDRSxtQkFBQTtFQUNBLGdCQUFBO0VBQ0EsZUFBQTtBRVZSO0FGaUJNO0VBQ0Usb0NBQUE7QUVmUjtBRmlCTTtFQUNFLG9DQUFBO0FFZlI7QUZxQkU7RUFDRSxhQUFBO0VBQ0EsMEJBQUE7RUFDQSxpQkFBQTtFQUNBLGdCQUFBO0VBQ0EseUJBQUE7RUFPQSw4QkFBQTtBRXpCSjtBRm9CSTtFQUNFLGtCQUFBO0VBQ0EsVUFBQTtBRWxCTjtBRnNCSTtFQUNFLFdBQUE7RUFDQSx5QkFBQTtFQUNBLGlCQUFBO0VBcUhBLG1DQUFBO0VBeUNBLG9DQUFBO0FFaExOO0FGb0JNO0VBQ0UsZUFBQTtFQUNBLGNDOUhVO0VEK0hWLGdCQUFBO0VBQ0Esa0JBQUE7QUVsQlI7QUZxQk07RUFDRSxjQ25JVTtFRG9JVixrQkFBQTtFQUNBLGtCQUFBO0VBQ0EsVUFBQTtBRW5CUjtBRnFCUTtFQUNFLGNBQUE7RUFDQSxjQUFBO0VBQ0EsZUFBQTtFQUNBLGtCQUFBO0VBQ0EsY0FBQTtFQUNBLHNCQUFBO0VBQ0EseUJBQUE7RUFDQSxxQkFBQTtBRW5CVjtBRnVCUTtFQUNFLGVBQUE7QUVyQlY7QUZ3QlE7O0VBRUUseUJDdkpRO0VEd0pSLGNBQUE7QUV0QlY7QUZ5QlE7O0VBRUUseUJDN0pRO0VEOEpSLGNBQUE7RUFDQSxlQUFBO0FFdkJWO0FGMEJRO0VBRUUsY0N4S1E7QUMrSWxCO0FGNEJRO0VBRUUsV0M5S1E7QUNtSmxCO0FGOEJRO0VBRUUsMEJBQUE7QUU3QlY7QUZnQ1E7RUFDRSxrQkFBQTtBRTlCVjtBRmdDVTtFQUNFLFNBQUE7QUU5Qlo7QUZpQ1U7RUFDRSxVQUFBO0FFL0JaO0FGbUNROztFQUlFLFdBQUE7RUFDQSxjQUFBO0VBQ0Esa0JBQUE7RUFDQSxXQUFBO0VBQ0EsV0FBQTtFQUNBLFlBQUE7RUFDQSxnQkFBQTtFQUNBLE1BQUE7RUFDQSxrQkFBQTtBRW5DVjtBRnNDUTs7RUFFRSxXQUFBO0VBQ0EsY0FBQTtFQUNBLGtCQUFBO0VBQ0EsV0FBQTtFQUNBLFFBQUE7RUFDQSxXQUFBO0VBQ0EsVUFBQTtFQUNBLFdBQUE7RUFDQSx1QkFBQTtFQUNBLHVCQUFBO0FFcENWO0FGdUNRO0VBQ0UsVUFBQTtBRXJDVjtBRndDUTtFQUNFLDBCQUFBO0VBQ0EsV0FBQTtFQUNBLFVBQUE7QUV0Q1Y7QUZ5Q1E7RUFFRSxrQkFBQTtFQUNBLFdDNU9RO0FDb01sQjtBRmdEVTs7O0VBRUUsbUJDalBNO0FDb01sQjtBRmlEUTtFQUNFLFdBQUE7RUFDQSxZQUFBO0VBQ0EsaUJBQUE7QUUvQ1Y7QUZpRFU7RUFDRSxVQUFBO0FFL0NaO0FGaURVO0VBQ0UsVUFBQTtFQUNBLE9BQUE7QUUvQ1o7QUZpRFU7RUFDRSxVQUFBO0VBQ0EsT0FBQTtBRS9DWjtBRm9EVTtFQU1FLG1CQzlRTTtFRCtRTixXQUFBO0FFdkRaO0FGZ0VZO0VBQ0UsMEJBQUE7RUFDQSxPQUFBO0VBQ0EsV0FBQTtBRTlEZDtBRnVFWTtFQUNFLDBCQUFBO0FFckVkO0FGNkVVO0VBQ0UsV0FBQTtFQUNBLFlBQUE7RUFDQSxpQkFBQTtFQUNBLGNBQUE7QUUzRVo7QUZpRlk7RUFDRSxrQkFBQTtBRS9FZDtBRnNGUTtFQUNFLFlBQUE7QUVwRlY7QUZzRlU7RUFDRSxZQUFBO0VBQ0EsbUJBQUE7QUVwRlo7QUY0RkU7RUFDRSxjQ2hWYztFRGlWZCxlQUFBO0VBQ0Esa0JBQUE7RUFDQSxZQUFBO0VBQ0EsaUJBQUE7RUFDQSxtQkFBQTtFQUNBLHlCQUFBO0VBQ0EsbUJBQUE7RUFDQSxlQUFBO0VBQ0EseUJBQUE7RUFDQSxzQkFBQTtFQUNBLHlCQUFBO0VBQ0EscUJBQUE7QUUxRko7QUY0Rkk7RUFDRSxXQUFBO0VBQ0EsV0FBQTtFQUNBLFlBQUE7RUFDQSxxQkFBQTtFQUNBLGlCQUFBO0VBQ0EsMkJBQUE7RUFDQSwyZ0JBQUE7QUUxRk47QUYrRkU7RUFDRSwwQkFBQTtBRTdGSjtBRitGSTtFQUNFLGlCQUFBO0FFN0ZOO0FGZ0dJO0VBQ0UsZ0JBQUE7RUFDQSxrQkFBQTtBRTlGTjtBRmdHTTtFQUNFLG1CQUFBO0FFOUZSO0FGaUdNO0VBQ0UsV0FBQTtFQUNBLGNBQUE7RUFDQSxXQUFBO0VBQ0EsWUFBQTtFQUNBLCtZQUFBO0VBQ0Esa0JBQUE7RUFDQSxTQUFBO0VBQ0EsVUFBQTtBRS9GUjtBRmtHTTtFQUNFLFdBQUE7QUVoR1I7QUZtR007RUFDRSxZQUFBO0FFakdSO0FGdUdFO0VBQ0UsYUFBQTtBRXJHSjtBRndHRTtFQUNFLGFBQUE7QUV0R0o7QUZ1R0k7RUFGRjtJQUdJLHNCQUFBO0VFcEdKO0FBQ0Y7QUZ3R0U7RUFDRSxhQUFBO0VBQ0EsZ0JDbmFjO0FDNlRsQjtBRjJHSTtFQUNFLFdBQUE7RUFDQSxjQUFBO0VBQ0EsWUFBQTtFQUNBLHlCQzlaWTtFRCtaWixrQkFBQTtFQUNBLFdDMWFZO0VEMmFaLFNBQUE7RUFDQSxtQkFBQTtFQUNBLGVBQUE7RUFDQSxnQkFBQTtFQUNBLGdCQUFBO0FFekdOO0FGMkdNO0VBQ0UseUJDdmFVO0FDOFRsQjtBRitHRTtFQUNFLGFBQUE7RUFDQSxtQkFBQTtFQUNBLHlCQUFBO0VBQ0EsaUJBQUE7RUFDQSw2QkFBQTtBRTdHSjtBRitHSTtFQUNFLGlCQUFBO0FFN0dOO0FGZ0hJO0VBQ0UsYUFBQTtFQUNBLG1CQUFBO0FFOUdOO0FGaUhJOztFQUVFLFlBQUE7QUUvR047QUZpSEk7O0VBRUUsWUFBQTtBRS9HTjtBRmtISTs7RUFFRSxjQUFBO0FFaEhOO0FGcUhBLG1CQUFBO0FBRUU7RUFDRSxlQUFBO0FFbkhKO0FGc0hFO0VBQ0UsY0M3ZGM7RUQ4ZGQsbUJBQUE7QUVwSEo7QUZ1SEU7RUFDRSxxQkFBQTtFQUNBLG1CQUFBO0VBQ0Esa0JBQUE7QUVySEo7QUZ1SEk7RUFDRSxXQUFBO0VBQ0EsWUFBQTtFQUNBLGtCQUFBO0VBQ0EsU0FBQTtFQUNBLHlCQ3RlWTtFRHVlWixjQzVlWTtFRDZlWixlQUFBO0VBQ0EsZ0JBQUE7RUFDQSxzQkFBQTtFQUNBLGNBQUE7RUFDQSxVQUFBO0VBQ0EsZ0JBQUE7QUVySE47QUZ1SE07RUFDRSx5QkMvZVU7QUMwWGxCO0FGeUhJO0VBQ0UsV0FBQTtFQUNBLFlBQUE7RUFDQSxtQkFBQTtFQUNBLGtCQUFBO0VBQ0EseUJBQUE7QUV2SE47QUYySEU7RUFDRSx5QkFBQTtFQUNBLGVBQUE7RUFDQSxZQUFBO0VBQ0EsbUJBQUE7RUFDQSx5QkFBQTtFQUNBLGdCQy9nQmM7RURnaEJkLGNDemdCYztFRDBnQmQsZUFBQTtBRXpISjtBRjJISTtFQUNFLHVCQUFBO0VBQ0EsZ0JBQUE7QUV6SE47QUY4SEE7O0VBRUUsYUFBQTtBRTNIRjtBRjhIQSx5QkFBQTtBQUNBO0VBRUk7SUFDRSxhQUFBO0VFNUhKO0VGOEhJO0lBQ0UsZ0JBQUE7SUFDQSxjQUFBO0VFNUhOO0FBQ0Y7QUZpSUEsWUFBQTtBR3ppQkk7RUFDRSxzQkZxQ087QUNzWWI7QUN2YU07RUFDRSxzQkZnQ0s7RUUvQkwsa0JGK0JLO0FDMFliO0FDdGFRO0VBQ0UsZ0JBQUE7QUR3YVY7QUNyYU07RUFDRSxnQkFBQTtBRHVhUjtBQzNWUTtFQUNFLHlCRjdEYTtFRThEYixxQkY5RGE7QUMyWnZCO0FDMVZRO0VBQ0UseUJGekVZO0VFMEVaLHFCRjFFWTtBQ3NhdEI7QUNyVlU7RUFDRSxzQkZwRUM7QUMyWmI7QUMvVVU7O0VBSUUsc0JGaEZDO0FDK1piO0FDNVVVO0VBQ0UsV0ZwRkM7QUNrYWI7QUMzVVU7RUFDRSxlQUFBO0VBQ0Esc0JGekZDO0VFMEZELFdGL0hNO0VFZ0lOLFlBQUE7RUFDQSxjQUFBO0FENlVaO0FDL2NJO0VBQ0UseUJGcUNPO0FDNmFiO0FDOWNNO0VBQ0UseUJGZ0NLO0VFL0JMLHFCRitCSztBQ2liYjtBQzdjUTtFQUNFLGdCQUFBO0FEK2NWO0FDNWNNO0VBQ0UsZ0JBQUE7QUQ4Y1I7QUN4Y1E7RUFDRSx5QkZVVztFRVRYLHFCRlNXO0FDaWNyQjtBQ3ZjUTtFQUNFLHlCRkZVO0VFR1YscUJGSFU7QUM0Y3BCO0FDNVhVO0VBQ0UseUJGcEVDO0FDa2NiO0FDdFhVOztFQUlFLHlCRmhGQztBQ3NjYjtBQ25YVTtFQUNFLGNGcEZDO0FDeWNiO0FDbFhVO0VBQ0UsZUFBQTtFQUNBLHlCRnpGQztFRTBGRCxXRi9ITTtFRWdJTixZQUFBO0VBQ0EsY0FBQTtBRG9YWjtBQ3RmSTtFQUNFLHlCRnFDTztBQ29kYjtBQ3JmTTtFQUNFLHlCRmdDSztFRS9CTCxxQkYrQks7QUN3ZGI7QUNwZlE7RUFDRSxnQkFBQTtBRHNmVjtBQ25mTTtFQUNFLGdCQUFBO0FEcWZSO0FDamVRO0VBQ0UseUJGSFU7RUVJVixxQkZKVTtBQ3VlcEI7QUNoZVE7RUFDRSx5QkZmUztFRWdCVCxxQkZoQlM7QUNrZm5CO0FDbmFVO0VBQ0UseUJGcEVDO0FDeWViO0FDN1pVOztFQUlFLHlCRmhGQztBQzZlYjtBQzFaVTtFQUNFLGNGcEZDO0FDZ2ZiO0FDelpVO0VBQ0UsZUFBQTtFQUNBLHlCRnpGQztFRTBGRCxXRi9ITTtFRWdJTixZQUFBO0VBQ0EsY0FBQTtBRDJaWjtBQzdoQkk7RUFDRSx5QkZxQ087QUMyZmI7QUM1aEJNO0VBQ0UseUJGZ0NLO0VFL0JMLHFCRitCSztBQytmYjtBQzNoQlE7RUFDRSxnQkFBQTtBRDZoQlY7QUMxaEJNO0VBQ0UsZ0JBQUE7QUQ0aEJSO0FDMWZRO0VBQ0UseUJGaEJlO0VFaUJmLHFCRmpCZTtBQzZnQnpCO0FDemZRO0VBQ0UseUJGNUJjO0VFNkJkLHFCRjdCYztBQ3doQnhCO0FDMWNVO0VBQ0UseUJGcEVDO0FDZ2hCYjtBQ3BjVTs7RUFJRSx5QkZoRkM7QUNvaEJiO0FDamNVO0VBQ0UsY0ZwRkM7QUN1aEJiO0FDaGNVO0VBQ0UsZUFBQTtFQUNBLHlCRnpGQztFRTBGRCxXRi9ITTtFRWdJTixZQUFBO0VBQ0EsY0FBQTtBRGtjWjtBQ3BrQkk7RUFDRSx5QkZxQ087QUNraUJiO0FDbmtCTTtFQUNFLHlCRmdDSztFRS9CTCxxQkYrQks7QUNzaUJiO0FDbGtCUTtFQUNFLGdCQUFBO0FEb2tCVjtBQ2prQk07RUFDRSxnQkFBQTtBRG1rQlI7QUNyZ0JRO0VBQ0UseUJGMUNTO0VFMkNULHFCRjNDUztBQ2tqQm5CO0FDcGdCUTtFQUNFLHlCRnREUTtFRXVEUixxQkZ2RFE7QUM2akJsQjtBQ2pmVTtFQUNFLHlCRnBFQztBQ3VqQmI7QUMzZVU7O0VBSUUseUJGaEZDO0FDMmpCYjtBQ3hlVTtFQUNFLGNGcEZDO0FDOGpCYjtBQ3ZlVTtFQUNFLGVBQUE7RUFDQSx5QkZ6RkM7RUUwRkQsV0YvSE07RUVnSU4sWUFBQTtFQUNBLGNBQUE7QUR5ZVo7QUMzbUJJO0VBQ0UseUJGcUNPO0FDeWtCYjtBQzFtQk07RUFDRSx5QkZnQ0s7RUUvQkwscUJGK0JLO0FDNmtCYjtBQ3ptQlE7RUFDRSxnQkFBQTtBRDJtQlY7QUN4bUJNO0VBQ0UsZ0JBQUE7QUQwbUJSO0FDMWpCUTtFQUNFLHlCRjdCWTtFRThCWixxQkY5Qlk7QUMwbEJ0QjtBQ3pqQlE7RUFDRSx5QkZ6Q1c7RUUwQ1gscUJGMUNXO0FDcW1CckI7QUN4aEJVO0VBQ0UseUJGcEVDO0FDOGxCYjtBQ2xoQlU7O0VBSUUseUJGaEZDO0FDa21CYjtBQy9nQlU7RUFDRSxjRnBGQztBQ3FtQmI7QUM5Z0JVO0VBQ0UsZUFBQTtFQUNBLHlCRnpGQztFRTBGRCxXRi9ITTtFRWdJTixZQUFBO0VBQ0EsY0FBQTtBRGdoQlo7QUVwcEJBO0VBQ0Usb0NBQUE7QUZ1cEJGO0FFdHBCRTtFQUNFLHVCQUFBO0FGd3BCSjtBRXRwQkU7RUFDRSx5QkFBQTtBRndwQko7QUV0cEJFO0VBQ0UsZ0NBQUE7QUZ3cEJKO0FFdHBCRTs7RUFFRSx5QkFBQTtBRndwQko7QUV0cEJFO0VBQ0Usa0NBQUE7QUZ3cEJKO0FFdHBCRTtFQUNFLG9DQUFBO0FGd3BCSjtBQXpxQkU7RUFDRSxhQUFBO0FBNHFCSjtBQXZxQkU7RUFDRSxhQUFBO0FBMHFCSjtBQXRxQkE7Ozs7OztFQU1FLG9DQUFBO0VBQ0EsdUJBQUE7QUF5cUJGO0FBdHFCQTtFQUNFLHlCQUFBO0FBeXFCRjtBQXRxQkE7RUFDRSxnQkFBQTtBQXlxQkY7QUF0cUJBO0VBQ0UseUJBQUE7QUF5cUJGO0FBdnFCQTtFQUNFLHlCQUFBO0FBMHFCRjtBQXhxQkE7RUFDRSx5QkFBQTtBQTJxQkY7QUF6cUJBO0VBQ0EseUJBQUE7QUE0cUJBIiwiZmlsZSI6ImNoZWNrLWluLmNvbXBvbmVudC5zY3NzIiwic291cmNlc0NvbnRlbnQiOlsiQGltcG9ydCAndXRpbHMvc2Nzcy92YXJpYWJsZXMnO1xuQGltcG9ydCAndXRpbHMvc2Nzcy9taXhpbnMnO1xuXG4vKiAuYnMtZGF0ZXBpY2tlciAqL1xuLmJzLWRhdGVwaWNrZXIge1xuICBkaXNwbGF5OiBmbGV4O1xuICBhbGlnbi1pdGVtczogc3RyZXRjaDtcbiAgZmxleC1mbG93OiByb3cgd3JhcDtcbiAgYmFja2dyb3VuZDogJG1haW4tYmc7XG4gIGJveC1zaGFkb3c6IDAgMCAxMHB4IDAgJG1haW4tYm94LXNoYWRvdztcbiAgcG9zaXRpb246IHJlbGF0aXZlO1xuICB6LWluZGV4OiAxO1xuXG4gICY6YWZ0ZXIge1xuICAgIGNsZWFyOiBib3RoO1xuICAgIGNvbnRlbnQ6ICcnO1xuICAgIGRpc3BsYXk6IGJsb2NrO1xuICB9XG5cbiAgYnMtZGF5LXBpY2tlciB7XG4gICAgZmxvYXQ6IGxlZnQ7XG4gIH1cblxuICAvKiBidXR0b24gKi9cbiAgYnV0dG9uOmhvdmVyLFxuICBidXR0b246Zm9jdXMsXG4gIGJ1dHRvbjphY3RpdmUsXG4gIGlucHV0OmhvdmVyLFxuICBpbnB1dDpmb2N1cyxcbiAgaW5wdXQ6YWN0aXZlLFxuICAmLWJ0bnMgYnV0dG9uOmhvdmVyLFxuICAmLWJ0bnMgYnV0dG9uOmZvY3VzLFxuICAmLWJ0bnMgYnV0dG9uOmFjdGl2ZSxcbiAgJi1wcmVkZWZpbmVkLWJ0bnMgYnV0dG9uOmFjdGl2ZSxcbiAgJi1wcmVkZWZpbmVkLWJ0bnMgYnV0dG9uOmZvY3VzIHtcbiAgICBvdXRsaW5lOiBub25lO1xuICB9XG5cbiAgLyogLmJzLWRhdGVwaWNrZXItaGVhZCAqL1xuICAmLWhlYWQge1xuICAgIG1pbi13aWR0aDogMjcwcHg7XG4gICAgaGVpZ2h0OiA1MHB4O1xuICAgIHBhZGRpbmc6IDEwcHg7XG4gICAgYm9yZGVyLXJhZGl1czogM3B4IDNweCAwIDA7XG4gICAgdGV4dC1hbGlnbjoganVzdGlmeTtcblxuICAgICY6YWZ0ZXIge1xuICAgICAgY29udGVudDogXCJcIjtcbiAgICAgIGRpc3BsYXk6IGlubGluZS1ibG9jaztcbiAgICAgIHZlcnRpY2FsLWFsaWduOiB0b3A7XG4gICAgICB3aWR0aDogMTAwJTtcbiAgICB9XG5cbiAgICAvKiAuYnMtZGF0ZXBpY2tlci1oZWFkIGJ1dHRvbiAqL1xuICAgIGJ1dHRvbiB7XG4gICAgICBkaXNwbGF5OiBpbmxpbmUtYmxvY2s7XG4gICAgICB2ZXJ0aWNhbC1hbGlnbjogdG9wO1xuICAgICAgcGFkZGluZzogMDtcbiAgICAgIGhlaWdodDogMzBweDtcbiAgICAgIGxpbmUtaGVpZ2h0OiAzMHB4O1xuICAgICAgYm9yZGVyOiAwO1xuICAgICAgYmFja2dyb3VuZDogdHJhbnNwYXJlbnQ7XG4gICAgICB0ZXh0LWFsaWduOiBjZW50ZXI7XG4gICAgICBjdXJzb3I6IHBvaW50ZXI7XG4gICAgICBjb2xvcjogJGZvbnQtY29sb3ItMDE7XG4gICAgICB0cmFuc2l0aW9uOiAwLjNzO1xuXG4gICAgICAmW2Rpc2FibGVkXSxcbiAgICAgICZbZGlzYWJsZWRdOmhvdmVyLFxuICAgICAgJltkaXNhYmxlZF06YWN0aXZlIHtcbiAgICAgICAgYmFja2dyb3VuZDogJGRpc2FibGVkLWJhY2tncm91bmQ7XG4gICAgICAgIGNvbG9yOiAkZGlzYWJsZWQtY29sb3I7XG4gICAgICAgIGN1cnNvcjogbm90LWFsbG93ZWQ7XG4gICAgICB9XG5cbiAgICAgICYubmV4dCxcbiAgICAgICYucHJldmlvdXMge1xuICAgICAgICBib3JkZXItcmFkaXVzOiA1MCU7XG4gICAgICAgIHdpZHRoOiAzMHB4O1xuICAgICAgICBoZWlnaHQ6IDMwcHg7XG5cbiAgICAgICAgc3BhbiB7XG4gICAgICAgICAgZm9udC1zaXplOiAyOHB4O1xuICAgICAgICAgIGxpbmUtaGVpZ2h0OiAxO1xuICAgICAgICAgIGRpc3BsYXk6IGlubGluZS1ibG9jaztcbiAgICAgICAgICBwb3NpdGlvbjogcmVsYXRpdmU7XG4gICAgICAgICAgaGVpZ2h0OiAxMDAlO1xuICAgICAgICAgIHdpZHRoOiAxMDAlO1xuICAgICAgICAgIGJvcmRlci1yYWRpdXM6IDUwJTtcbiAgICAgICAgfVxuICAgICAgfVxuXG4gICAgICAmLmN1cnJlbnQge1xuICAgICAgICBib3JkZXItcmFkaXVzOiAxNXB4O1xuICAgICAgICBtYXgtd2lkdGg6IDE1NXB4O1xuICAgICAgICBwYWRkaW5nOiAwIDEzcHg7XG4gICAgICB9XG4gICAgfVxuICB9XG5cbiAgJi1oZWFkIHtcbiAgICBidXR0b24ge1xuICAgICAgJjpob3ZlciB7XG4gICAgICAgIGJhY2tncm91bmQtY29sb3I6IHJnYmEoMCwgMCwgMCwgMC4xKTtcbiAgICAgIH1cbiAgICAgICY6YWN0aXZlIHtcbiAgICAgICAgYmFja2dyb3VuZC1jb2xvcjogcmdiYSgwLCAwLCAwLCAwLjIpO1xuICAgICAgfVxuICAgIH1cbiAgfVxuXG4gIC8qIC5icy1kYXRlcGlja2VyLWJvZHkgKi9cbiAgJi1ib2R5IHtcbiAgICBwYWRkaW5nOiAxMHB4O1xuICAgIGJvcmRlci1yYWRpdXM6IDAgMCAzcHggM3B4O1xuICAgIG1pbi1oZWlnaHQ6IDIzMnB4O1xuICAgIG1pbi13aWR0aDogMjc4cHg7XG4gICAgYm9yZGVyOiAxcHggc29saWQgJGJvcmRlci1jb2xvcjtcblxuICAgIC5kYXlzLndlZWtzIHtcbiAgICAgIHBvc2l0aW9uOiByZWxhdGl2ZTtcbiAgICAgIHotaW5kZXg6IDE7XG4gICAgfVxuXG4gICAgLyogLmJzLWRhdGVwaWNrZXItYm9keSB0YWJsZSAqL1xuICAgIHRhYmxlIHtcbiAgICAgIHdpZHRoOiAxMDAlO1xuICAgICAgYm9yZGVyLWNvbGxhcHNlOiBzZXBhcmF0ZTtcbiAgICAgIGJvcmRlci1zcGFjaW5nOiAwO1xuXG4gICAgICB0aCB7XG4gICAgICAgIGZvbnQtc2l6ZTogMTNweDtcbiAgICAgICAgY29sb3I6ICRmb250LWNvbG9yLTAyO1xuICAgICAgICBmb250LXdlaWdodDogNDAwO1xuICAgICAgICB0ZXh0LWFsaWduOiBjZW50ZXI7XG4gICAgICB9XG5cbiAgICAgIHRkIHtcbiAgICAgICAgY29sb3I6ICRmb250LWNvbG9yLTAzO1xuICAgICAgICB0ZXh0LWFsaWduOiBjZW50ZXI7XG4gICAgICAgIHBvc2l0aW9uOiByZWxhdGl2ZTtcbiAgICAgICAgcGFkZGluZzogMDtcblxuICAgICAgICBzcGFuIHtcbiAgICAgICAgICBkaXNwbGF5OiBibG9jaztcbiAgICAgICAgICBtYXJnaW46IDAgYXV0bztcbiAgICAgICAgICBmb250LXNpemU6IDEzcHg7XG4gICAgICAgICAgYm9yZGVyLXJhZGl1czogNTAlO1xuICAgICAgICAgIC8qei1pbmRleDogMTsqL1xuICAgICAgICAgIC1tb3otdXNlci1zZWxlY3Q6IG5vbmU7XG4gICAgICAgICAgLXdlYmtpdC11c2VyLXNlbGVjdDogbm9uZTtcbiAgICAgICAgICAtbXMtdXNlci1zZWxlY3Q6IG5vbmU7XG4gICAgICAgIH1cblxuICAgICAgICAvLyB0b2RvOiBjaGVjayBmaXJzdCA6bm90KC5kaXNhYmxlZCkgdXNhZ2VcbiAgICAgICAgJjpub3QoLmRpc2FibGVkKTpub3QoLndlZWspIHNwYW46bm90KC5kaXNhYmxlZCk6bm90KC5pcy1vdGhlci1tb250aCkge1xuICAgICAgICAgIGN1cnNvcjogcG9pbnRlcjtcbiAgICAgICAgfVxuXG4gICAgICAgICYuaXMtaGlnaGxpZ2h0ZWQ6bm90KC5kaXNhYmxlZCk6bm90KC5zZWxlY3RlZCkgc3BhbixcbiAgICAgICAgc3Bhbi5pcy1oaWdobGlnaHRlZDpub3QoLmRpc2FibGVkKTpub3QoLnNlbGVjdGVkKSB7XG4gICAgICAgICAgYmFja2dyb3VuZC1jb2xvcjogJGhpZ2hsaWdodGVkO1xuICAgICAgICAgIHRyYW5zaXRpb246IDBzO1xuICAgICAgICB9XG5cbiAgICAgICAgJi5pcy1hY3RpdmUtb3RoZXItbW9udGg6bm90KC5kaXNhYmxlZCk6bm90KC5zZWxlY3RlZCkgc3BhbixcbiAgICAgICAgc3Bhbi5pcy1hY3RpdmUtb3RoZXItbW9udGg6bm90KC5kaXNhYmxlZCk6bm90KC5zZWxlY3RlZCkge1xuICAgICAgICAgIGJhY2tncm91bmQtY29sb3I6ICRoaWdobGlnaHRlZDtcbiAgICAgICAgICB0cmFuc2l0aW9uOiAwcztcbiAgICAgICAgICBjdXJzb3I6IHBvaW50ZXI7XG4gICAgICAgIH1cblxuICAgICAgICBzcGFuLmRpc2FibGVkLFxuICAgICAgICAmLmRpc2FibGVkIHNwYW4ge1xuICAgICAgICAgIGNvbG9yOiAkZm9udC1jb2xvci0wMjtcbiAgICAgICAgfVxuXG4gICAgICAgIHNwYW4uc2VsZWN0ZWQsXG4gICAgICAgICYuc2VsZWN0ZWQgc3BhbiB7XG4gICAgICAgICAgY29sb3I6ICRmb250LWNvbG9yLTAxO1xuICAgICAgICB9XG5cbiAgICAgICAgc3Bhbi5pcy1vdGhlci1tb250aCxcbiAgICAgICAgJi5pcy1vdGhlci1tb250aCBzcGFuIHtcbiAgICAgICAgICBjb2xvcjogcmdiYSgwLCAwLCAwLCAwLjI1KTtcbiAgICAgICAgfVxuXG4gICAgICAgICYuYWN0aXZlIHtcbiAgICAgICAgICBwb3NpdGlvbjogcmVsYXRpdmU7XG5cbiAgICAgICAgICAmLnNlbGVjdC1zdGFydDpiZWZvcmUge1xuICAgICAgICAgICAgbGVmdDogMzUlO1xuICAgICAgICAgIH1cblxuICAgICAgICAgICYuc2VsZWN0LWVuZDpiZWZvcmUge1xuICAgICAgICAgICAgbGVmdDogLTg1JTtcbiAgICAgICAgICB9XG4gICAgICAgIH1cblxuICAgICAgICBzcGFuLmFjdGl2ZS5zZWxlY3Qtc3RhcnQ6YWZ0ZXIsXG4gICAgICAgIHNwYW4uYWN0aXZlLnNlbGVjdC1lbmQ6YWZ0ZXIsXG4gICAgICAgICYuYWN0aXZlLnNlbGVjdC1zdGFydCBzcGFuOmFmdGVyLFxuICAgICAgICAmLmFjdGl2ZS5zZWxlY3QtZW5kIHNwYW46YWZ0ZXIge1xuICAgICAgICAgIGNvbnRlbnQ6IFwiXCI7XG4gICAgICAgICAgZGlzcGxheTogYmxvY2s7XG4gICAgICAgICAgcG9zaXRpb246IGFic29sdXRlO1xuICAgICAgICAgIHotaW5kZXg6IC0xO1xuICAgICAgICAgIHdpZHRoOiAxMDAlO1xuICAgICAgICAgIGhlaWdodDogMTAwJTtcbiAgICAgICAgICB0cmFuc2l0aW9uOiAwLjNzO1xuICAgICAgICAgIHRvcDogMDtcbiAgICAgICAgICBib3JkZXItcmFkaXVzOiA1MCU7XG4gICAgICAgIH1cblxuICAgICAgICAmOmJlZm9yZSxcbiAgICAgICAgc3BhbjpiZWZvcmUge1xuICAgICAgICAgIGNvbnRlbnQ6IFwiXCI7XG4gICAgICAgICAgZGlzcGxheTogYmxvY2s7XG4gICAgICAgICAgcG9zaXRpb246IGFic29sdXRlO1xuICAgICAgICAgIHotaW5kZXg6IC0xO1xuICAgICAgICAgIHRvcDogNnB4O1xuICAgICAgICAgIGJvdHRvbTogNnB4O1xuICAgICAgICAgIGxlZnQ6IC0zcHg7XG4gICAgICAgICAgcmlnaHQ6IC0ycHg7XG4gICAgICAgICAgYm94LXNpemluZzogY29udGVudC1ib3g7XG4gICAgICAgICAgYmFja2dyb3VuZDogdHJhbnNwYXJlbnQ7XG4gICAgICAgIH1cblxuICAgICAgICAmLmFjdGl2ZS5zZWxlY3Qtc3RhcnQgKyB0ZC5hY3RpdmU6YmVmb3JlIHtcbiAgICAgICAgICBsZWZ0OiAtMjAlO1xuICAgICAgICB9XG5cbiAgICAgICAgJjpsYXN0LWNoaWxkLmFjdGl2ZTpiZWZvcmUge1xuICAgICAgICAgIGJvcmRlci1yYWRpdXM6IDAgM3B4IDNweCAwO1xuICAgICAgICAgIHdpZHRoOiAxMjUlO1xuICAgICAgICAgIGxlZnQ6IC0yNSU7XG4gICAgICAgIH1cblxuICAgICAgICBzcGFuW2NsYXNzKj1cInNlbGVjdC1cIl0sXG4gICAgICAgICZbY2xhc3MqPVwic2VsZWN0LVwiXSBzcGFuIHtcbiAgICAgICAgICBib3JkZXItcmFkaXVzOiA1MCU7XG4gICAgICAgICAgY29sb3I6ICRmb250LWNvbG9yLTAxO1xuICAgICAgICB9XG4gICAgICB9XG5cbiAgICAgIC8qIC5icy1kYXRlcGlja2VyLWJvZHkgdGFibGUuZGF5cyAqL1xuICAgICAgJi5kYXlzIHtcbiAgICAgICAgdGQsXG4gICAgICAgIHNwYW4ge1xuICAgICAgICAgICYuYWN0aXZlOm5vdCguc2VsZWN0LXN0YXJ0KTpiZWZvcmUsXG4gICAgICAgICAgJi5pbi1yYW5nZTpub3QoLnNlbGVjdC1zdGFydCk6YmVmb3JlIHtcbiAgICAgICAgICAgIGJhY2tncm91bmQ6ICRoaWdobGlnaHRlZDtcbiAgICAgICAgICB9XG4gICAgICAgIH1cblxuICAgICAgICBzcGFuIHtcbiAgICAgICAgICB3aWR0aDogMzJweDtcbiAgICAgICAgICBoZWlnaHQ6IDMycHg7XG4gICAgICAgICAgbGluZS1oZWlnaHQ6IDMycHg7XG5cbiAgICAgICAgICAmLnNlbGVjdC1zdGFydCB7XG4gICAgICAgICAgICB6LWluZGV4OiAyO1xuICAgICAgICAgIH1cbiAgICAgICAgICAmLmlzLWhpZ2hsaWdodGVkLmluLXJhbmdlOmJlZm9yZSB7XG4gICAgICAgICAgICByaWdodDogM3B4O1xuICAgICAgICAgICAgbGVmdDogMDtcbiAgICAgICAgICB9XG4gICAgICAgICAgJi5pbi1yYW5nZS5zZWxlY3QtZW5kOmJlZm9yZSB7XG4gICAgICAgICAgICByaWdodDogNHB4O1xuICAgICAgICAgICAgbGVmdDogMDtcbiAgICAgICAgICB9XG4gICAgICAgIH1cblxuICAgICAgICB0ZCB7XG4gICAgICAgICAgJi5zZWxlY3Qtc3RhcnQgKyB0ZC5zZWxlY3QtZW5kOmJlZm9yZSxcbiAgICAgICAgICAmLnNlbGVjdC1zdGFydCArIHRkLmlzLWhpZ2hsaWdodGVkOmJlZm9yZSxcbiAgICAgICAgICAmLmFjdGl2ZSArIHRkLmlzLWhpZ2hsaWdodGVkOmJlZm9yZSxcbiAgICAgICAgICAmLmFjdGl2ZSArIHRkLnNlbGVjdC1lbmQ6YmVmb3JlLFxuICAgICAgICAgICYuaW4tcmFuZ2UgKyB0ZC5pcy1oaWdobGlnaHRlZDpiZWZvcmUsXG4gICAgICAgICAgJi5pbi1yYW5nZSArIHRkLnNlbGVjdC1lbmQ6YmVmb3JlIHtcbiAgICAgICAgICAgIGJhY2tncm91bmQ6ICRoaWdobGlnaHRlZDtcbiAgICAgICAgICAgIHdpZHRoOiAxMDAlO1xuICAgICAgICAgIH1cbiAgICAgICAgfVxuICAgICAgfVxuXG4gICAgICAvKiAuYnMtZGF0ZXBpY2tlci1ib2R5IHRhYmxlLndlZWtzICovXG4gICAgICAmLndlZWtzIHtcbiAgICAgICAgdHIge1xuICAgICAgICAgIHRkIHtcbiAgICAgICAgICAgICY6bnRoLWNoaWxkKDIpLmFjdGl2ZTpiZWZvcmUge1xuICAgICAgICAgICAgICBib3JkZXItcmFkaXVzOiAzcHggMCAwIDNweDtcbiAgICAgICAgICAgICAgbGVmdDogMDtcbiAgICAgICAgICAgICAgd2lkdGg6IDEwMCU7XG4gICAgICAgICAgICB9XG4gICAgICAgICAgfVxuICAgICAgICB9XG4gICAgICB9XG5cbiAgICAgICY6bm90KC53ZWVrcykge1xuICAgICAgICB0ciB7XG4gICAgICAgICAgdGR7XG4gICAgICAgICAgICAmOmZpcnN0LWNoaWxkOmJlZm9yZSB7XG4gICAgICAgICAgICAgIGJvcmRlci1yYWRpdXM6IDNweCAwIDAgM3B4O1xuICAgICAgICAgICAgfVxuICAgICAgICAgIH1cbiAgICAgICAgfVxuICAgICAgfVxuXG4gICAgICAmLnllYXJzIHtcbiAgICAgICAgdGQge1xuICAgICAgICAgIHNwYW4ge1xuICAgICAgICAgICAgd2lkdGg6IDQ2cHg7XG4gICAgICAgICAgICBoZWlnaHQ6IDQ2cHg7XG4gICAgICAgICAgICBsaW5lLWhlaWdodDogNDVweDtcbiAgICAgICAgICAgIG1hcmdpbjogMCBhdXRvO1xuICAgICAgICAgIH1cbiAgICAgICAgfVxuXG4gICAgICAgIHRyOm5vdCg6bGFzdC1jaGlsZCkge1xuICAgICAgICAgIHRkIHtcbiAgICAgICAgICAgIHNwYW4ge1xuICAgICAgICAgICAgICBtYXJnaW4tYm90dG9tOiA4cHg7XG4gICAgICAgICAgICB9XG4gICAgICAgICAgfVxuICAgICAgICB9XG4gICAgICB9XG5cbiAgICAgICYubW9udGhzIHtcbiAgICAgICAgdGQge1xuICAgICAgICAgIGhlaWdodDogNTJweDtcblxuICAgICAgICAgIHNwYW4ge1xuICAgICAgICAgICAgcGFkZGluZzogNnB4O1xuICAgICAgICAgICAgYm9yZGVyLXJhZGl1czogMTVweDtcbiAgICAgICAgICB9XG4gICAgICAgIH1cbiAgICAgIH1cbiAgICB9XG4gIH1cblxuICAvKiAuY3VycmVudC10aW1lZGF0ZSAqL1xuICAuY3VycmVudC10aW1lZGF0ZSB7XG4gICAgY29sb3I6ICRmb250LWNvbG9yLTAzO1xuICAgIGZvbnQtc2l6ZTogMTVweDtcbiAgICB0ZXh0LWFsaWduOiBjZW50ZXI7XG4gICAgaGVpZ2h0OiAzMHB4O1xuICAgIGxpbmUtaGVpZ2h0OiAzMHB4O1xuICAgIGJvcmRlci1yYWRpdXM6IDIwcHg7XG4gICAgYm9yZGVyOiAxcHggc29saWQgJGJvcmRlci1jb2xvcjtcbiAgICBtYXJnaW4tYm90dG9tOiAxMHB4O1xuICAgIGN1cnNvcjogcG9pbnRlcjtcbiAgICB0ZXh0LXRyYW5zZm9ybTogdXBwZXJjYXNlO1xuICAgIC1tb3otdXNlci1zZWxlY3Q6IG5vbmU7XG4gICAgLXdlYmtpdC11c2VyLXNlbGVjdDogbm9uZTtcbiAgICAtbXMtdXNlci1zZWxlY3Q6IG5vbmU7XG5cbiAgICBzcGFuOm5vdCg6ZW1wdHkpOmJlZm9yZSB7XG4gICAgICBjb250ZW50OiBcIlwiO1xuICAgICAgd2lkdGg6IDE1cHg7XG4gICAgICBoZWlnaHQ6IDE2cHg7XG4gICAgICBkaXNwbGF5OiBpbmxpbmUtYmxvY2s7XG4gICAgICBtYXJnaW4tcmlnaHQ6IDRweDtcbiAgICAgIHZlcnRpY2FsLWFsaWduOiB0ZXh0LWJvdHRvbTtcbiAgICAgIGJhY2tncm91bmQ6IHVybChkYXRhOmltYWdlL3BuZztiYXNlNjQsaVZCT1J3MEtHZ29BQUFBTlNVaEVVZ0FBQUE4QUFBQVFDQVlBQUFESlZpVUVBQUFCTWtsRVFWUW9VOVZUd1czQ1FCQ2NPVWdCdEVCS1NBdWtBbkJLTUUrd0ZDQWxZSWhrOHNRbHhGQUJ0SkFTY0FzdUFQQkVld1ljeENQOG91eHJQRHN6YTYxdWlWTjFvNlJOSEQ0aHRTQ21xNDlSZk83MUJ2TUpxQkJrSVRSZjFrbVVXNDluUVJDOWgxSTVBWmxCQ2xhTDhhUDFmS2dPT3hDeDhhU0xzK1ExOWVadU5POFFtUHFKUnRERmd1eTdPQWNEYkpQcysvQktWUERJUHJ2RDJaSmdXQW1WZTdPMHJJMFZxczFzZXlXVVhwdUpvcHBZQ2E1TCtVKytOcE5Qa3I1T0Uyb01kQVJzYjNneWtKVDV5ZFpjTDhaOVd3NjBueGcyTGhqT045bGk5T3dYWnpvK3hMYnAzbkMyczlDTDJScnVlR3lWcmd3Tm04SHBzQ3paOUVFVzZrcVhsbzFHUWUwM0Z6UC83VzhIbDBkQnR1N0JmN3p0Nm1Jd3ZYMVJ2ekRDbTcrcTNtQVcwRGwvR1BkVUNlWHJaTFQ5QnJEckdrbTRxbFB2QUFBQUFFbEZUa1N1UW1DQyk7XG4gICAgfVxuICB9XG5cbiAgLyogLmJzLWRhdGVwaWNrZXItbXVsdGlwbGUgKi9cbiAgJi1tdWx0aXBsZSB7XG4gICAgYm9yZGVyLXJhZGl1czogNHB4IDAgMCA0cHg7XG5cbiAgICAmICsgJiB7XG4gICAgICBtYXJnaW4tbGVmdDogMTBweDtcbiAgICB9XG5cbiAgICAuYnMtZGF0ZXBpY2tlciB7XG4gICAgICBib3gtc2hhZG93OiBub25lO1xuICAgICAgcG9zaXRpb246IHJlbGF0aXZlO1xuXG4gICAgICAmOm5vdCg6bGFzdC1jaGlsZCkge1xuICAgICAgICBwYWRkaW5nLXJpZ2h0OiAxMHB4O1xuICAgICAgfVxuXG4gICAgICAmICsgLmJzLWRhdGVwaWNrZXI6YWZ0ZXIge1xuICAgICAgICBjb250ZW50OiBcIlwiO1xuICAgICAgICBkaXNwbGF5OiBibG9jaztcbiAgICAgICAgd2lkdGg6IDE0cHg7XG4gICAgICAgIGhlaWdodDogMTBweDtcbiAgICAgICAgYmFja2dyb3VuZDogdXJsKGRhdGE6aW1hZ2UvcG5nO2Jhc2U2NCxpVkJPUncwS0dnb0FBQUFOU1VoRVVnQUFBQThBQUFBS0NBWUFBQUJyR3dUNUFBQUExRWxFUVZRb1U0MlJzUXJDVUF4Rjc3VnVEdTdPNG9NV1cvL0JVUkJCcFp2Z0trNHVJcmpvcUtPVGYrRG9wSU80dVlnZ3RGVGZ3Mytwa1FxQ1cxL0c1SjdrSmlGeTRtNU14VWx4QXpnSVBIWCtsek1QenVwUllsWWd4aVI3dnFzT1A4WUt6c1R4MHl4Rk1DVVorcTdhWnpscitPdmdvV2NBRnlBSGdhdDJqTFd1NDgyNTJEZHFBaWhESkdTU0pOVVV4WW1RanMzK2hQUUJsQWgyckcyTENPUG5hdzNJaUdEWDk5VFJDczdBU0pzTmhVT0E3ZC9MY3VIdlJHMjJGSVp2c05YdzFNWDZWWkV4Q2lsT1FLRWZlTFhyLzEwK2FDOUhvN2FyaDdvQUFBQUFTVVZPUks1Q1lJST0pO1xuICAgICAgICBwb3NpdGlvbjogYWJzb2x1dGU7XG4gICAgICAgIHRvcDogMjVweDtcbiAgICAgICAgbGVmdDogLThweDtcbiAgICAgIH1cblxuICAgICAgLmxlZnQge1xuICAgICAgICBmbG9hdDogbGVmdDtcbiAgICAgIH1cblxuICAgICAgLnJpZ2h0IHtcbiAgICAgICAgZmxvYXQ6IHJpZ2h0O1xuICAgICAgfVxuICAgIH1cbiAgfVxuXG4gIC8qIC5icy1kYXRlcGlja2VyLWJ0bnMgKi9cbiAgJi1jb250YWluZXIge1xuICAgIHBhZGRpbmc6IDE1cHg7XG4gIH1cblxuICAuYnMtbWVkaWEtY29udGFpbmVyIHtcbiAgICBkaXNwbGF5OiBmbGV4O1xuICAgIEBtZWRpYShtYXgtd2lkdGg6IDc2OHB4KSB7XG4gICAgICBmbGV4LWRpcmVjdGlvbjogY29sdW1uO1xuICAgIH1cbiAgfVxuXG4gIC8qLmJzLWRhdGVwaWNrZXItY3VzdG9tLXJhbmdlICovXG4gICYtY3VzdG9tLXJhbmdlIHtcbiAgICBwYWRkaW5nOiAxNXB4O1xuICAgIGJhY2tncm91bmQ6ICRjdXN0b20tcmFuZ2UtYmc7XG4gIH1cblxuICAvKiAuYnMtZGF0ZXBpY2tlci1wcmVkZWZpbmVkLWJ0bnMgKi9cbiAgJi1wcmVkZWZpbmVkLWJ0bnMge1xuICAgIGJ1dHRvbiB7XG4gICAgICB3aWR0aDogMTAwJTtcbiAgICAgIGRpc3BsYXk6IGJsb2NrO1xuICAgICAgaGVpZ2h0OiAzMHB4O1xuICAgICAgYmFja2dyb3VuZC1jb2xvcjogJGJ0bi1iZzI7XG4gICAgICBib3JkZXItcmFkaXVzOiA0cHg7XG4gICAgICBjb2xvcjogJGZvbnQtY29sb3ItMDE7XG4gICAgICBib3JkZXI6IDA7XG4gICAgICBtYXJnaW4tYm90dG9tOiAxMHB4O1xuICAgICAgcGFkZGluZzogMCAxOHB4O1xuICAgICAgdGV4dC1hbGlnbjogbGVmdDtcbiAgICAgIHRyYW5zaXRpb246IDAuM3M7XG5cbiAgICAgICY6aG92ZXIge1xuICAgICAgICBiYWNrZ3JvdW5kLWNvbG9yOiAkYnRuLWJnMi1ob3ZlcjtcbiAgICAgIH1cbiAgICB9XG4gIH1cblxuICAvKiAuYnMtZGF0ZXBpY2tlci1idXR0b25zICovXG4gICYtYnV0dG9ucyB7XG4gICAgZGlzcGxheTogZmxleDtcbiAgICBmbGV4LWZsb3c6IHJvdyB3cmFwO1xuICAgIGp1c3RpZnktY29udGVudDogZmxleC1lbmQ7XG4gICAgcGFkZGluZy10b3A6IDEwcHg7XG4gICAgYm9yZGVyLXRvcDogMXB4IHNvbGlkICRib3JkZXItY29sb3I7XG5cbiAgICAuYnRuLWRlZmF1bHQge1xuICAgICAgbWFyZ2luLWxlZnQ6IDEwcHg7XG4gICAgfVxuXG4gICAgLmJ0bi10b2RheS13cmFwcGVyIHtcbiAgICAgIGRpc3BsYXk6IGZsZXg7XG4gICAgICBmbGV4LWZsb3c6IHJvdyB3cmFwO1xuICAgIH1cblxuICAgIC5jbGVhci1yaWdodCxcbiAgICAudG9kYXktcmlnaHQge1xuICAgICAgZmxleC1ncm93OiAwO1xuICAgIH1cbiAgICAuY2xlYXItbGVmdCxcbiAgICAudG9kYXktbGVmdCB7XG4gICAgICBmbGV4LWdyb3c6IDE7XG4gICAgfVxuXG4gICAgLmNsZWFyLWNlbnRlcixcbiAgICAudG9kYXktY2VudGVyIHtcbiAgICAgIGZsZXgtZ3JvdzogMC41O1xuICAgIH1cbiAgfVxufVxuXG4vKiAuYnMtdGltZXBpY2tlciAqL1xuLmJzLXRpbWVwaWNrZXIge1xuICAmLWNvbnRhaW5lciB7XG4gICAgcGFkZGluZzogMTBweCAwO1xuICB9XG5cbiAgJi1sYWJlbCB7XG4gICAgY29sb3I6ICRmb250LWNvbG9yLTAzO1xuICAgIG1hcmdpbi1ib3R0b206IDEwcHg7XG4gIH1cblxuICAmLWNvbnRyb2xzIHtcbiAgICBkaXNwbGF5OiBpbmxpbmUtYmxvY2s7XG4gICAgdmVydGljYWwtYWxpZ246IHRvcDtcbiAgICBtYXJnaW4tcmlnaHQ6IDEwcHg7XG5cbiAgICBidXR0b24ge1xuICAgICAgd2lkdGg6IDIwcHg7XG4gICAgICBoZWlnaHQ6IDIwcHg7XG4gICAgICBib3JkZXItcmFkaXVzOiA1MCU7XG4gICAgICBib3JkZXI6IDA7XG4gICAgICBiYWNrZ3JvdW5kLWNvbG9yOiAkYnRuLWJnO1xuICAgICAgY29sb3I6ICRmb250LWNvbG9yLTAzO1xuICAgICAgZm9udC1zaXplOiAxNnB4O1xuICAgICAgZm9udC13ZWlnaHQ6IDcwMDtcbiAgICAgIHZlcnRpY2FsLWFsaWduOiBtaWRkbGU7XG4gICAgICBsaW5lLWhlaWdodDogMDtcbiAgICAgIHBhZGRpbmc6IDA7XG4gICAgICB0cmFuc2l0aW9uOiAwLjNzO1xuXG4gICAgICAmOmhvdmVyIHtcbiAgICAgICAgYmFja2dyb3VuZC1jb2xvcjogJGJ0bi1iZy1ob3ZlcjtcbiAgICAgIH1cbiAgICB9XG5cbiAgICBpbnB1dCB7XG4gICAgICB3aWR0aDogMzVweDtcbiAgICAgIGhlaWdodDogMjVweDtcbiAgICAgIGJvcmRlci1yYWRpdXM6IDEzcHg7XG4gICAgICB0ZXh0LWFsaWduOiBjZW50ZXI7XG4gICAgICBib3JkZXI6IDFweCBzb2xpZCAkYm9yZGVyLWNvbG9yO1xuICAgIH1cbiAgfVxuXG4gIC5zd2l0Y2gtdGltZS1mb3JtYXQge1xuICAgIHRleHQtdHJhbnNmb3JtOiB1cHBlcmNhc2U7XG4gICAgbWluLXdpZHRoOiA1NHB4O1xuICAgIGhlaWdodDogMjVweDtcbiAgICBib3JkZXItcmFkaXVzOiAyMHB4O1xuICAgIGJvcmRlcjogMXB4IHNvbGlkICRib3JkZXItY29sb3I7XG4gICAgYmFja2dyb3VuZDogJG1haW4tYmc7XG4gICAgY29sb3I6ICRmb250LWNvbG9yLTAzO1xuICAgIGZvbnQtc2l6ZTogMTNweDtcblxuICAgIGltZyB7XG4gICAgICB2ZXJ0aWNhbC1hbGlnbjogaW5pdGlhbDtcbiAgICAgIG1hcmdpbi1sZWZ0OiA0cHg7XG4gICAgfVxuICB9XG59XG5cbmJzLWRhdGVwaWNrZXItY29udGFpbmVyLFxuYnMtZGF0ZXJhbmdlcGlja2VyLWNvbnRhaW5lciB7XG4gIHotaW5kZXg6IDEwODA7XG59XG5cbi8qIHNjcmVlbiBzaXplIDwgMTAyNHB4ICovXG5AbWVkaWEgKG1heC13aWR0aDogNzY4cHgpIHtcbiAgLmJzLWRhdGVwaWNrZXIge1xuICAgICYtbXVsdGlwbGUge1xuICAgICAgZGlzcGxheTogZmxleDtcblxuICAgICAgJiArICYge1xuICAgICAgICBtYXJnaW4tdG9wOiAxMHB4O1xuICAgICAgICBtYXJnaW4tbGVmdDogMDtcbiAgICAgIH1cbiAgICB9XG4gIH1cbn1cblxuLyogdGhlbWluZyAqL1xuQGVhY2ggJG5hbWUsICRjb2xvciBpbiAkdGhlbWUtbGlzdCB7XG4gIEBpbmNsdWRlIHRoZW1pbmcoJG5hbWUsICRjb2xvcik7XG59XG4iLCIkbWFpbi1iZzogICAgICAgICAjZmZmICFkZWZhdWx0O1xuJGN1c3RvbS1yYW5nZS1iZzogI2VlZSAhZGVmYXVsdDtcblxuJG1haW4tYm94LXNoYWRvdzogI2FhYSAhZGVmYXVsdDtcblxuJGZvbnQtY29sb3ItMDE6ICAgI2ZmZiAhZGVmYXVsdDtcbiRmb250LWNvbG9yLTAyOiAgICM5YWFlYzEgIWRlZmF1bHQ7XG4kZm9udC1jb2xvci0wMzogICAjNTQ3MDhiICFkZWZhdWx0O1xuXG4kYm9yZGVyLWNvbG9yOiAgICAjZTllZGYwICFkZWZhdWx0O1xuJGhpZ2hsaWdodGVkOiAgICAgI2U5ZWRmMCAhZGVmYXVsdDtcblxuJGJ0bi1iZzogICAgICAgICAgI2U5ZWRmMCAhZGVmYXVsdDtcbiRidG4tYmctaG92ZXI6ICAgICNkNWRhZGQgIWRlZmF1bHQ7XG5cbiRidG4tYmcyOiAgICAgICAgICM5YWFlYzEgIWRlZmF1bHQ7XG4kYnRuLWJnMi1ob3ZlcjogICAjNTQ3MDhiICFkZWZhdWx0O1xuXG4kdGhlbWUtZ3JheTogICAgICAjNzc3ICFkZWZhdWx0O1xuJHRoZW1lLWdyZWVuOiAgICAgIzVjYjg1YyAhZGVmYXVsdDtcbiR0aGVtZS1ibHVlOiAgICAgICM1YmMwZGUgIWRlZmF1bHQ7XG4kdGhlbWUtZGFyay1ibHVlOiAjMzM3YWI3ICFkZWZhdWx0O1xuJHRoZW1lLXJlZDogICAgICAgI2Q5NTM0ZiAhZGVmYXVsdDtcbiR0aGVtZS1vcmFuZ2U6ICAgICNmMGFkNGUgIWRlZmF1bHQ7XG5cbiRkaXNhYmxlZC1iYWNrZ3JvdW5kOiAgcmdiYSgyMjEsIDIyMSwgMjIxLCAwLjMpICFkZWZhdWx0O1xuJGRpc2FibGVkLWNvbG9yOiAgICAgICAjZjVmNWY1ICFkZWZhdWx0O1xuXG4kaG92ZXItdGhlbWUtZGVmYXVsdDogIzZGNkU2RTtcbiRob3Zlci10aGVtZS1ncmVlbjogIzIxODgzODtcbiRob3Zlci10aGVtZS1ibHVlOiAjM0FCM0Q3O1xuJGhvdmVyLXRoZW1lLWRhcmstYmx1ZTogIzJDNkZBOTtcbiRob3Zlci10aGVtZS1vcmFuZ2U6ICNGRkFDMzU7XG4kaG92ZXItdGhlbWUtcmVkOiAjRTMzNzMyO1xuXG4kYWN0aXZlLXRoZW1lLWRlZmF1bHQ6ICM2MTYxNjE7XG4kYWN0aXZlLXRoZW1lLWdyZWVuOiAjMWU3ZTM0O1xuJGFjdGl2ZS10aGVtZS1ibHVlOiAjMkFBOENEO1xuJGFjdGl2ZS10aGVtZS1kYXJrLWJsdWU6ICMyNjY0OTg7XG4kYWN0aXZlLXRoZW1lLW9yYW5nZTogI0VEOUMyOTtcbiRhY3RpdmUtdGhlbWUtcmVkOiAjRDIzNTMxO1xuXG4kdGhlbWUtbGlzdDogKFxuICAnZGVmYXVsdCc6ICR0aGVtZS1ncmF5LFxuICAnZ3JlZW4nOiAkdGhlbWUtZ3JlZW4sXG4gICdibHVlJzogJHRoZW1lLWJsdWUsXG4gICdkYXJrLWJsdWUnOiAkdGhlbWUtZGFyay1ibHVlLFxuICAncmVkJzogJHRoZW1lLXJlZCxcbiAgJ29yYW5nZSc6ICR0aGVtZS1vcmFuZ2UsXG4pICFkZWZhdWx0O1xuIiwiQGltcG9ydCAnfm5neC1ib290c3RyYXAvZGF0ZXBpY2tlci9icy1kYXRlcGlja2VyLnNjc3MnO1xuQGltcG9ydCAnLi9zcmMvc2Nzcy92ZW5kb3JzL2JzLWRhdGVwaWNrZXIvZGF0ZXBpY2tlcic7XG5cbjpob3N0IGMtaW5wdXQtZ3JvdXAtcHJlcGVuZCBjLWlucHV0LWdyb3VwLXRleHQgYy1pY29uIHtcbiAgJjpvbmx5LWNoaWxkIHtcbiAgICBkaXNwbGF5OiBmbGV4O1xuICB9XG59XG5cbjpob3N0IGMtaW5wdXQtZ3JvdXAtYXBwZW5kIGMtaW5wdXQtZ3JvdXAtdGV4dCBjLWljb24ge1xuICAmOm9ubHktY2hpbGQge1xuICAgIGRpc3BsYXk6IGZsZXg7XG4gIH1cbn1cblxuLnRoZW1lLWRhcmstYmx1ZSAuYnMtZGF0ZXBpY2tlci1oZWFkLFxuLmN1c3RvbS10b2RheS1jbGFzcyxcbi50aGVtZS1kYXJrLWJsdWUgLmJzLWRhdGVwaWNrZXItYm9keSB0YWJsZSB0ZCBzcGFuLnNlbGVjdGVkLFxuLnRoZW1lLWRhcmstYmx1ZSAuYnMtZGF0ZXBpY2tlci1ib2R5IHRhYmxlIHRkLnNlbGVjdGVkIHNwYW4sXG4udGhlbWUtZGFyay1ibHVlIC5icy1kYXRlcGlja2VyLWJvZHkgdGFibGUgdGQgc3BhbltjbGFzcyo9c2VsZWN0LV06YWZ0ZXIsXG4udGhlbWUtZGFyay1ibHVlIC5icy1kYXRlcGlja2VyLWJvZHkgdGFibGUgdGRbY2xhc3MqPXNlbGVjdC1dIHNwYW46YWZ0ZXIge1xuICBiYWNrZ3JvdW5kLWNvbG9yOiAjMjU3Nzk2ICFpbXBvcnRhbnQ7XG4gIGNvbG9yOiB3aGl0ZSAhaW1wb3J0YW50O1xufVxuXG4udGhlbWUtZGFyay1ibHVlIC5icy1kYXRlcGlja2VyLWJvZHkgdGFibGUgdGQud2VlayBzcGFuIHtcbiAgY29sb3I6ICMzQzRCNjQgIWltcG9ydGFudDtcbn1cblxuLm10LTEwIHtcbiAgbWFyZ2luLXRvcDogMTBweDtcbn1cblxuLm8tbmFtZXtcbiAgbWluLXdpZHRoOiAyMCUgIWltcG9ydGFudDtcbiAgfVxuLmMtbmFtZXsgICAgXG4gIG1pbi13aWR0aDogMzAlICFpbXBvcnRhbnQ7XG4gfVxuLmQtbmFtZXtcbiAgbWluLXdpZHRoOiAyMCUgIWltcG9ydGFudDtcbiB9XG4udy1uYW1le1xubWluLXdpZHRoOiAyMCUgIWltcG9ydGFudDtcbn0iLCJAaW1wb3J0ICd2YXJpYWJsZXMnO1xuXG5AbWl4aW4gdGhlbWluZygkbmFtZSwgJGNvbG9yKSB7XG4gIC50aGVtZS0jeyRuYW1lfSB7XG4gICAgLmJzLWRhdGVwaWNrZXItaGVhZCB7XG4gICAgICBiYWNrZ3JvdW5kLWNvbG9yOiAkY29sb3I7XG4gICAgfVxuXG4gICAgLmJ0bi10b2RheS13cmFwcGVyLCAuYnRuLWNsZWFyLXdyYXBwZXIge1xuICAgICAgLmJ0bi1zdWNjZXNzIHtcbiAgICAgICAgYmFja2dyb3VuZC1jb2xvcjogJGNvbG9yO1xuICAgICAgICBib3JkZXItY29sb3I6ICRjb2xvcjtcbiAgICAgIH1cbiAgICAgIC5idG4tc3VjY2Vzczpub3QoOmRpc2FibGVkKTpub3QoLmRpc2FibGVkKTphY3RpdmUge1xuICAgICAgICAmOmZvY3VzIHtcbiAgICAgICAgICBib3gtc2hhZG93OiBub25lO1xuICAgICAgICB9XG4gICAgICB9XG4gICAgICAuYnRuLXN1Y2Nlc3M6Zm9jdXMge1xuICAgICAgICBib3gtc2hhZG93OiBub25lO1xuICAgICAgfVxuICAgIH1cblxuICAgIEBpZiAkbmFtZSA9PSAnZ3JlZW4nIHtcbiAgICAgIC5idG4tdG9kYXktd3JhcHBlciwgLmJ0bi1jbGVhci13cmFwcGVyIHtcbiAgICAgICAgLmJ0bi1zdWNjZXNzOm5vdCg6ZGlzYWJsZWQpOm5vdCguZGlzYWJsZWQpOmFjdGl2ZSB7XG4gICAgICAgICAgYmFja2dyb3VuZC1jb2xvcjogJGFjdGl2ZS10aGVtZS1ncmVlbjtcbiAgICAgICAgICBib3JkZXItY29sb3I6ICRhY3RpdmUtdGhlbWUtZ3JlZW47XG4gICAgICAgIH1cblxuICAgICAgICAuYnRuLXN1Y2Nlc3M6aG92ZXIge1xuICAgICAgICAgIGJhY2tncm91bmQtY29sb3I6ICRob3Zlci10aGVtZS1ncmVlbjtcbiAgICAgICAgICBib3JkZXItY29sb3I6ICRob3Zlci10aGVtZS1ncmVlbjtcbiAgICAgICAgfVxuICAgICAgfVxuICAgIH1cblxuICAgIEBpZiAkbmFtZSA9PSAnYmx1ZScge1xuICAgICAgLmJ0bi10b2RheS13cmFwcGVyLCAuYnRuLWNsZWFyLXdyYXBwZXIge1xuICAgICAgICAuYnRuLXN1Y2Nlc3M6bm90KDpkaXNhYmxlZCk6bm90KC5kaXNhYmxlZCk6YWN0aXZlIHtcbiAgICAgICAgICBiYWNrZ3JvdW5kLWNvbG9yOiAkYWN0aXZlLXRoZW1lLWJsdWU7XG4gICAgICAgICAgYm9yZGVyLWNvbG9yOiAkYWN0aXZlLXRoZW1lLWJsdWU7XG4gICAgICAgIH1cblxuICAgICAgICAuYnRuLXN1Y2Nlc3M6aG92ZXIge1xuICAgICAgICAgIGJhY2tncm91bmQtY29sb3I6ICRob3Zlci10aGVtZS1ibHVlO1xuICAgICAgICAgIGJvcmRlci1jb2xvcjogJGhvdmVyLXRoZW1lLWJsdWU7XG4gICAgICAgIH1cbiAgICAgIH1cbiAgICB9XG5cbiAgICBAaWYgJG5hbWUgPT0gJ2RhcmstYmx1ZScge1xuICAgICAgLmJ0bi10b2RheS13cmFwcGVyLCAuYnRuLWNsZWFyLXdyYXBwZXIge1xuICAgICAgICAuYnRuLXN1Y2Nlc3M6bm90KDpkaXNhYmxlZCk6bm90KC5kaXNhYmxlZCk6YWN0aXZlIHtcbiAgICAgICAgICBiYWNrZ3JvdW5kLWNvbG9yOiAkYWN0aXZlLXRoZW1lLWRhcmstYmx1ZTtcbiAgICAgICAgICBib3JkZXItY29sb3I6ICRhY3RpdmUtdGhlbWUtZGFyay1ibHVlO1xuICAgICAgICB9XG5cbiAgICAgICAgLmJ0bi1zdWNjZXNzOmhvdmVyIHtcbiAgICAgICAgICBiYWNrZ3JvdW5kLWNvbG9yOiAkaG92ZXItdGhlbWUtZGFyay1ibHVlO1xuICAgICAgICAgIGJvcmRlci1jb2xvcjogJGhvdmVyLXRoZW1lLWRhcmstYmx1ZTtcbiAgICAgICAgfVxuICAgICAgfVxuICAgIH1cblxuICAgIEBpZiAkbmFtZSA9PSAnb3JhbmdlJyB7XG4gICAgICAuYnRuLXRvZGF5LXdyYXBwZXIsIC5idG4tY2xlYXItd3JhcHBlciB7XG4gICAgICAgIC5idG4tc3VjY2Vzczpub3QoOmRpc2FibGVkKTpub3QoLmRpc2FibGVkKTphY3RpdmUge1xuICAgICAgICAgIGJhY2tncm91bmQtY29sb3I6ICRhY3RpdmUtdGhlbWUtb3JhbmdlO1xuICAgICAgICAgIGJvcmRlci1jb2xvcjogJGFjdGl2ZS10aGVtZS1vcmFuZ2U7XG4gICAgICAgIH1cblxuICAgICAgICAuYnRuLXN1Y2Nlc3M6aG92ZXIge1xuICAgICAgICAgIGJhY2tncm91bmQtY29sb3I6ICRob3Zlci10aGVtZS1vcmFuZ2U7XG4gICAgICAgICAgYm9yZGVyLWNvbG9yOiAkaG92ZXItdGhlbWUtb3JhbmdlO1xuICAgICAgICB9XG4gICAgICB9XG4gICAgfVxuXG4gICAgQGlmICRuYW1lID09ICdyZWQnIHtcbiAgICAgIC5idG4tdG9kYXktd3JhcHBlciwgLmJ0bi1jbGVhci13cmFwcGVyIHtcbiAgICAgICAgLmJ0bi1zdWNjZXNzOm5vdCg6ZGlzYWJsZWQpOm5vdCguZGlzYWJsZWQpOmFjdGl2ZSB7XG4gICAgICAgICAgYmFja2dyb3VuZC1jb2xvcjogJGFjdGl2ZS10aGVtZS1yZWQ7XG4gICAgICAgICAgYm9yZGVyLWNvbG9yOiAkYWN0aXZlLXRoZW1lLXJlZDtcbiAgICAgICAgfVxuXG4gICAgICAgIC5idG4tc3VjY2Vzczpob3ZlciB7XG4gICAgICAgICAgYmFja2dyb3VuZC1jb2xvcjogJGhvdmVyLXRoZW1lLXJlZDtcbiAgICAgICAgICBib3JkZXItY29sb3I6ICRob3Zlci10aGVtZS1yZWQ7XG4gICAgICAgIH1cbiAgICAgIH1cbiAgICB9XG5cbiAgICBAaWYgJG5hbWUgPT0gJ2RlZmF1bHQnIHtcbiAgICAgIC5idG4tdG9kYXktd3JhcHBlciwgLmJ0bi1jbGVhci13cmFwcGVyIHtcbiAgICAgICAgLmJ0bi1zdWNjZXNzOm5vdCg6ZGlzYWJsZWQpOm5vdCguZGlzYWJsZWQpOmFjdGl2ZSB7XG4gICAgICAgICAgYmFja2dyb3VuZC1jb2xvcjogJGFjdGl2ZS10aGVtZS1kZWZhdWx0O1xuICAgICAgICAgIGJvcmRlci1jb2xvcjogJGFjdGl2ZS10aGVtZS1kZWZhdWx0O1xuICAgICAgICB9XG5cbiAgICAgICAgLmJ0bi1zdWNjZXNzOmhvdmVyIHtcbiAgICAgICAgICBiYWNrZ3JvdW5kLWNvbG9yOiAkaG92ZXItdGhlbWUtZGVmYXVsdDtcbiAgICAgICAgICBib3JkZXItY29sb3I6ICRob3Zlci10aGVtZS1kZWZhdWx0O1xuICAgICAgICB9XG4gICAgICB9XG4gICAgfVxuXG4gICAgICAuYnMtZGF0ZXBpY2tlci1wcmVkZWZpbmVkLWJ0bnMge1xuICAgICAgICBidXR0b24ge1xuICAgICAgICAgICYuc2VsZWN0ZWQge1xuICAgICAgICAgICAgYmFja2dyb3VuZC1jb2xvcjogJGNvbG9yIDtcbiAgICAgICAgICB9XG4gICAgICB9XG4gICAgfVxuXG4gICAgLmJzLWRhdGVwaWNrZXItYm9keSB7XG4gICAgICB0YWJsZSB7XG4gICAgICAgIHRkIHtcbiAgICAgICAgICBzcGFuLnNlbGVjdGVkLFxuICAgICAgICAgICYuc2VsZWN0ZWQgc3BhbixcbiAgICAgICAgICBzcGFuW2NsYXNzKj1cInNlbGVjdC1cIl06YWZ0ZXIsXG4gICAgICAgICAgJltjbGFzcyo9XCJzZWxlY3QtXCJdIHNwYW46YWZ0ZXIge1xuICAgICAgICAgICAgYmFja2dyb3VuZC1jb2xvcjogJGNvbG9yO1xuICAgICAgICAgIH1cblxuICAgICAgICAgICYud2VlayBzcGFuIHtcbiAgICAgICAgICAgIGNvbG9yOiAkY29sb3I7XG4gICAgICAgICAgfVxuXG4gICAgICAgICAgJi5hY3RpdmUtd2VlayBzcGFuOmhvdmVyIHtcbiAgICAgICAgICAgIGN1cnNvcjogcG9pbnRlcjtcbiAgICAgICAgICAgIGJhY2tncm91bmQtY29sb3I6ICRjb2xvcjtcbiAgICAgICAgICAgIGNvbG9yOiAkZm9udC1jb2xvci0wMTtcbiAgICAgICAgICAgIG9wYWNpdHk6IDAuNTtcbiAgICAgICAgICAgIHRyYW5zaXRpb246IDBzO1xuICAgICAgICAgIH1cbiAgICAgICAgfVxuICAgICAgfVxuICAgIH1cbiAgfVxufVxuIiwiLy8gdG9kbzogdGVtcCBjLWRhcmstdGhlbWUgcGx1bWJpbmcgZm9yIGJzLWRhdGVwaWNrZXJcblxuLmMtZGFyay10aGVtZSB+ICogLmJzLWRhdGVwaWNrZXIge1xuICBiYWNrZ3JvdW5kLWNvbG9yOiAjMjMyNDJkICFpbXBvcnRhbnQ7XG4gIC5icy1kYXRlcGlja2VyLWhlYWQgYnV0dG9uIHtcbiAgICBjb2xvcjogZGFya2VuKCMyMzI0MmQsIDUwJSkgIWltcG9ydGFudDtcbiAgfVxuICAuYnMtZGF0ZXBpY2tlci1ib2R5IHRkIHtcbiAgICBjb2xvcjogbGlnaHRlbigjMjMyNDJkLCA1MCUpICFpbXBvcnRhbnQ7XG4gIH1cbiAgLmJzLWRhdGVwaWNrZXItYm9keSB7XG4gICAgYm9yZGVyLWNvbG9yOiBsaWdodGVuKCMyMzI0MmQsIDEwJSkgIWltcG9ydGFudDtcbiAgfVxuICAuYnMtZGF0ZXBpY2tlci1ib2R5IHRhYmxlIHRkLmRpc2FibGVkIHNwYW4sXG4gIC5icy1kYXRlcGlja2VyLWJvZHkgdGFibGUgdGQgc3Bhbi5kaXNhYmxlZCB7XG4gICAgY29sb3I6IGxpZ2h0ZW4oIzIzMjQyZCwgNTAlKSAhaW1wb3J0YW50O1xuICB9XG4gIC5icy1kYXRlcGlja2VyLWJvZHkgdGFibGUuZGF5cyBzcGFuLmluLXJhbmdlOm5vdCguc2VsZWN0LXN0YXJ0KTpiZWZvcmUge1xuICAgIGJhY2tncm91bmQtY29sb3I6IGRhcmtlbigjMjMyNDJkLCA5MCUpICFpbXBvcnRhbnQ7XG4gIH1cbiAgLmJzLWRhdGVwaWNrZXItYnV0dG9ucyB7XG4gICAgYm9yZGVyLXRvcC1jb2xvcjogbGlnaHRlbigjMjMyNDJkLCAxMCUpICFpbXBvcnRhbnQ7XG4gIH1cbn1cblxuIl19 */";
+      /***/
+    },
+
+    /***/
+    "qUkX":
+    /*!*************************************************!*\
+      !*** ./src/app/views/reports/reports.module.ts ***!
+      \*************************************************/
+
+    /*! exports provided: ReportsModule */
+
+    /***/
+    function qUkX(module, __webpack_exports__, __webpack_require__) {
+      "use strict";
+
+      __webpack_require__.r(__webpack_exports__);
+      /* harmony export (binding) */
+
+
+      __webpack_require__.d(__webpack_exports__, "ReportsModule", function () {
+        return ReportsModule;
+      });
+      /* harmony import */
+
+
+      var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(
+      /*! tslib */
+      "mrSG");
+      /* harmony import */
+
+
+      var _angular_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(
+      /*! @angular/core */
+      "8Y7J");
+      /* harmony import */
+
+
+      var _angular_common__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(
+      /*! @angular/common */
+      "SVse");
+      /* harmony import */
+
+
+      var _check_in_check_in_component__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(
+      /*! ./check-in/check-in.component */
+      "DduO");
+      /* harmony import */
+
+
+      var _log_in_log_in_component__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(
+      /*! ./log-in/log-in.component */
+      "8sM2");
+      /* harmony import */
+
+
+      var _angular_router__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(
+      /*! @angular/router */
+      "iInd");
+      /* harmony import */
+
+
+      var _angular_forms__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(
+      /*! @angular/forms */
+      "s7LF");
+      /* harmony import */
+
+
+      var _coreui_angular__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(
+      /*! @coreui/angular */
+      "Iluq");
+      /* harmony import */
+
+
+      var _coreui_icons_angular__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(
+      /*! @coreui/icons-angular */
+      "rVqu");
+      /* harmony import */
+
+
+      var _angular_material_sort__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(
+      /*! @angular/material/sort */
+      "LUZP");
+      /* harmony import */
+
+
+      var ngx_bootstrap_datepicker__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(
+      /*! ngx-bootstrap/datepicker */
+      "ienR");
+      /* harmony import */
+
+
+      var _angular_material_table__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(
+      /*! @angular/material/table */
+      "OaSA");
+      /* harmony import */
+
+
+      var _angular_material_paginator__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(
+      /*! @angular/material/paginator */
+      "5QHs"); // Datepicker
+
+
+      var route = [{
+        path: '',
+        data: {
+          title: 'Reports'
+        },
+        children: [{
+          path: '',
+          redirectTo: 'check-in'
+        }, {
+          path: 'check-in',
+          data: {
+            title: 'Check-In'
+          },
+          component: _check_in_check_in_component__WEBPACK_IMPORTED_MODULE_3__["CheckInComponent"]
+        }, {
+          path: 'log-in',
+          data: {
+            title: 'Log-In'
+          },
+          component: _log_in_log_in_component__WEBPACK_IMPORTED_MODULE_4__["LogInComponent"]
+        }]
+      }];
+
+      var ReportsModule = function ReportsModule() {
+        _classCallCheck(this, ReportsModule);
+      };
+
+      ReportsModule = Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"])([Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["NgModule"])({
+        declarations: [_check_in_check_in_component__WEBPACK_IMPORTED_MODULE_3__["CheckInComponent"], _log_in_log_in_component__WEBPACK_IMPORTED_MODULE_4__["LogInComponent"]],
+        imports: [_angular_common__WEBPACK_IMPORTED_MODULE_2__["CommonModule"], _angular_router__WEBPACK_IMPORTED_MODULE_5__["RouterModule"].forChild(route), _angular_forms__WEBPACK_IMPORTED_MODULE_6__["FormsModule"], _angular_forms__WEBPACK_IMPORTED_MODULE_6__["ReactiveFormsModule"], _coreui_angular__WEBPACK_IMPORTED_MODULE_7__["FormModule"], _coreui_angular__WEBPACK_IMPORTED_MODULE_7__["CardModule"], _coreui_angular__WEBPACK_IMPORTED_MODULE_7__["GridModule"], _angular_material_sort__WEBPACK_IMPORTED_MODULE_9__["MatSortModule"], _angular_material_paginator__WEBPACK_IMPORTED_MODULE_12__["MatPaginatorModule"], _coreui_icons_angular__WEBPACK_IMPORTED_MODULE_8__["IconModule"], _coreui_angular__WEBPACK_IMPORTED_MODULE_7__["ButtonModule"], ngx_bootstrap_datepicker__WEBPACK_IMPORTED_MODULE_10__["BsDatepickerModule"].forRoot(), _angular_material_table__WEBPACK_IMPORTED_MODULE_11__["MatTableModule"], _coreui_angular__WEBPACK_IMPORTED_MODULE_7__["SpinkitModule"]],
+        providers: [_angular_common__WEBPACK_IMPORTED_MODULE_2__["DatePipe"]]
+      })], ReportsModule);
+      /***/
+    }
+  }]);
+})();
+//# sourceMappingURL=views-reports-reports-module-es5.js.map
