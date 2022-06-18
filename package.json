@@ -1,7 +1,8 @@
 {
-  "name": "@coreui/coreui-pro-angular-admin-template-starter",
+  "name": "tranc-track",
   "version": "3.0.0-alpha.13",
   "description": "CoreUI Pro Angular 11 Admin Template",
+  "homepage":"https://techniverse-software.github.io/tranc-track",
   "author": {
     "name": "creativeLabs Łukasz Holeczek",
     "url": "https://coreui.io",
