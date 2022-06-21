@@ -8,7 +8,7 @@ import { AuthService } from "../../../services/auth.service";
 import * as city_state_list from "./city_state.json";
 import { GlobalService } from "../../../services/global.service";
 // import * as city_list from './cities.json';
-// import * as state_list from './states.json';
+import * as state_list from './states.json';
 import { HttpClient } from "@angular/common/http";
 // import { Constant } from "src/app/services/constant";
 @Component({
@@ -31,9 +31,9 @@ export class OrganizationAddEditComponent implements OnInit {
     { label: "No", value: false },
   ];
   countryCode: any = 1;
-  countryInitial: any = "gb";
+  countryInitial: any = "in";
   countryCode1: any = 1;
-  countryInitial1: any = "gb";
+  countryInitial1: any = "in";
   countryObj: any;
   countryObj1: any;
   data: any;
@@ -59,15 +59,25 @@ export class OrganizationAddEditComponent implements OnInit {
 
   ngOnInit(): void {
     this.loading = true;
-    // console.log((city_state_list as any).default)
+    console.log("state_list")
+    console.log(state_list)
     // var city_state_list = (city_state_list as any).default;
-    for (var key in (city_state_list as any).default) {
-      if ((city_state_list as any).default.hasOwnProperty(key)) {
-        // console.log(key + " -> " + p[key]);
-        this.city_list.push(key);
-        this.state_list.push((city_state_list as any).default[key]);
+    
+    for (var states of (state_list as any).default) {
+      if ((states as any).country_code == "IN") {
+        console.log((states as any).name);
+        this.city_list.push(states);
+        this.state_list.push((states as any).name);
       }
     }
+
+    // for (var key in (city_state_list as any).default) {
+    //   if ((city_state_list as any).default.hasOwnProperty(key)) {
+    //     console.log(key + " -> " + key);
+    //     this.city_list.push(key);
+    //     this.state_list.push((city_state_list as any).default[key]);
+    //   }
+    // }
     // console.log(this.state_list)
     // this.country_list = (country_list as any).default
     this.formErrors = this.vf.errorMessages;
@@ -77,8 +87,8 @@ export class OrganizationAddEditComponent implements OnInit {
     this.organizationId = this.route.snapshot.params.id;
     this.organizationForm["controls"].billingAddress[
       "controls"
-    ].country.setValue("United Kingdom");
-    this.country_chnage("United Kingdom");
+    ].country.setValue("India");
+    this.country_chnage("India");
     // var index = this.country_list.findIndex((x) => x.name == 'United Kingdom');
     // if (index !== -1) {
     // }

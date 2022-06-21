@@ -72,7 +72,7 @@ export class LocationAddEditComponent implements OnInit {
     }
     this.formErrors = this.vf.errorMessages;
     this.createForm();
-    this.deviceForm["controls"].country.setValue("United Kingdom");
+    this.deviceForm["controls"].country.setValue("India");
     this.tokenData = this.authService.decodeToken();
     this.deviceId = this.route.snapshot.params.id;
     if (this.deviceId) {

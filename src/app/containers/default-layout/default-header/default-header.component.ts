@@ -41,8 +41,8 @@ export class DefaultHeaderComponent extends HeaderComponent implements OnInit {
     } else {
       document.body.style.overflowY = "auto";
       document.body.style.overflowX = "auto";
-      this.gs.organizatioName = 'Trace N Track';
-      // 'Trace N Track'; 
+      this.gs.organizatioName = 'Tap N Trak';
+      // 'Tap N Trak'; 
     }
     this.authService.organizationNameEvent.subscribe((data) => {
       this.gs.organizatioName = data;
